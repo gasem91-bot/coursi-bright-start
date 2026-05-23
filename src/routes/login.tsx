@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import coursiLogo from "@/assets/coursi-logo.png";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
@@ -82,20 +83,11 @@ function LoginPage() {
           padding: "40px 36px",
         }}
       >
-        <h1
-          style={{
-            fontFamily: "Inter, sans-serif",
-            fontWeight: 900,
-            fontSize: "32px",
-            textAlign: "center",
-            background: "linear-gradient(135deg, #7B35C0, #40C8C8)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
-          }}
-        >
-          COURS!
-        </h1>
+        <img
+          src={coursiLogo}
+          alt="COURSI"
+          style={{ display: "block", margin: "0 auto", width: "140px", height: "auto" }}
+        />
         <p style={{ color: "#AAAAAA", fontSize: "13px", textAlign: "center", marginTop: "6px" }}>
           بوابة كورس الذكاء الاصطناعي
         </p>
