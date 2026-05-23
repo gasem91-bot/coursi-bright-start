@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import coursiLogo from "@/assets/coursi-logo.png";
+import ShaderBackground from "@/components/ui/shader-background";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
@@ -62,22 +63,38 @@ function LoginPage() {
   return (
     <div
       style={{
+        position: "relative",
         minHeight: "100vh",
         width: "100%",
         background: "#000",
-        backgroundImage:
-          "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(123,53,192,0.08), transparent)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         padding: "24px",
+        overflow: "hidden",
       }}
     >
+      <div style={{ position: "absolute", inset: 0, opacity: 0.55 }}>
+        <ShaderBackground />
+      </div>
       <div
         style={{
+          position: "absolute",
+          inset: 0,
+          backgroundImage:
+            "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(123,53,192,0.18), transparent 70%)",
+          pointerEvents: "none",
+        }}
+      />
+      <div
+        style={{
+          position: "relative",
+          zIndex: 1,
           width: "100%",
           maxWidth: "440px",
-          background: "#0D0D0D",
+          background: "rgba(13,13,13,0.82)",
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
           border: "1px solid #1E1E1E",
           borderRadius: "20px",
           padding: "40px 36px",
