@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -26,7 +26,6 @@ const inputStyle: React.CSSProperties = {
 };
 
 function LoginPage() {
-  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -41,7 +40,7 @@ function LoginPage() {
       setError("البريد الإلكتروني أو كلمة المرور غير صحيحة");
       setLoading(false);
     } else {
-      navigate({ to: "/dashboard" as string });
+      window.location.href = "/dashboard";
     }
   };
 
