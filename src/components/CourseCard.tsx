@@ -42,7 +42,7 @@ export function CourseCard({
             {level}
           </span>
         </div>
-      </iMAGE>
+      </div>
       <div className="flex flex-1 flex-col p-5">
         <h3 className="font-heading text-lg font-semibold text-card-foreground line-clamp-2">
           {title}
