@@ -212,16 +212,16 @@ function DashboardPage() {
                 const labelText = isCurrent ? "مستواك الحالي" : isCompleted ? "✓ أتممته" : "المستوى التالي";
                 const labelColor = isCurrent ? "#40C8C8" : isCompleted ? "#3DD6A0" : "#AAAAAA";
                 return (
-                  <>
-                    <div key={jl.key} style={{ flex: 1, textAlign: "center", padding: 14, borderRadius: 12, ...boxStyle }}>
+                  <Fragment key={jl.key}>
+                    <div style={{ flex: 1, textAlign: "center", padding: 14, borderRadius: 12, ...boxStyle }}>
                       <div style={{ fontSize: 28 }}>{jl.emoji}</div>
                       <div style={{ fontSize: 13, fontWeight: 700, color: "#fff", marginTop: 4 }}>{jl.name}</div>
                       <div style={{ fontSize: 11, color: labelColor, marginTop: 4 }}>{labelText}</div>
                     </div>
                     {i < journeyLevels.length - 1 && (
-                      <div key={`arr-${i}`} style={{ flexShrink: 0, fontSize: 20, color: "#AAAAAA", opacity: 0.3, alignSelf: "center" }}>←</div>
+                      <div style={{ flexShrink: 0, fontSize: 20, color: "#AAAAAA", opacity: 0.3, alignSelf: "center" }}>←</div>
                     )}
-                  </>
+                  </Fragment>
                 );
               })}
             </div>
