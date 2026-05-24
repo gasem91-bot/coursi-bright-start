@@ -255,7 +255,7 @@ function CourseAIPage() {
             </div>
           </div>
 
-          {course.chapters.map((title, i) => {
+          {course.chapters.map((ch, i) => {
             const isActive = i === activeChapter;
             const isDone = completedIds.has(chapterId(level, i));
             return (
