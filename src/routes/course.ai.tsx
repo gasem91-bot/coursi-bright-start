@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import coursiLogo from "@/assets/coursi-logo.png";
+import { COURSE_CONTENT, type QuizQuestion } from "@/lib/course-content";
 
 export const Route = createFileRoute("/course/ai")({
   component: CourseAIPage,
@@ -13,94 +14,13 @@ type Tier = "course" | "course_ai";
 
 const font = "Noto Sans Arabic, sans-serif";
 
-const COURSE = {
-  beginner: {
-    name: "أساسيات الذكاء الاصطناعي من الصفر",
-    meta: "٨ فصول · ٤ أسابيع",
-    chapters: [
-      "مدخل إلى الذكاء الاصطناعي",
-      "أدوات AI الأساسية الخمس",
-      "فن كتابة الأوامر",
-      "AI لإنتاج المحتوى العربي",
-      "AI للإنتاجية الشخصية",
-      "تصميم الصور والمرئيات",
-      "بناء أول سير عمل آلي",
-      "بناء مصدر دخل من AI",
-    ],
-  },
-  intermediate: {
-    name: "الذكاء الاصطناعي للمحترفين",
-    meta: "١٠ فصول · ٦ أسابيع",
-    chapters: [
-      "البرومبت المتقدم والهندسة العميقة",
-      "الأتمتة الاحترافية",
-      "بناء GPT مخصص",
-      "AI للتسويق الرقمي المتقدم",
-      "AI للفيديو والميديا",
-      "بناء وكالة خدمات AI",
-      "تحليل البيانات بـ AI",
-      "المنتجات الرقمية القائمة على AI",
-      "نفسية العمل بـ AI ومستقبله",
-      "مشروع التخرج والشهادة",
-    ],
-  },
-  advanced: {
-    name: "إتقان الذكاء الاصطناعي",
-    meta: "١٢ فصل · ٨ أسابيع",
-    chapters: [
-      "هندسة أنظمة AI",
-      "بناء وكلاء AI",
-      "التكامل مع APIs",
-      "Fine-tuning ونماذج مخصصة",
-      "بناء SaaS بـ AI",
-      "AI في التجارة الإلكترونية",
-      "AI للمبيعات وإدارة العلاقات",
-      "الأمن والأخلاقيات في AI",
-      "بناء فريق AI ذكي",
-      "AI والاستثمار في الشركات",
-      "التوسع والنمو",
-      "شهادة AI Master",
-    ],
-  },
-} as const;
+const COURSE = COURSE_CONTENT;
 
 const AR_NUM = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"];
 const toAr = (n: number) => String(n).split("").map((d) => AR_NUM[+d] ?? d).join("");
 const pad2 = (n: number) => String(n).padStart(2, "0");
 const chapterId = (level: Level, idx: number) => `ai-${level}-${pad2(idx + 1)}`;
 
-const QUESTIONS = [
-  {
-    q: "ما الهدف الرئيسي من هذا الفصل؟",
-    opts: [
-      "فهم المفاهيم الأساسية وتطبيقها",
-      "حفظ المعلومات النظرية",
-      "اجتياز الاختبار فقط",
-      "قراءة المحتوى بدون تطبيق",
-    ],
-    correct: 0,
-  },
-  {
-    q: "ما أهم عنصر في التعلّم الفعّال؟",
-    opts: [
-      "قراءة أكبر قدر من المحتوى",
-      "التطبيق الفوري لما تتعلّمه",
-      "الاستعجال في إنهاء الكورس",
-      "حفظ التعريفات",
-    ],
-    correct: 1,
-  },
-  {
-    q: "ما الخطوة الصحيحة بعد إتمام هذا الفصل؟",
-    opts: [
-      "إعادة قراءة الفصل من البداية",
-      "الانتظار حتى تتذكر كل شيء",
-      "تطبيق ما تعلّمته والانتقال للفصل التالي",
-      "تخطي الاختبار",
-    ],
-    correct: 2,
-  },
-];
 const ARABIC_LETTERS = ["أ", "ب", "ج", "د"];
 
 function CourseAIPage() {
@@ -179,7 +99,9 @@ function CourseAIPage() {
   const pct = total ? Math.round((completedCount / total) * 100) : 0;
 
   const isLast = activeChapter === total - 1;
-  const currentChapterTitle = course.chapters[activeChapter] ?? "";
+  const currentChapter = course.chapters[activeChapter];
+  const currentChapterTitle = currentChapter?.title ?? "";
+  const quizQuestions: QuizQuestion[] = currentChapter?.quiz ?? [];
 
   const goToChapter = (i: number) => {
     setActiveChapter(i);
@@ -193,13 +115,13 @@ function CourseAIPage() {
   };
 
   const handleAnswer = (idx: number) => {
-    if (answered) return;
-    const correct = QUESTIONS[currentQ].correct;
+    if (answered || !quizQuestions[currentQ]) return;
+    const correct = quizQuestions[currentQ].correct;
     setAnswered(true);
     setSelectedAnswer(idx);
     if (idx === correct) setScore((s) => s + 1);
     setTimeout(() => {
-      if (currentQ < QUESTIONS.length - 1) {
+      if (currentQ < quizQuestions.length - 1) {
         setCurrentQ((q) => q + 1);
         setAnswered(false);
         setSelectedAnswer(null);
@@ -333,7 +255,7 @@ function CourseAIPage() {
             </div>
           </div>
 
-          {course.chapters.map((title, i) => {
+          {course.chapters.map((ch, i) => {
             const isActive = i === activeChapter;
             const isDone = completedIds.has(chapterId(level, i));
             return (
@@ -367,7 +289,7 @@ function CourseAIPage() {
                     color: isDone ? "#444" : isActive ? "#bbb" : "#888",
                   }}
                 >
-                  {title}
+                  {ch.title}
                 </div>
                 <div
                   style={{
@@ -429,11 +351,13 @@ function CourseAIPage() {
             <ContentTab
               chapterIndex={activeChapter}
               chapterTitle={currentChapterTitle}
+              chapterHtml={currentChapter?.content ?? ""}
               onGoQuiz={() => setActiveTab("quiz")}
             />
           ) : (
             <QuizTab
               chapterIndex={activeChapter}
+              questions={quizQuestions}
               currentQ={currentQ}
               answered={answered}
               selectedAnswer={selectedAnswer}
@@ -572,84 +496,45 @@ function CourseAIPage() {
   );
 }
 
+const CONTENT_CSS = `
+.coursi-content h3 { color:#fff; font-weight:700; font-size:18px; margin:24px 0 10px; font-family:${font}; }
+.coursi-content p { color:#BBB; font-size:15px; line-height:1.9; margin:0 0 12px; }
+.coursi-content strong { color:#fff; }
+.coursi-content .info-box { background:rgba(123,53,192,0.06); border-right:3px solid #7B35C0; border-radius:10px; padding:16px 18px; margin:20px 0; }
+.coursi-content .info-box .box-title { color:#9B55E0; font-weight:700; font-size:13px; margin:0 0 8px; }
+.coursi-content .info-box p { color:#AAA; font-size:14px; margin:0; }
+.coursi-content .action-box { background:rgba(64,200,200,0.05); border-right:3px solid #40C8C8; border-radius:10px; padding:16px 18px; margin:20px 0; }
+.coursi-content .action-box .box-title { color:#40C8C8; font-weight:700; font-size:13px; margin:0 0 8px; }
+.coursi-content .action-box p { color:#AAA; font-size:14px; margin:0; }
+`;
+
 function ContentTab({
   chapterIndex,
   chapterTitle,
+  chapterHtml,
   onGoQuiz,
 }: {
   chapterIndex: number;
   chapterTitle: string;
+  chapterHtml: string;
   onGoQuiz: () => void;
 }) {
   return (
     <div style={{ padding: "28px 32px" }}>
+      <style>{CONTENT_CSS}</style>
       <div style={{ color: "#666", fontSize: 11, letterSpacing: 2, marginBottom: 8 }}>
         الفصل {toAr(chapterIndex + 1)}
       </div>
       <h1 style={{ color: "#fff", fontWeight: 700, fontSize: 24, marginBottom: 12, fontFamily: font }}>
         {chapterTitle}
       </h1>
-      <div style={{ display: "flex", gap: 16, color: "#888", fontSize: 12, marginBottom: 4 }}>
+      <div style={{ display: "flex", gap: 16, color: "#888", fontSize: 12, marginBottom: 12 }}>
         <span>📖 محتوى تفصيلي</span>
         <span>✦ اختبار في النهاية</span>
         <span>🎯 مهمة عملية</span>
       </div>
 
-      <div
-        style={{
-          background: "rgba(123,53,192,0.06)",
-          borderRight: "3px solid #7B35C0",
-          borderRadius: 10,
-          padding: "16px 18px",
-          margin: "20px 0",
-        }}
-      >
-        <div style={{ color: "#9B55E0", fontWeight: 700, fontSize: 13, marginBottom: 8 }}>
-          💡 ما ستتعلمه في هذا الفصل
-        </div>
-        <div style={{ color: "#AAA", fontSize: 14 }}>
-          محتوى هذا الفصل قيد الإعداد ويُضاف قريباً من فريق COURSI
-        </div>
-      </div>
-
-      <p style={{ color: "#AAA", fontSize: 15, lineHeight: 1.9 }}>
-        هذا الفصل يغطي {chapterTitle} بشكل كامل وعملي. المحتوى التفصيلي مع الأمثلة والتطبيقات سيظهر هنا قريباً.
-      </p>
-
-      <div
-        style={{
-          width: "100%",
-          aspectRatio: "16 / 9",
-          background: "#0D0D0D",
-          border: "1px solid #1E1E1E",
-          borderRadius: 12,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          margin: "20px 0",
-          color: "#333",
-          fontSize: 13,
-        }}
-      >
-        🖼️ صورة توضيحية للفصل — تُضاف قريباً
-      </div>
-
-      <div
-        style={{
-          background: "rgba(64,200,200,0.05)",
-          borderRight: "3px solid #40C8C8",
-          borderRadius: 10,
-          padding: "16px 18px",
-          margin: "20px 0",
-        }}
-      >
-        <div style={{ color: "#40C8C8", fontWeight: 700, fontSize: 13, marginBottom: 8 }}>
-          🎯 مهمتك في هذا الفصل
-        </div>
-        <div style={{ color: "#AAA", fontSize: 14 }}>
-          راجع المحتوى جيداً ثم انتقل للاختبار عند الانتهاء. طبّق ما تتعلّمه فوراً في حياتك العملية.
-        </div>
-      </div>
+      <div className="coursi-content" dir="rtl" dangerouslySetInnerHTML={{ __html: chapterHtml }} />
 
       <button
         onClick={onGoQuiz}
@@ -676,6 +561,7 @@ function ContentTab({
 
 function QuizTab({
   chapterIndex,
+  questions,
   currentQ,
   answered,
   selectedAnswer,
@@ -687,6 +573,7 @@ function QuizTab({
   onNextChapter,
 }: {
   chapterIndex: number;
+  questions: QuizQuestion[];
   currentQ: number;
   answered: boolean;
   selectedAnswer: number | null;
@@ -715,7 +602,7 @@ function QuizTab({
           }}
         >
           <div style={{ color: "#fff", fontWeight: 700, fontSize: 36, lineHeight: 1 }}>{toAr(score)}</div>
-          <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 12, marginTop: 4 }}>/٣</div>
+          <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 12, marginTop: 4 }}>/{toAr(questions.length)}</div>
         </div>
         <div style={{ color: "#fff", fontWeight: 700, fontSize: 22, textAlign: "center" }}>
           أحسنت! أكملت اختبار الفصل {toAr(chapterIndex + 1)}
@@ -794,9 +681,12 @@ function QuizTab({
     );
   }
 
-  const q = QUESTIONS[currentQ];
+  const q = questions[currentQ];
+  if (!q) {
+    return <div style={{ padding: 32, color: "#888" }}>لا توجد أسئلة لهذا الفصل.</div>;
+  }
   const correct = q.correct;
-  const progressPct = ((currentQ + (answered ? 1 : 0)) / QUESTIONS.length) * 100;
+  const progressPct = ((currentQ + (answered ? 1 : 0)) / questions.length) * 100;
 
   return (
     <div style={{ padding: "28px 32px" }}>
@@ -804,7 +694,7 @@ function QuizTab({
         اختبار الفصل {toAr(chapterIndex + 1)}
       </h2>
       <div style={{ color: "#888", fontSize: 12, marginTop: 4, marginBottom: 20 }}>
-        ٣ أسئلة · تظهر الإجابة الصحيحة فوراً
+        {toAr(questions.length)} أسئلة · تظهر الإجابة الصحيحة فوراً
       </div>
 
       <div style={{ height: 3, background: "#1E1E1E", borderRadius: 2, overflow: "hidden", marginBottom: 24 }}>
@@ -822,10 +712,10 @@ function QuizTab({
         السؤال {toAr(currentQ + 1)}
       </div>
       <div style={{ color: "#DDD", fontSize: 18, fontWeight: 700, marginBottom: 20, lineHeight: 1.6 }}>
-        {q.q}
+        {q.question}
       </div>
 
-      {q.opts.map((opt, i) => {
+      {q.options.map((opt, i) => {
         const isCorrect = i === correct;
         const isPicked = selectedAnswer === i;
         let borderColor = "#1E1E1E";
@@ -891,6 +781,23 @@ function QuizTab({
           </button>
         );
       })}
+
+      {answered && (
+        <div
+          style={{
+            marginTop: 18,
+            padding: "14px 18px",
+            background: selectedAnswer === correct ? "rgba(64,200,200,0.08)" : "rgba(197,84,94,0.08)",
+            border: `1px solid ${selectedAnswer === correct ? "#40C8C8" : "#C5545E"}`,
+            borderRadius: 10,
+            color: "#DDD",
+            fontSize: 14,
+            lineHeight: 1.7,
+          }}
+        >
+          {q.feedback}
+        </div>
+      )}
     </div>
   );
 }
