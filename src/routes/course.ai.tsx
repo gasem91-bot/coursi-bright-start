@@ -99,7 +99,9 @@ function CourseAIPage() {
   const pct = total ? Math.round((completedCount / total) * 100) : 0;
 
   const isLast = activeChapter === total - 1;
-  const currentChapterTitle = course.chapters[activeChapter] ?? "";
+  const currentChapter = course.chapters[activeChapter];
+  const currentChapterTitle = currentChapter?.title ?? "";
+  const quizQuestions: QuizQuestion[] = currentChapter?.quiz ?? [];
 
   const goToChapter = (i: number) => {
     setActiveChapter(i);
@@ -113,13 +115,13 @@ function CourseAIPage() {
   };
 
   const handleAnswer = (idx: number) => {
-    if (answered) return;
-    const correct = QUESTIONS[currentQ].correct;
+    if (answered || !quizQuestions[currentQ]) return;
+    const correct = quizQuestions[currentQ].correct;
     setAnswered(true);
     setSelectedAnswer(idx);
     if (idx === correct) setScore((s) => s + 1);
     setTimeout(() => {
-      if (currentQ < QUESTIONS.length - 1) {
+      if (currentQ < quizQuestions.length - 1) {
         setCurrentQ((q) => q + 1);
         setAnswered(false);
         setSelectedAnswer(null);
