@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import coursiLogo from "@/assets/coursi-logo.png";
+import { COURSE_CONTENT, type QuizQuestion } from "@/lib/course-content";
 
 export const Route = createFileRoute("/course/ai")({
   component: CourseAIPage,
