@@ -351,11 +351,13 @@ function CourseAIPage() {
             <ContentTab
               chapterIndex={activeChapter}
               chapterTitle={currentChapterTitle}
+              chapterHtml={currentChapter?.content ?? ""}
               onGoQuiz={() => setActiveTab("quiz")}
             />
           ) : (
             <QuizTab
               chapterIndex={activeChapter}
+              questions={quizQuestions}
               currentQ={currentQ}
               answered={answered}
               selectedAnswer={selectedAnswer}
