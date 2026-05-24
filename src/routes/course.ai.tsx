@@ -496,84 +496,45 @@ function CourseAIPage() {
   );
 }
 
+const CONTENT_CSS = `
+.coursi-content h3 { color:#fff; font-weight:700; font-size:18px; margin:24px 0 10px; font-family:${font}; }
+.coursi-content p { color:#BBB; font-size:15px; line-height:1.9; margin:0 0 12px; }
+.coursi-content strong { color:#fff; }
+.coursi-content .info-box { background:rgba(123,53,192,0.06); border-right:3px solid #7B35C0; border-radius:10px; padding:16px 18px; margin:20px 0; }
+.coursi-content .info-box .box-title { color:#9B55E0; font-weight:700; font-size:13px; margin:0 0 8px; }
+.coursi-content .info-box p { color:#AAA; font-size:14px; margin:0; }
+.coursi-content .action-box { background:rgba(64,200,200,0.05); border-right:3px solid #40C8C8; border-radius:10px; padding:16px 18px; margin:20px 0; }
+.coursi-content .action-box .box-title { color:#40C8C8; font-weight:700; font-size:13px; margin:0 0 8px; }
+.coursi-content .action-box p { color:#AAA; font-size:14px; margin:0; }
+`;
+
 function ContentTab({
   chapterIndex,
   chapterTitle,
+  chapterHtml,
   onGoQuiz,
 }: {
   chapterIndex: number;
   chapterTitle: string;
+  chapterHtml: string;
   onGoQuiz: () => void;
 }) {
   return (
     <div style={{ padding: "28px 32px" }}>
+      <style>{CONTENT_CSS}</style>
       <div style={{ color: "#666", fontSize: 11, letterSpacing: 2, marginBottom: 8 }}>
         الفصل {toAr(chapterIndex + 1)}
       </div>
       <h1 style={{ color: "#fff", fontWeight: 700, fontSize: 24, marginBottom: 12, fontFamily: font }}>
         {chapterTitle}
       </h1>
-      <div style={{ display: "flex", gap: 16, color: "#888", fontSize: 12, marginBottom: 4 }}>
+      <div style={{ display: "flex", gap: 16, color: "#888", fontSize: 12, marginBottom: 12 }}>
         <span>📖 محتوى تفصيلي</span>
         <span>✦ اختبار في النهاية</span>
         <span>🎯 مهمة عملية</span>
       </div>
 
-      <div
-        style={{
-          background: "rgba(123,53,192,0.06)",
-          borderRight: "3px solid #7B35C0",
-          borderRadius: 10,
-          padding: "16px 18px",
-          margin: "20px 0",
-        }}
-      >
-        <div style={{ color: "#9B55E0", fontWeight: 700, fontSize: 13, marginBottom: 8 }}>
-          💡 ما ستتعلمه في هذا الفصل
-        </div>
-        <div style={{ color: "#AAA", fontSize: 14 }}>
-          محتوى هذا الفصل قيد الإعداد ويُضاف قريباً من فريق COURSI
-        </div>
-      </div>
-
-      <p style={{ color: "#AAA", fontSize: 15, lineHeight: 1.9 }}>
-        هذا الفصل يغطي {chapterTitle} بشكل كامل وعملي. المحتوى التفصيلي مع الأمثلة والتطبيقات سيظهر هنا قريباً.
-      </p>
-
-      <div
-        style={{
-          width: "100%",
-          aspectRatio: "16 / 9",
-          background: "#0D0D0D",
-          border: "1px solid #1E1E1E",
-          borderRadius: 12,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          margin: "20px 0",
-          color: "#333",
-          fontSize: 13,
-        }}
-      >
-        🖼️ صورة توضيحية للفصل — تُضاف قريباً
-      </div>
-
-      <div
-        style={{
-          background: "rgba(64,200,200,0.05)",
-          borderRight: "3px solid #40C8C8",
-          borderRadius: 10,
-          padding: "16px 18px",
-          margin: "20px 0",
-        }}
-      >
-        <div style={{ color: "#40C8C8", fontWeight: 700, fontSize: 13, marginBottom: 8 }}>
-          🎯 مهمتك في هذا الفصل
-        </div>
-        <div style={{ color: "#AAA", fontSize: 14 }}>
-          راجع المحتوى جيداً ثم انتقل للاختبار عند الانتهاء. طبّق ما تتعلّمه فوراً في حياتك العملية.
-        </div>
-      </div>
+      <div className="coursi-content" dir="rtl" dangerouslySetInnerHTML={{ __html: chapterHtml }} />
 
       <button
         onClick={onGoQuiz}
@@ -600,6 +561,7 @@ function ContentTab({
 
 function QuizTab({
   chapterIndex,
+  questions,
   currentQ,
   answered,
   selectedAnswer,
@@ -611,6 +573,7 @@ function QuizTab({
   onNextChapter,
 }: {
   chapterIndex: number;
+  questions: QuizQuestion[];
   currentQ: number;
   answered: boolean;
   selectedAnswer: number | null;
@@ -639,7 +602,7 @@ function QuizTab({
           }}
         >
           <div style={{ color: "#fff", fontWeight: 700, fontSize: 36, lineHeight: 1 }}>{toAr(score)}</div>
-          <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 12, marginTop: 4 }}>/٣</div>
+          <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 12, marginTop: 4 }}>/{toAr(questions.length)}</div>
         </div>
         <div style={{ color: "#fff", fontWeight: 700, fontSize: 22, textAlign: "center" }}>
           أحسنت! أكملت اختبار الفصل {toAr(chapterIndex + 1)}
@@ -718,9 +681,12 @@ function QuizTab({
     );
   }
 
-  const q = QUESTIONS[currentQ];
+  const q = questions[currentQ];
+  if (!q) {
+    return <div style={{ padding: 32, color: "#888" }}>لا توجد أسئلة لهذا الفصل.</div>;
+  }
   const correct = q.correct;
-  const progressPct = ((currentQ + (answered ? 1 : 0)) / QUESTIONS.length) * 100;
+  const progressPct = ((currentQ + (answered ? 1 : 0)) / questions.length) * 100;
 
   return (
     <div style={{ padding: "28px 32px" }}>
@@ -728,7 +694,7 @@ function QuizTab({
         اختبار الفصل {toAr(chapterIndex + 1)}
       </h2>
       <div style={{ color: "#888", fontSize: 12, marginTop: 4, marginBottom: 20 }}>
-        ٣ أسئلة · تظهر الإجابة الصحيحة فوراً
+        {toAr(questions.length)} أسئلة · تظهر الإجابة الصحيحة فوراً
       </div>
 
       <div style={{ height: 3, background: "#1E1E1E", borderRadius: 2, overflow: "hidden", marginBottom: 24 }}>
@@ -746,10 +712,10 @@ function QuizTab({
         السؤال {toAr(currentQ + 1)}
       </div>
       <div style={{ color: "#DDD", fontSize: 18, fontWeight: 700, marginBottom: 20, lineHeight: 1.6 }}>
-        {q.q}
+        {q.question}
       </div>
 
-      {q.opts.map((opt, i) => {
+      {q.options.map((opt, i) => {
         const isCorrect = i === correct;
         const isPicked = selectedAnswer === i;
         let borderColor = "#1E1E1E";
@@ -815,6 +781,23 @@ function QuizTab({
           </button>
         );
       })}
+
+      {answered && (
+        <div
+          style={{
+            marginTop: 18,
+            padding: "14px 18px",
+            background: selectedAnswer === correct ? "rgba(64,200,200,0.08)" : "rgba(197,84,94,0.08)",
+            border: `1px solid ${selectedAnswer === correct ? "#40C8C8" : "#C5545E"}`,
+            borderRadius: 10,
+            color: "#DDD",
+            fontSize: 14,
+            lineHeight: 1.7,
+          }}
+        >
+          {q.feedback}
+        </div>
+      )}
     </div>
   );
 }
