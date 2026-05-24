@@ -289,7 +289,7 @@ function CourseAIPage() {
                     color: isDone ? "#444" : isActive ? "#bbb" : "#888",
                   }}
                 >
-                  {title}
+                  {ch.title}
                 </div>
                 <div
                   style={{
