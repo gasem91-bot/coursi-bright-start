@@ -3,6 +3,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import coursiLogo from "@/assets/coursi-logo.png";
+import ShaderBackground from "@/components/ui/shader-background";
 
 export const Route = createFileRoute("/dashboard")({
   component: DashboardPage,
@@ -100,7 +101,7 @@ function DashboardPage() {
   if (notFound) {
     return (
       <div style={{ minHeight: "100vh", background: "#000", display: "flex", alignItems: "center", justifyContent: "center", padding: 24, fontFamily: font }}>
-        <div style={{ background: "#0D0D0D", border: "1px solid #1E1E1E", borderRadius: 16, padding: "28px 32px", maxWidth: 480, textAlign: "center", color: "#fff" }}>
+        <div style={{ background: "rgba(13,13,13,0.55)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: "28px 32px", maxWidth: 480, textAlign: "center", color: "#fff" }}>
           لم يتم العثور على بياناتك. تواصل مع الدعم على support@coursi.ai
         </div>
       </div>
@@ -132,9 +133,11 @@ function DashboardPage() {
       : null;
 
   return (
-    <div style={{ minHeight: "100vh", background: "#000", fontFamily: font, direction: "rtl" }}>
+    <div style={{ minHeight: "100vh", background: "#000", fontFamily: font, direction: "rtl", position: "relative" }}>
+      <ShaderBackground />
+      <div style={{ position: "relative", zIndex: 1 }}>
       {/* Navbar */}
-      <nav style={{ position: "sticky", top: 0, zIndex: 10, background: "#000", borderBottom: "1px solid #1E1E1E", padding: "14px 28px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <nav style={{ position: "sticky", top: 0, zIndex: 10, background: "rgba(0,0,0,0.7)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", borderBottom: "1px solid #1E1E1E", padding: "14px 28px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <img src={coursiLogo} alt="COURSI" style={{ height: 32, width: "auto" }} />
         <span style={{ color: "#AAAAAA", fontSize: 13 }}>بوابة الذكاء الاصطناعي</span>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -150,7 +153,7 @@ function DashboardPage() {
 
       <main style={{ maxWidth: 860, margin: "0 auto", padding: "32px 24px" }}>
         {/* Card 1: Welcome */}
-        <section style={{ background: "#0D0D0D", border: "1px solid #1E1E1E", borderRadius: 16, padding: "24px 28px", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+        <section style={{ background: "rgba(13,13,13,0.55)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: "24px 28px", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
           <div>
             <h2 style={{ color: "#fff", fontWeight: 700, fontSize: 20 }}>مرحباً بك في COURSI</h2>
             <p style={{ color: "#AAAAAA", fontSize: 13, marginTop: 4 }}>{profile?.email}</p>
@@ -166,7 +169,7 @@ function DashboardPage() {
         </section>
 
         {/* Card 2: Progress */}
-        <section style={{ background: "#0D0D0D", border: "1px solid #1E1E1E", borderRadius: 16, padding: "24px 28px", marginBottom: 16 }}>
+        <section style={{ background: "rgba(13,13,13,0.55)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: "24px 28px", marginBottom: 16 }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <span style={{ color: "#9B55E0", fontSize: 11, letterSpacing: 2, textTransform: "uppercase", fontWeight: 700 }}>تقدّمك في الكورس</span>
             <span style={{ color: "#40C8C8", fontWeight: 700, fontSize: 22 }}>{percentage}%</span>
@@ -198,7 +201,7 @@ function DashboardPage() {
 
         {/* Card 4: Upgrade (only beginner/intermediate) */}
         {level !== "advanced" && (
-          <section style={{ background: "#0D0D0D", border: "1px solid #1E1E1E", borderRadius: 16, padding: "20px 28px" }}>
+          <section style={{ background: "rgba(13,13,13,0.55)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: "20px 28px" }}>
             <div style={{ color: "#9B55E0", fontSize: 11, letterSpacing: 2, textTransform: "uppercase", fontWeight: 700, marginBottom: 16 }}>✦ رحلتك لا تنتهي هنا</div>
             <div style={{ display: "flex", alignItems: "stretch", gap: 8 }}>
               {journeyLevels.map((jl, i) => {
@@ -231,6 +234,7 @@ function DashboardPage() {
           </section>
         )}
       </main>
+      </div>
     </div>
   );
 }

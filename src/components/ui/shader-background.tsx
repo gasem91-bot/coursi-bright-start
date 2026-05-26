@@ -14,8 +14,14 @@ const fsSource = `
 
   const float overallSpeed = 0.2;
   const float gridSmoothWidth = 0.015;
+  const float axisWidth = 0.05;
+  const float majorLineWidth = 0.025;
+  const float minorLineWidth = 0.0125;
+  const float majorLineFrequency = 5.0;
+  const float minorLineFrequency = 1.0;
+  const vec4 gridColor = vec4(0.5);
   const float scale = 5.0;
-  const vec4 lineColor = vec4(0.48, 0.21, 0.75, 1.0);
+  const vec4 lineColor = vec4(0.4, 0.2, 0.8, 1.0);
   const float minLineWidth = 0.01;
   const float maxLineWidth = 0.2;
   const float lineSpeed = 1.0 * overallSpeed;
@@ -33,6 +39,7 @@ const fsSource = `
   #define drawCircle(pos, radius, coord) smoothstep(radius + gridSmoothWidth, radius, length(coord - (pos)))
   #define drawSmoothLine(pos, halfWidth, t) smoothstep(halfWidth, 0.0, abs(pos - (t)))
   #define drawCrispLine(pos, halfWidth, t) smoothstep(halfWidth + gridSmoothWidth, halfWidth, abs(pos - (t)))
+  #define drawPeriodicLine(freq, width, t) drawCrispLine(freq / 2.0, width, abs(mod(t, freq) - (freq) / 2.0))
 
   float random(float t) {
     return (cos(t) + cos(t * 1.3 + 1.3) + cos(t * 1.4 + 1.4)) / 3.0;
@@ -55,8 +62,8 @@ const fsSource = `
     space.x += random(space.y * warpFrequency + iTime * warpSpeed + 2.0) * warpAmplitude * horizontalFade;
 
     vec4 lines = vec4(0.0);
-    vec4 bgColor1 = vec4(0.0, 0.0, 0.0, 1.0);
-    vec4 bgColor2 = vec4(0.06, 0.02, 0.12, 1.0);
+    vec4 bgColor1 = vec4(0.1, 0.1, 0.3, 1.0);
+    vec4 bgColor2 = vec4(0.3, 0.1, 0.5, 1.0);
 
     for(int l = 0; l < linesPerGroup; l++) {
       float normalizedLineIndex = float(l) / float(linesPerGroup);
@@ -79,61 +86,59 @@ const fsSource = `
     fragColor = mix(bgColor1, bgColor2, uv.x);
     fragColor *= verticalFade;
     fragColor.a = 1.0;
-    fragColor += lines * 0.6;
+    fragColor += lines;
 
     gl_FragColor = fragColor;
   }
 `;
 
-function loadShader(gl: WebGLRenderingContext, type: number, source: string) {
+const loadShader = (gl: WebGLRenderingContext, type: number, source: string) => {
   const shader = gl.createShader(type);
   if (!shader) return null;
   gl.shaderSource(shader, source);
   gl.compileShader(shader);
   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    console.error("Shader compile error:", gl.getShaderInfoLog(shader));
+    console.error("Shader compile error: ", gl.getShaderInfoLog(shader));
     gl.deleteShader(shader);
     return null;
   }
   return shader;
-}
+};
 
-function initShaderProgram(gl: WebGLRenderingContext) {
-  const vs = loadShader(gl, gl.VERTEX_SHADER, vsSource);
-  const fs = loadShader(gl, gl.FRAGMENT_SHADER, fsSource);
-  if (!vs || !fs) return null;
+const initShaderProgram = (gl: WebGLRenderingContext, vs: string, fs: string) => {
+  const vertexShader = loadShader(gl, gl.VERTEX_SHADER, vs);
+  const fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fs);
+  if (!vertexShader || !fragmentShader) return null;
   const program = gl.createProgram();
   if (!program) return null;
-  gl.attachShader(program, vs);
-  gl.attachShader(program, fs);
+  gl.attachShader(program, vertexShader);
+  gl.attachShader(program, fragmentShader);
   gl.linkProgram(program);
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    console.error("Program link error:", gl.getProgramInfoLog(program));
+    console.error("Shader program link error: ", gl.getProgramInfoLog(program));
     return null;
   }
   return program;
-}
+};
 
 interface ShaderBackgroundProps {
   className?: string;
   style?: React.CSSProperties;
 }
 
-export default function ShaderBackground({ className, style }: ShaderBackgroundProps) {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+const ShaderBackground = ({ className, style }: ShaderBackgroundProps) => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
     const canvas = canvasRef.current;
     if (!canvas) return;
-
     const gl = canvas.getContext("webgl");
     if (!gl) {
       console.warn("WebGL not supported.");
       return;
     }
 
-    const program = initShaderProgram(gl);
+    const program = initShaderProgram(gl, vsSource, fsSource);
     if (!program) return;
 
     const positionBuffer = gl.createBuffer();
@@ -144,36 +149,32 @@ export default function ShaderBackground({ className, style }: ShaderBackgroundP
       gl.STATIC_DRAW
     );
 
-    const attribLoc = gl.getAttribLocation(program, "aVertexPosition");
-    const resLoc = gl.getUniformLocation(program, "iResolution");
-    const timeLoc = gl.getUniformLocation(program, "iTime");
+    const vertexPosition = gl.getAttribLocation(program, "aVertexPosition");
+    const uResolution = gl.getUniformLocation(program, "iResolution");
+    const uTime = gl.getUniformLocation(program, "iTime");
 
     const resize = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const w = canvas.clientWidth || window.innerWidth;
       const h = canvas.clientHeight || window.innerHeight;
-      canvas.width = Math.floor(w * dpr);
-      canvas.height = Math.floor(h * dpr);
-      gl.viewport(0, 0, canvas.width, canvas.height);
+      canvas.width = w;
+      canvas.height = h;
+      gl.viewport(0, 0, w, h);
     };
-
-    const ro = new ResizeObserver(resize);
-    ro.observe(canvas);
     window.addEventListener("resize", resize);
     resize();
 
-    const start = performance.now();
+    const start = Date.now();
     let raf = 0;
     const render = () => {
-      const t = (performance.now() - start) / 1000;
+      const t = (Date.now() - start) / 1000;
       gl.clearColor(0, 0, 0, 1);
       gl.clear(gl.COLOR_BUFFER_BIT);
       gl.useProgram(program);
-      gl.uniform2f(resLoc, canvas.width, canvas.height);
-      gl.uniform1f(timeLoc, t);
+      gl.uniform2f(uResolution, canvas.width, canvas.height);
+      gl.uniform1f(uTime, t);
       gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-      gl.vertexAttribPointer(attribLoc, 2, gl.FLOAT, false, 0, 0);
-      gl.enableVertexAttribArray(attribLoc);
+      gl.vertexAttribPointer(vertexPosition, 2, gl.FLOAT, false, 0, 0);
+      gl.enableVertexAttribArray(vertexPosition);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
       raf = requestAnimationFrame(render);
     };
@@ -181,7 +182,6 @@ export default function ShaderBackground({ className, style }: ShaderBackgroundP
 
     return () => {
       cancelAnimationFrame(raf);
-      ro.disconnect();
       window.removeEventListener("resize", resize);
     };
   }, []);
@@ -191,13 +191,16 @@ export default function ShaderBackground({ className, style }: ShaderBackgroundP
       ref={canvasRef}
       className={className}
       style={{
-        position: "absolute",
+        position: "fixed",
         inset: 0,
         width: "100%",
         height: "100%",
-        display: "block",
+        zIndex: 0,
+        pointerEvents: "none",
         ...style,
       }}
     />
   );
-}
+};
+
+export default ShaderBackground;
