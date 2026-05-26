@@ -3,6 +3,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import coursiLogo from "@/assets/coursi-logo.png";
+import ShaderBackground from "@/components/ui/shader-background";
 
 export const Route = createFileRoute("/dashboard")({
   component: DashboardPage,
