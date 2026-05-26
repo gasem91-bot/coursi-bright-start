@@ -152,7 +152,7 @@ function DashboardPage() {
         {/* Card 1: Welcome */}
         <section style={{ background: "#0D0D0D", border: "1px solid #1E1E1E", borderRadius: 16, padding: "24px 28px", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
           <div>
-            <h2 style={{ color: "#fff", fontWeight: 700, fontSize: 20 }}>مرحباً بك في COURS!</h2>
+            <h2 style={{ color: "#fff", fontWeight: 700, fontSize: 20 }}>مرحباً بك في COURSI!</h2>
             <p style={{ color: "#AAAAAA", fontSize: 13, marginTop: 4 }}>{profile?.email}</p>
           </div>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 0 }}>
