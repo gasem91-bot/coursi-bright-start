@@ -234,6 +234,7 @@ function DashboardPage() {
           </section>
         )}
       </main>
+      </div>
     </div>
   );
 }
