@@ -13,7 +13,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "COURSI AI Portal" },
+      { title: "COURSI AI COURSE" },
+      { property: "og:title", content: "COURSI AI COURSE" },
+      { name: "twitter:title", content: "COURSI AI COURSE" },
+      { name: "description", content: "AI TOOL" },
+      { property: "og:description", content: "AI TOOL" },
+      { name: "twitter:description", content: "AI TOOL" },
+      { name: "twitter:card", content: "summary" },
+      { property: "og:type", content: "website" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
