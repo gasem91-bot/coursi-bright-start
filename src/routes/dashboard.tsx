@@ -133,9 +133,11 @@ function DashboardPage() {
       : null;
 
   return (
-    <div style={{ minHeight: "100vh", background: "#000", fontFamily: font, direction: "rtl" }}>
+    <div style={{ minHeight: "100vh", background: "#000", fontFamily: font, direction: "rtl", position: "relative" }}>
+      <ShaderBackground />
+      <div style={{ position: "relative", zIndex: 1 }}>
       {/* Navbar */}
-      <nav style={{ position: "sticky", top: 0, zIndex: 10, background: "#000", borderBottom: "1px solid #1E1E1E", padding: "14px 28px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <nav style={{ position: "sticky", top: 0, zIndex: 10, background: "rgba(0,0,0,0.7)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", borderBottom: "1px solid #1E1E1E", padding: "14px 28px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <img src={coursiLogo} alt="COURSI" style={{ height: 32, width: "auto" }} />
         <span style={{ color: "#AAAAAA", fontSize: 13 }}>بوابة الذكاء الاصطناعي</span>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
