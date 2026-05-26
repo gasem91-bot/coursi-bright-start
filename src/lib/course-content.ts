@@ -2,6 +2,13 @@
 // Beginner Level — 8 Chapters — Complete Arabic Content
 // Paste this into src/data/courseContent.js in the COURSI AI Portal project
 
+export interface QuizQuestion {
+  question: string;
+  options: string[];
+  correct: number;
+  feedback: string;
+}
+
 export const COURSE_CONTENT = {
   beginner: {
     name: "أساسيات الذكاء الاصطناعي من الصفر",
