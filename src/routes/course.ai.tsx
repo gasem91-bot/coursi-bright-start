@@ -37,6 +37,8 @@ function CourseAIPage() {
   const [tier, setTier] = useState<Tier>("course");
   const [userId, setUserId] = useState<string | null>(null);
   const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
+  const [userName, setUserName] = useState<string>("");
+
 
   const [activeChapter, setActiveChapter] = useState(0);
   const [activeTab, setActiveTab] = useState<"content" | "quiz">("content");
