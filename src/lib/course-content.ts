@@ -1,9 +1,9 @@
 // COURSI AI Course — full content
-// Beginner level sourced from src/lib/course-beginner.ts (12 chapters)
-// Intermediate & Advanced remain inline below.
+// All three levels sourced from dedicated files.
 
 import { BEGINNER_CHAPTERS } from "./course-beginner";
 import { INTERMEDIATE_CHAPTERS } from "./course-intermediate";
+import { ADVANCED_CHAPTERS } from "./course-advanced";
 export type { QuizQuestion } from "./course-content-types";
 
 export const COURSE_CONTENT = {
@@ -19,8 +19,11 @@ export const COURSE_CONTENT = {
   },
   advanced: {
     name: "إتقان الذكاء الاصطناعي — بناء منتجات وأعمال",
-    meta: "١٢ فصل · ٨ أسابيع",
-    chapters: [
+    meta: "١٢ فصلاً · ١٠ أسابيع",
+    chapters: ADVANCED_CHAPTERS,
+  },
+} as const;
+
       {
         id: 0,
         title: "هندسة أنظمة AI",
