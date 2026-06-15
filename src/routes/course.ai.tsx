@@ -353,7 +353,7 @@ function CourseAIPage() {
                   key={t}
                   onClick={() => setActiveTab(t)}
                   style={{
-                    background: isActive ? "linear-gradient(135deg,#7B35C0,#40C8C8)" : "transparent",
+                    background: isActive ? "linear-gradient(135deg,#7B35FF,#00D4C8)" : "transparent",
                     color: isActive ? "#fff" : "#666",
                     border: isActive ? "none" : "1px solid #1E1E1E",
                     borderBottom: "none",
@@ -408,11 +408,11 @@ function CourseAIPage() {
               width: 56,
               height: 56,
               borderRadius: "50%",
-              background: "linear-gradient(135deg,#7B35C0,#40C8C8)",
+              background: "linear-gradient(135deg,#7B35FF,#00D4C8)",
               border: "none",
               cursor: "pointer",
               zIndex: 100,
-              boxShadow: "0 0 24px rgba(123,53,192,0.45)",
+              boxShadow: "0 0 24px rgba(123,53,255,0.45)",
               fontSize: 24,
               display: "flex",
               alignItems: "center",
@@ -461,7 +461,7 @@ function CourseAIPage() {
                 <div
                   key={i}
                   style={{
-                    background: m.from === "ai" ? "#141414" : "rgba(64,200,200,0.12)",
+                    background: m.from === "ai" ? "#141414" : "rgba(0,212,200,0.12)",
                     borderRadius: m.from === "ai" ? "12px 12px 12px 0" : "12px 12px 0 12px",
                     padding: "12px 16px",
                     maxWidth: "85%",
@@ -501,7 +501,7 @@ function CourseAIPage() {
                   width: 38,
                   height: 38,
                   borderRadius: "50%",
-                  background: "linear-gradient(135deg,#7B35C0,#40C8C8)",
+                  background: "linear-gradient(135deg,#7B35FF,#00D4C8)",
                   border: "none",
                   cursor: "pointer",
                   color: "#fff",
@@ -521,15 +521,39 @@ function CourseAIPage() {
 }
 
 const CONTENT_CSS = `
-.coursi-content h3 { color:#fff; font-weight:700; font-size:18px; margin:24px 0 10px; font-family:${font}; }
-.coursi-content p { color:#BBB; font-size:15px; line-height:1.9; margin:0 0 12px; }
-.coursi-content strong { color:#fff; }
-.coursi-content .info-box { background:rgba(123,53,192,0.06); border-right:3px solid #7B35C0; border-radius:10px; padding:16px 18px; margin:20px 0; }
-.coursi-content .info-box .box-title { color:#9B55E0; font-weight:700; font-size:13px; margin:0 0 8px; }
-.coursi-content .info-box p { color:#AAA; font-size:14px; margin:0; }
-.coursi-content .action-box { background:rgba(64,200,200,0.05); border-right:3px solid #40C8C8; border-radius:10px; padding:16px 18px; margin:20px 0; }
-.coursi-content .action-box .box-title { color:#40C8C8; font-weight:700; font-size:13px; margin:0 0 8px; }
-.coursi-content .action-box p { color:#AAA; font-size:14px; margin:0; }
+.coursi-content { animation: coursi-fade-up 420ms ease-out both; }
+.coursi-content h3 { color:#fff; font-weight:800; font-size:19px; margin:26px 0 10px; font-family:${font}; }
+.coursi-content p { color:#CFC8DE; font-size:15px; line-height:1.95; margin:0 0 12px; }
+.coursi-content strong { color:#fff; font-weight:700; }
+.coursi-content ul.bullet-list, .coursi-content ol.bullet-list { list-style:none; padding:0; margin:8px 0 14px; }
+.coursi-content ul.bullet-list li, .coursi-content ol.bullet-list li { color:#CFC8DE; font-size:15px; line-height:1.85; padding-right:18px; margin-bottom:6px; position:relative; }
+.coursi-content ul.bullet-list li::before { content:"◆"; color:${CYAN}; position:absolute; right:0; top:0; font-size:10px; }
+.coursi-content ol.bullet-list { counter-reset:cli; }
+.coursi-content ol.bullet-list li::before { content:counter(cli, arabic-indic) "."; counter-increment:cli; color:${PURPLE}; font-weight:800; font-size:13px; }
+.coursi-content .intro-box { background:linear-gradient(135deg, rgba(123,53,255,0.10), rgba(0,212,200,0.04)); border:1px solid rgba(123,53,255,0.18); border-radius:14px; padding:18px 20px; margin:0 0 22px; }
+.coursi-content .intro-box p { color:#E2DCF0; font-size:15px; margin:0; line-height:1.9; }
+.coursi-content .learn-box { background:rgba(123,53,255,0.07); border:1px solid rgba(123,53,255,0.18); border-radius:14px; padding:18px 20px; margin:0 0 22px; }
+.coursi-content .learn-box ul { list-style:none; padding:0; margin:0; }
+.coursi-content .learn-box li { color:#CFC8DE; font-size:14px; padding:6px 22px 6px 0; position:relative; line-height:1.7; }
+.coursi-content .learn-box li::before { content:"✦"; color:${PURPLE}; position:absolute; right:0; top:6px; font-size:13px; }
+.coursi-content .block-title { color:#fff; font-weight:800; font-size:14px; margin:0 0 10px; display:flex; align-items:center; gap:8px; }
+.coursi-content .block-ic { display:inline-flex; width:24px; height:24px; border-radius:7px; background:linear-gradient(135deg,${PURPLE},${CYAN}); color:#fff; align-items:center; justify-content:center; font-size:13px; }
+.coursi-content .info-box { background:rgba(123,53,255,0.06); border-right:3px solid ${PURPLE}; border-radius:10px; padding:14px 18px; margin:18px 0; }
+.coursi-content .info-box .box-title { color:${PURPLE}; font-weight:800; font-size:13px; margin:0 0 6px; }
+.coursi-content .info-box p { color:#CFC8DE; font-size:14px; margin:0 0 6px; line-height:1.8; }
+.coursi-content .warn-box { background:rgba(255,170,60,0.06); border-right:3px solid #FFAA3C; border-radius:10px; padding:14px 18px; margin:18px 0; }
+.coursi-content .warn-box .box-title { color:#FFAA3C; font-weight:800; font-size:13px; margin:0 0 6px; }
+.coursi-content .warn-box p { color:#CFC8DE; font-size:14px; margin:0; line-height:1.8; }
+.coursi-content .action-box, .coursi-content .exercise-box { background:linear-gradient(135deg, rgba(0,212,200,0.10), rgba(0,212,200,0.02)); border:1px solid rgba(0,212,200,0.25); border-radius:14px; padding:18px 20px; margin:24px 0 8px; }
+.coursi-content .exercise-box .block-title .block-ic { background:linear-gradient(135deg,${CYAN},${PURPLE}); }
+.coursi-content .exercise-box p { color:#E2DCF0; font-size:15px; margin:0; line-height:1.9; }
+.coursi-content .tools-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:12px; margin:14px 0 22px; }
+.coursi-content .tool-card { background:rgba(255,255,255,0.03); border:1px solid ${BORDER}; border-radius:14px; padding:14px 16px; display:flex; flex-direction:column; gap:8px; transition:border-color .2s, transform .2s; }
+.coursi-content .tool-card:hover { border-color:rgba(123,53,255,0.45); transform:translateY(-2px); }
+.coursi-content .tool-name { color:#fff; font-weight:800; font-size:15px; }
+.coursi-content .tool-desc { color:#9590A8; font-size:13px; line-height:1.65; flex:1; }
+.coursi-content .tool-btn { color:${CYAN}; font-size:12px; font-weight:700; text-decoration:none; border-top:1px solid ${BORDER}; padding-top:8px; margin-top:auto; }
+.coursi-content .tool-btn:hover { color:${PURPLE}; }
 `;
 
 function ContentTab({
@@ -563,7 +587,7 @@ function ContentTab({
       <button
         onClick={onGoQuiz}
         style={{
-          background: "linear-gradient(135deg,#7B35C0,#40C8C8)",
+          background: "linear-gradient(135deg,#7B35FF,#00D4C8)",
           color: "#fff",
           fontSize: 15,
           fontWeight: 700,
@@ -573,7 +597,7 @@ function ContentTab({
           width: "100%",
           cursor: "pointer",
           fontFamily: font,
-          boxShadow: "0 0 24px rgba(123,53,192,0.3)",
+          boxShadow: "0 0 24px rgba(123,53,255,0.3)",
           marginTop: 32,
         }}
       >
@@ -616,13 +640,13 @@ function QuizTab({
             width: 120,
             height: 120,
             borderRadius: "50%",
-            background: "linear-gradient(135deg,#7B35C0,#40C8C8)",
+            background: "linear-gradient(135deg,#7B35FF,#00D4C8)",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
             margin: "0 auto 24px",
-            boxShadow: "0 0 40px rgba(123,53,192,0.4)",
+            boxShadow: "0 0 40px rgba(123,53,255,0.4)",
           }}
         >
           <div style={{ color: "#fff", fontWeight: 700, fontSize: 36, lineHeight: 1 }}>{toAr(score)}</div>
@@ -639,8 +663,8 @@ function QuizTab({
           <div
             style={{
               margin: 24,
-              background: "linear-gradient(135deg, rgba(123,53,192,0.08), rgba(64,200,200,0.04))",
-              border: "1px solid rgba(123,53,192,0.2)",
+              background: "linear-gradient(135deg, rgba(123,53,255,0.08), rgba(0,212,200,0.04))",
+              border: "1px solid rgba(123,53,255,0.2)",
               borderRadius: 20,
               padding: "48px 36px",
               textAlign: "center",
@@ -666,7 +690,7 @@ function QuizTab({
                 window.location.href = "https://coursi.ai/ai/payment";
               }}
               style={{
-                background: "linear-gradient(135deg,#7B35C0,#40C8C8)",
+                background: "linear-gradient(135deg,#7B35FF,#00D4C8)",
                 color: "#fff",
                 fontSize: 15,
                 fontWeight: 700,
@@ -675,7 +699,7 @@ function QuizTab({
                 border: "none",
                 cursor: "pointer",
                 fontFamily: font,
-                boxShadow: "0 0 24px rgba(123,53,192,0.3)",
+                boxShadow: "0 0 24px rgba(123,53,255,0.3)",
               }}
             >
               🚀 انتقل للمستوى التالي
@@ -685,7 +709,7 @@ function QuizTab({
           <button
             onClick={onNextChapter}
             style={{
-              background: "linear-gradient(135deg,#7B35C0,#40C8C8)",
+              background: "linear-gradient(135deg,#7B35FF,#00D4C8)",
               color: "#fff",
               fontSize: 15,
               fontWeight: 700,
@@ -695,7 +719,7 @@ function QuizTab({
               width: "100%",
               cursor: "pointer",
               fontFamily: font,
-              boxShadow: "0 0 24px rgba(123,53,192,0.3)",
+              boxShadow: "0 0 24px rgba(123,53,255,0.3)",
             }}
           >
             الفصل التالي ←
@@ -726,7 +750,7 @@ function QuizTab({
           style={{
             width: `${progressPct}%`,
             height: "100%",
-            background: "linear-gradient(90deg,#7B35C0,#40C8C8)",
+            background: "linear-gradient(90deg,#7B35FF,#00D4C8)",
             transition: "width 0.3s",
           }}
         />
@@ -749,9 +773,9 @@ function QuizTab({
 
         if (answered) {
           if (isCorrect) {
-            borderColor = "#40C8C8";
-            bg = "rgba(64,200,200,0.07)";
-            circleBg = "#40C8C8";
+            borderColor = "#00D4C8";
+            bg = "rgba(0,212,200,0.07)";
+            circleBg = "#00D4C8";
             circleColor = "#000";
           } else if (isPicked) {
             borderColor = "#C5545E";
@@ -811,8 +835,8 @@ function QuizTab({
           style={{
             marginTop: 18,
             padding: "14px 18px",
-            background: selectedAnswer === correct ? "rgba(64,200,200,0.08)" : "rgba(197,84,94,0.08)",
-            border: `1px solid ${selectedAnswer === correct ? "#40C8C8" : "#C5545E"}`,
+            background: selectedAnswer === correct ? "rgba(0,212,200,0.08)" : "rgba(197,84,94,0.08)",
+            border: `1px solid ${selectedAnswer === correct ? "#00D4C8" : "#C5545E"}`,
             borderRadius: 10,
             color: "#DDD",
             fontSize: 14,
