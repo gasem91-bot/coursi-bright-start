@@ -219,7 +219,25 @@ function CourseAIPage() {
         >
           <img src={coursiLogo} alt="COURSI" style={{ height: 28, display: "block" }} />
         </button>
-        <div style={{ color: "#B8B0D0", fontSize: 13, fontWeight: 600 }}>{course.name}</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{ color: "#B8B0D0", fontSize: 13, fontWeight: 600 }}>{course.name}</div>
+          {level === "intermediate" && (
+            <span
+              style={{
+                background: `linear-gradient(135deg, rgba(0,212,200,0.18), rgba(123,53,255,0.18))`,
+                border: `1px solid ${CYAN}`,
+                color: CYAN,
+                fontSize: 11,
+                fontWeight: 800,
+                padding: "4px 10px",
+                borderRadius: 999,
+                letterSpacing: 0.4,
+              }}
+            >
+              المستوى المتوسط
+            </span>
+          )}
+        </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{ color: CYAN, fontWeight: 700, fontSize: 13 }}>{toAr(pct)}%</div>
           <div style={{ width: 100, height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 4, overflow: "hidden" }}>
