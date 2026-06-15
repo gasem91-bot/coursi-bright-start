@@ -12,7 +12,12 @@ export const Route = createFileRoute("/course/ai")({
 type Level = "beginner" | "intermediate" | "advanced";
 type Tier = "course" | "course_ai";
 
-const font = "Noto Sans Arabic, sans-serif";
+const font = "Cairo, 'Noto Sans Arabic', sans-serif";
+const BG = "#060410";
+const BG_SOFT = "#0B0820";
+const PURPLE = "#7B35FF";
+const CYAN = "#00D4C8";
+const BORDER = "rgba(255,255,255,0.08)";
 
 const COURSE = COURSE_CONTENT;
 
@@ -166,7 +171,7 @@ function CourseAIPage() {
       <div
         style={{
           minHeight: "100vh",
-          background: "#000",
+          background: BG,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -179,25 +184,25 @@ function CourseAIPage() {
             width: 56,
             height: 56,
             borderRadius: "50%",
-            border: "3px solid #1E1E1E",
-            borderTopColor: "#7B35C0",
-            borderRightColor: "#40C8C8",
-            animation: "spin 1s linear infinite",
+            border: "3px solid rgba(255,255,255,0.08)",
+            borderTopColor: PURPLE,
+            borderRightColor: CYAN,
+            animation: "coursi-spin 1s linear infinite",
           }}
         />
         <div style={{ marginTop: 18, color: "#888", fontSize: 14 }}>جاري تحميل الكورس...</div>
-        <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
       </div>
     );
   }
 
   return (
-    <div style={{ background: "#000", color: "#fff", height: "100vh", display: "flex", flexDirection: "column", fontFamily: font, overflow: "hidden" }}>
+    <div style={{ background: BG, color: "#fff", height: "100vh", display: "flex", flexDirection: "column", fontFamily: font, overflow: "hidden" }}>
       {/* Top bar */}
       <div
         style={{
-          background: "#000",
-          borderBottom: "1px solid #1E1E1E",
+          background: "rgba(6,4,16,0.85)",
+          backdropFilter: "blur(10px)",
+          borderBottom: `1px solid ${BORDER}`,
           padding: "12px 24px",
           display: "flex",
           alignItems: "center",
@@ -214,11 +219,11 @@ function CourseAIPage() {
         >
           <img src={coursiLogo} alt="COURSI" style={{ height: 28, display: "block" }} />
         </button>
-        <div style={{ color: "#888", fontSize: 13 }}>{course.name}</div>
+        <div style={{ color: "#B8B0D0", fontSize: 13, fontWeight: 600 }}>{course.name}</div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ color: "#40C8C8", fontWeight: 700, fontSize: 13 }}>{toAr(pct)}%</div>
-          <div style={{ width: 80, height: 3, background: "#1E1E1E", borderRadius: 2, overflow: "hidden" }}>
-            <div style={{ width: `${pct}%`, height: "100%", background: "linear-gradient(90deg,#7B35C0,#40C8C8)" }} />
+          <div style={{ color: CYAN, fontWeight: 700, fontSize: 13 }}>{toAr(pct)}%</div>
+          <div style={{ width: 100, height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 4, overflow: "hidden" }}>
+            <div style={{ width: `${pct}%`, height: "100%", background: `linear-gradient(90deg,${PURPLE},${CYAN})`, transition: "width 600ms ease" }} />
           </div>
         </div>
       </div>
@@ -228,29 +233,29 @@ function CourseAIPage() {
         {/* Sidebar (right in RTL = first child) */}
         <aside
           style={{
-            width: 280,
+            width: 300,
             flexShrink: 0,
-            background: "#050505",
-            borderLeft: "1px solid #1E1E1E",
+            background: BG_SOFT,
+            borderLeft: `1px solid ${BORDER}`,
             overflowY: "auto",
           }}
         >
           <div
             style={{
-              padding: 16,
-              borderBottom: "1px solid #0a0a0a",
+              padding: "18px 18px 16px",
+              borderBottom: `1px solid ${BORDER}`,
               position: "sticky",
               top: 0,
-              background: "#050505",
+              background: BG_SOFT,
               zIndex: 1,
             }}
           >
-            <div style={{ color: "#fff", fontWeight: 700, fontSize: 13, marginBottom: 4 }}>{course.name}</div>
-            <div style={{ color: "#888", fontSize: 11, marginBottom: 10 }}>{course.meta}</div>
-            <div style={{ height: 3, background: "#1E1E1E", borderRadius: 2, overflow: "hidden", marginBottom: 6 }}>
-              <div style={{ width: `${pct}%`, height: "100%", background: "linear-gradient(90deg,#7B35C0,#40C8C8)" }} />
+            <div style={{ color: "#fff", fontWeight: 800, fontSize: 14, marginBottom: 4 }}>{course.name}</div>
+            <div style={{ color: "#888", fontSize: 11, marginBottom: 12 }}>{course.meta}</div>
+            <div style={{ height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 4, overflow: "hidden", marginBottom: 6 }}>
+              <div style={{ width: `${pct}%`, height: "100%", background: `linear-gradient(90deg,${PURPLE},${CYAN})`, transition: "width 600ms ease" }} />
             </div>
-            <div style={{ color: "#40C8C8", fontSize: 10, fontWeight: 700 }}>
+            <div style={{ color: CYAN, fontSize: 10, fontWeight: 700 }}>
               {toAr(completedCount)} / {toAr(total)} مكتمل · {toAr(pct)}%
             </div>
           </div>
@@ -258,6 +263,7 @@ function CourseAIPage() {
           {course.chapters.map((ch, i) => {
             const isActive = i === activeChapter;
             const isDone = completedIds.has(chapterId(level, i));
+            const status: "done" | "current" | "upcoming" = isDone ? "done" : isActive ? "current" : "upcoming";
             return (
               <div
                 key={i}
@@ -267,55 +273,73 @@ function CourseAIPage() {
                   display: "flex",
                   alignItems: "center",
                   gap: 10,
-                  borderBottom: "1px solid #0a0a0a",
+                  borderBottom: `1px solid ${BORDER}`,
                   cursor: "pointer",
-                  background: isActive ? "rgba(123,53,192,0.08)" : "transparent",
-                  borderRight: isActive ? "2px solid #7B35C0" : "2px solid transparent",
+                  background: isActive ? "rgba(123,53,255,0.10)" : "transparent",
+                  borderRight: isActive ? `2px solid ${PURPLE}` : "2px solid transparent",
                   transition: "background 0.15s",
                 }}
                 onMouseEnter={(e) => {
-                  if (!isActive) (e.currentTarget as HTMLDivElement).style.background = "#0a0a0a";
+                  if (!isActive) (e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.03)";
                 }}
                 onMouseLeave={(e) => {
                   if (!isActive) (e.currentTarget as HTMLDivElement).style.background = "transparent";
                 }}
               >
-                <div style={{ width: 28, color: "#555", fontSize: 10, fontWeight: 700 }}>{pad2(i + 1)}</div>
+                <div style={{ width: 26, color: isDone ? CYAN : isActive ? "#fff" : "#555", fontSize: 11, fontWeight: 800 }}>{pad2(i + 1)}</div>
                 <div
                   style={{
                     flex: 1,
-                    fontSize: 12,
-                    lineHeight: 1.4,
-                    color: isDone ? "#444" : isActive ? "#bbb" : "#888",
+                    fontSize: 12.5,
+                    lineHeight: 1.5,
+                    color: isDone ? "#666" : isActive ? "#fff" : "#9590A8",
+                    fontWeight: isActive ? 700 : 500,
                   }}
                 >
                   {ch.title}
                 </div>
-                <div
-                  style={{
-                    width: 10,
-                    height: 10,
-                    borderRadius: "50%",
-                    border: isDone ? "none" : "1.5px solid #1E1E1E",
-                    background: isDone ? "linear-gradient(135deg,#7B35C0,#40C8C8)" : "transparent",
-                    flexShrink: 0,
-                  }}
-                />
+                {status === "done" ? (
+                  <div
+                    style={{
+                      width: 18, height: 18, borderRadius: "50%",
+                      background: `linear-gradient(135deg,${PURPLE},${CYAN})`,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      color: "#fff", fontSize: 11, fontWeight: 800, flexShrink: 0,
+                    }}
+                  >
+                    ✓
+                  </div>
+                ) : status === "current" ? (
+                  <div
+                    style={{
+                      width: 14, height: 14, borderRadius: "50%",
+                      background: CYAN, flexShrink: 0,
+                      animation: "coursi-pulse-dot 1.6s ease-out infinite",
+                    }}
+                  />
+                ) : (
+                  <div
+                    style={{
+                      width: 14, height: 14, borderRadius: "50%",
+                      border: "1.5px solid rgba(255,255,255,0.15)", flexShrink: 0,
+                    }}
+                  />
+                )}
               </div>
             );
           })}
         </aside>
 
         {/* Content */}
-        <main ref={contentScrollRef} style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", minWidth: 0 }}>
+        <main ref={contentScrollRef} style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", minWidth: 0, background: BG }}>
           {/* Tabs */}
           <div
             style={{
               padding: "16px 24px 0",
               display: "flex",
               gap: 8,
-              borderBottom: "1px solid #1E1E1E",
-              background: "#000",
+              borderBottom: `1px solid ${BORDER}`,
+              background: BG,
               position: "sticky",
               top: 0,
               zIndex: 10,
@@ -329,7 +353,7 @@ function CourseAIPage() {
                   key={t}
                   onClick={() => setActiveTab(t)}
                   style={{
-                    background: isActive ? "linear-gradient(135deg,#7B35C0,#40C8C8)" : "transparent",
+                    background: isActive ? "linear-gradient(135deg,#7B35FF,#00D4C8)" : "transparent",
                     color: isActive ? "#fff" : "#666",
                     border: isActive ? "none" : "1px solid #1E1E1E",
                     borderBottom: "none",
@@ -384,11 +408,11 @@ function CourseAIPage() {
               width: 56,
               height: 56,
               borderRadius: "50%",
-              background: "linear-gradient(135deg,#7B35C0,#40C8C8)",
+              background: "linear-gradient(135deg,#7B35FF,#00D4C8)",
               border: "none",
               cursor: "pointer",
               zIndex: 100,
-              boxShadow: "0 0 24px rgba(123,53,192,0.45)",
+              boxShadow: "0 0 24px rgba(123,53,255,0.45)",
               fontSize: 24,
               display: "flex",
               alignItems: "center",
@@ -437,7 +461,7 @@ function CourseAIPage() {
                 <div
                   key={i}
                   style={{
-                    background: m.from === "ai" ? "#141414" : "rgba(64,200,200,0.12)",
+                    background: m.from === "ai" ? "#141414" : "rgba(0,212,200,0.12)",
                     borderRadius: m.from === "ai" ? "12px 12px 12px 0" : "12px 12px 0 12px",
                     padding: "12px 16px",
                     maxWidth: "85%",
@@ -477,7 +501,7 @@ function CourseAIPage() {
                   width: 38,
                   height: 38,
                   borderRadius: "50%",
-                  background: "linear-gradient(135deg,#7B35C0,#40C8C8)",
+                  background: "linear-gradient(135deg,#7B35FF,#00D4C8)",
                   border: "none",
                   cursor: "pointer",
                   color: "#fff",
@@ -497,15 +521,39 @@ function CourseAIPage() {
 }
 
 const CONTENT_CSS = `
-.coursi-content h3 { color:#fff; font-weight:700; font-size:18px; margin:24px 0 10px; font-family:${font}; }
-.coursi-content p { color:#BBB; font-size:15px; line-height:1.9; margin:0 0 12px; }
-.coursi-content strong { color:#fff; }
-.coursi-content .info-box { background:rgba(123,53,192,0.06); border-right:3px solid #7B35C0; border-radius:10px; padding:16px 18px; margin:20px 0; }
-.coursi-content .info-box .box-title { color:#9B55E0; font-weight:700; font-size:13px; margin:0 0 8px; }
-.coursi-content .info-box p { color:#AAA; font-size:14px; margin:0; }
-.coursi-content .action-box { background:rgba(64,200,200,0.05); border-right:3px solid #40C8C8; border-radius:10px; padding:16px 18px; margin:20px 0; }
-.coursi-content .action-box .box-title { color:#40C8C8; font-weight:700; font-size:13px; margin:0 0 8px; }
-.coursi-content .action-box p { color:#AAA; font-size:14px; margin:0; }
+.coursi-content { animation: coursi-fade-up 420ms ease-out both; }
+.coursi-content h3 { color:#fff; font-weight:800; font-size:19px; margin:26px 0 10px; font-family:${font}; }
+.coursi-content p { color:#CFC8DE; font-size:15px; line-height:1.95; margin:0 0 12px; }
+.coursi-content strong { color:#fff; font-weight:700; }
+.coursi-content ul.bullet-list, .coursi-content ol.bullet-list { list-style:none; padding:0; margin:8px 0 14px; }
+.coursi-content ul.bullet-list li, .coursi-content ol.bullet-list li { color:#CFC8DE; font-size:15px; line-height:1.85; padding-right:18px; margin-bottom:6px; position:relative; }
+.coursi-content ul.bullet-list li::before { content:"◆"; color:${CYAN}; position:absolute; right:0; top:0; font-size:10px; }
+.coursi-content ol.bullet-list { counter-reset:cli; }
+.coursi-content ol.bullet-list li::before { content:counter(cli, arabic-indic) "."; counter-increment:cli; color:${PURPLE}; font-weight:800; font-size:13px; }
+.coursi-content .intro-box { background:linear-gradient(135deg, rgba(123,53,255,0.10), rgba(0,212,200,0.04)); border:1px solid rgba(123,53,255,0.18); border-radius:14px; padding:18px 20px; margin:0 0 22px; }
+.coursi-content .intro-box p { color:#E2DCF0; font-size:15px; margin:0; line-height:1.9; }
+.coursi-content .learn-box { background:rgba(123,53,255,0.07); border:1px solid rgba(123,53,255,0.18); border-radius:14px; padding:18px 20px; margin:0 0 22px; }
+.coursi-content .learn-box ul { list-style:none; padding:0; margin:0; }
+.coursi-content .learn-box li { color:#CFC8DE; font-size:14px; padding:6px 22px 6px 0; position:relative; line-height:1.7; }
+.coursi-content .learn-box li::before { content:"✦"; color:${PURPLE}; position:absolute; right:0; top:6px; font-size:13px; }
+.coursi-content .block-title { color:#fff; font-weight:800; font-size:14px; margin:0 0 10px; display:flex; align-items:center; gap:8px; }
+.coursi-content .block-ic { display:inline-flex; width:24px; height:24px; border-radius:7px; background:linear-gradient(135deg,${PURPLE},${CYAN}); color:#fff; align-items:center; justify-content:center; font-size:13px; }
+.coursi-content .info-box { background:rgba(123,53,255,0.06); border-right:3px solid ${PURPLE}; border-radius:10px; padding:14px 18px; margin:18px 0; }
+.coursi-content .info-box .box-title { color:${PURPLE}; font-weight:800; font-size:13px; margin:0 0 6px; }
+.coursi-content .info-box p { color:#CFC8DE; font-size:14px; margin:0 0 6px; line-height:1.8; }
+.coursi-content .warn-box { background:rgba(255,170,60,0.06); border-right:3px solid #FFAA3C; border-radius:10px; padding:14px 18px; margin:18px 0; }
+.coursi-content .warn-box .box-title { color:#FFAA3C; font-weight:800; font-size:13px; margin:0 0 6px; }
+.coursi-content .warn-box p { color:#CFC8DE; font-size:14px; margin:0; line-height:1.8; }
+.coursi-content .action-box, .coursi-content .exercise-box { background:linear-gradient(135deg, rgba(0,212,200,0.10), rgba(0,212,200,0.02)); border:1px solid rgba(0,212,200,0.25); border-radius:14px; padding:18px 20px; margin:24px 0 8px; }
+.coursi-content .exercise-box .block-title .block-ic { background:linear-gradient(135deg,${CYAN},${PURPLE}); }
+.coursi-content .exercise-box p { color:#E2DCF0; font-size:15px; margin:0; line-height:1.9; }
+.coursi-content .tools-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:12px; margin:14px 0 22px; }
+.coursi-content .tool-card { background:rgba(255,255,255,0.03); border:1px solid ${BORDER}; border-radius:14px; padding:14px 16px; display:flex; flex-direction:column; gap:8px; transition:border-color .2s, transform .2s; }
+.coursi-content .tool-card:hover { border-color:rgba(123,53,255,0.45); transform:translateY(-2px); }
+.coursi-content .tool-name { color:#fff; font-weight:800; font-size:15px; }
+.coursi-content .tool-desc { color:#9590A8; font-size:13px; line-height:1.65; flex:1; }
+.coursi-content .tool-btn { color:${CYAN}; font-size:12px; font-weight:700; text-decoration:none; border-top:1px solid ${BORDER}; padding-top:8px; margin-top:auto; }
+.coursi-content .tool-btn:hover { color:${PURPLE}; }
 `;
 
 function ContentTab({
@@ -539,7 +587,7 @@ function ContentTab({
       <button
         onClick={onGoQuiz}
         style={{
-          background: "linear-gradient(135deg,#7B35C0,#40C8C8)",
+          background: "linear-gradient(135deg,#7B35FF,#00D4C8)",
           color: "#fff",
           fontSize: 15,
           fontWeight: 700,
@@ -549,7 +597,7 @@ function ContentTab({
           width: "100%",
           cursor: "pointer",
           fontFamily: font,
-          boxShadow: "0 0 24px rgba(123,53,192,0.3)",
+          boxShadow: "0 0 24px rgba(123,53,255,0.3)",
           marginTop: 32,
         }}
       >
@@ -592,13 +640,13 @@ function QuizTab({
             width: 120,
             height: 120,
             borderRadius: "50%",
-            background: "linear-gradient(135deg,#7B35C0,#40C8C8)",
+            background: "linear-gradient(135deg,#7B35FF,#00D4C8)",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
             margin: "0 auto 24px",
-            boxShadow: "0 0 40px rgba(123,53,192,0.4)",
+            boxShadow: "0 0 40px rgba(123,53,255,0.4)",
           }}
         >
           <div style={{ color: "#fff", fontWeight: 700, fontSize: 36, lineHeight: 1 }}>{toAr(score)}</div>
@@ -615,8 +663,8 @@ function QuizTab({
           <div
             style={{
               margin: 24,
-              background: "linear-gradient(135deg, rgba(123,53,192,0.08), rgba(64,200,200,0.04))",
-              border: "1px solid rgba(123,53,192,0.2)",
+              background: "linear-gradient(135deg, rgba(123,53,255,0.08), rgba(0,212,200,0.04))",
+              border: "1px solid rgba(123,53,255,0.2)",
               borderRadius: 20,
               padding: "48px 36px",
               textAlign: "center",
@@ -642,7 +690,7 @@ function QuizTab({
                 window.location.href = "https://coursi.ai/ai/payment";
               }}
               style={{
-                background: "linear-gradient(135deg,#7B35C0,#40C8C8)",
+                background: "linear-gradient(135deg,#7B35FF,#00D4C8)",
                 color: "#fff",
                 fontSize: 15,
                 fontWeight: 700,
@@ -651,7 +699,7 @@ function QuizTab({
                 border: "none",
                 cursor: "pointer",
                 fontFamily: font,
-                boxShadow: "0 0 24px rgba(123,53,192,0.3)",
+                boxShadow: "0 0 24px rgba(123,53,255,0.3)",
               }}
             >
               🚀 انتقل للمستوى التالي
@@ -661,7 +709,7 @@ function QuizTab({
           <button
             onClick={onNextChapter}
             style={{
-              background: "linear-gradient(135deg,#7B35C0,#40C8C8)",
+              background: "linear-gradient(135deg,#7B35FF,#00D4C8)",
               color: "#fff",
               fontSize: 15,
               fontWeight: 700,
@@ -671,7 +719,7 @@ function QuizTab({
               width: "100%",
               cursor: "pointer",
               fontFamily: font,
-              boxShadow: "0 0 24px rgba(123,53,192,0.3)",
+              boxShadow: "0 0 24px rgba(123,53,255,0.3)",
             }}
           >
             الفصل التالي ←
@@ -702,7 +750,7 @@ function QuizTab({
           style={{
             width: `${progressPct}%`,
             height: "100%",
-            background: "linear-gradient(90deg,#7B35C0,#40C8C8)",
+            background: "linear-gradient(90deg,#7B35FF,#00D4C8)",
             transition: "width 0.3s",
           }}
         />
@@ -725,9 +773,9 @@ function QuizTab({
 
         if (answered) {
           if (isCorrect) {
-            borderColor = "#40C8C8";
-            bg = "rgba(64,200,200,0.07)";
-            circleBg = "#40C8C8";
+            borderColor = "#00D4C8";
+            bg = "rgba(0,212,200,0.07)";
+            circleBg = "#00D4C8";
             circleColor = "#000";
           } else if (isPicked) {
             borderColor = "#C5545E";
@@ -787,8 +835,8 @@ function QuizTab({
           style={{
             marginTop: 18,
             padding: "14px 18px",
-            background: selectedAnswer === correct ? "rgba(64,200,200,0.08)" : "rgba(197,84,94,0.08)",
-            border: `1px solid ${selectedAnswer === correct ? "#40C8C8" : "#C5545E"}`,
+            background: selectedAnswer === correct ? "rgba(0,212,200,0.08)" : "rgba(197,84,94,0.08)",
+            border: `1px solid ${selectedAnswer === correct ? "#00D4C8" : "#C5545E"}`,
             borderRadius: 10,
             color: "#DDD",
             fontSize: 14,
