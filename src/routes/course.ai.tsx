@@ -17,7 +17,9 @@ const BG = "#060410";
 const BG_SOFT = "#0B0820";
 const PURPLE = "#7B35FF";
 const CYAN = "#00D4C8";
+const GOLD = "#D4AF37";
 const BORDER = "rgba(255,255,255,0.08)";
+
 
 const COURSE = COURSE_CONTENT;
 
@@ -35,6 +37,8 @@ function CourseAIPage() {
   const [tier, setTier] = useState<Tier>("course");
   const [userId, setUserId] = useState<string | null>(null);
   const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
+  const [userName, setUserName] = useState<string>("");
+
 
   const [activeChapter, setActiveChapter] = useState(0);
   const [activeTab, setActiveTab] = useState<"content" | "quiz">("content");
@@ -87,8 +91,16 @@ function CourseAIPage() {
       setUserId(uid);
       setLevel(((profile?.level as Level) ?? "beginner"));
       setTier(((subscription?.tier as Tier) ?? "course"));
+      const meta = (session.user.user_metadata ?? {}) as Record<string, unknown>;
+      const fullName =
+        (profile && (profile as Record<string, unknown>).full_name as string) ||
+        (meta.full_name as string) ||
+        (meta.name as string) ||
+        (session.user.email?.split("@")[0] ?? "طالب كورسي");
+      setUserName(fullName);
       await fetchProgress(uid);
       setLoading(false);
+
     })();
     return () => {
       mounted = false;
@@ -237,7 +249,28 @@ function CourseAIPage() {
               المستوى المتوسط
             </span>
           )}
+          {level === "advanced" && (
+            <span
+              className="adv-shine-badge"
+              style={{
+                background: `linear-gradient(135deg, rgba(212,175,55,0.20), rgba(123,53,255,0.18))`,
+                border: `1px solid ${GOLD}`,
+                color: GOLD,
+                fontSize: 11,
+                fontWeight: 800,
+                padding: "4px 10px",
+                borderRadius: 999,
+                letterSpacing: 0.4,
+                position: "relative",
+                overflow: "hidden",
+              }}
+            >
+              المستوى المتقدم
+            </span>
+          )}
         </div>
+
+
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{ color: CYAN, fontWeight: 700, fontSize: 13 }}>{toAr(pct)}%</div>
           <div style={{ width: 100, height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 4, overflow: "hidden" }}>
@@ -407,6 +440,9 @@ function CourseAIPage() {
               score={score}
               isLast={isLast}
               courseName={course.name}
+              level={level}
+              userName={userName}
+
               onAnswer={handleAnswer}
               onNextChapter={() => goToChapter(activeChapter + 1)}
             />
@@ -626,7 +662,69 @@ const CONTENT_CSS = `
 @media (max-width: 720px) {
   .coursi-content .flow-arrow { flex-basis:100%; height:24px; transform:rotate(90deg); }
 }
+
+/* ===== Advanced: gold accents ===== */
+.coursi-content .gold-ic { background:linear-gradient(135deg, ${GOLD}, ${PURPLE}) !important; color:#1a1208 !important; }
+.coursi-content .learn-box.gold { background:rgba(212,175,55,0.06); border-color:rgba(212,175,55,0.25); }
+.coursi-content .learn-box.gold li::before { color:${GOLD}; }
+.coursi-content .exercise-box.gold { background:linear-gradient(135deg, rgba(212,175,55,0.10), rgba(212,175,55,0.02)); border-color:rgba(212,175,55,0.30); }
+.coursi-content .info-box.gold { background:rgba(212,175,55,0.06); border-right-color:${GOLD}; }
+.coursi-content .info-box.gold .box-title { color:${GOLD}; }
+.coursi-content .adv-tool-card.gold:hover { border-color:rgba(212,175,55,0.55); box-shadow:0 8px 24px rgba(212,175,55,0.10); }
+.coursi-content .adv-tool-btn.gold { color:${GOLD}; }
+.coursi-content .adv-tool-btn.gold:hover { color:${PURPLE}; }
+.coursi-content .try-box.gold { background:linear-gradient(135deg, rgba(212,175,55,0.08), rgba(123,53,255,0.04)); border-color:rgba(212,175,55,0.25); }
+.coursi-content .try-item.done .try-check.gold { background:linear-gradient(135deg,${GOLD},${PURPLE}); }
+@keyframes adv-shine { 0%{transform:translateX(-100%)} 60%,100%{transform:translateX(200%)} }
+.adv-shine-badge::after { content:""; position:absolute; top:0; bottom:0; width:30%; background:linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent); animation:adv-shine 3s ease-in-out infinite; }
+
+/* Architecture diagram */
+.coursi-content .arch-wrap { background:rgba(255,255,255,0.02); border:1px solid ${BORDER}; border-radius:16px; padding:18px 20px; margin:18px 0 24px; }
+.coursi-content .arch-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:12px; margin:8px 0 6px; }
+.coursi-content .arch-node { background:linear-gradient(180deg, rgba(212,175,55,0.08), rgba(123,53,255,0.04)); border:1.5px solid rgba(212,175,55,0.25); border-radius:14px; padding:14px 10px; text-align:center; cursor:pointer; transition:all .25s; }
+.coursi-content .arch-node:hover, .coursi-content .arch-node.active { border-color:${GOLD}; transform:translateY(-3px); box-shadow:0 8px 24px rgba(212,175,55,0.18); }
+.coursi-content .arch-node .arch-ic { font-size:24px; margin-bottom:6px; }
+.coursi-content .arch-node .arch-t { color:#fff; font-weight:800; font-size:13px; }
+.coursi-content .arch-detail { margin-top:16px; background:rgba(212,175,55,0.06); border-right:3px solid ${GOLD}; border-radius:10px; padding:14px 16px; color:#CFC8DE; font-size:14px; line-height:1.8; min-height:48px; }
+
+/* Calculator */
+.coursi-content .calc-wrap { background:rgba(255,255,255,0.02); border:1px solid ${BORDER}; border-radius:16px; padding:18px 20px; margin:18px 0 24px; }
+.coursi-content .calc-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:12px; margin:10px 0 16px; }
+.coursi-content .calc-field { display:flex; flex-direction:column; gap:6px; }
+.coursi-content .calc-field span { color:#B6AECC; font-size:12.5px; font-weight:600; }
+.coursi-content .calc-field input { background:#0D0820; border:1px solid ${BORDER}; border-radius:10px; padding:10px 12px; color:#fff; font-family:${font}; font-size:14px; outline:none; transition:border-color .2s; }
+.coursi-content .calc-field input:focus { border-color:${GOLD}; }
+.coursi-content .calc-results { display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:10px; margin-top:8px; }
+.coursi-content .calc-stat { background:linear-gradient(180deg, rgba(212,175,55,0.10), rgba(123,53,255,0.04)); border:1px solid rgba(212,175,55,0.25); border-radius:12px; padding:12px 14px; text-align:center; }
+.coursi-content .calc-stat .calc-lbl { color:#9590A8; font-size:11.5px; font-weight:700; margin-bottom:4px; }
+.coursi-content .calc-stat .calc-val { color:${GOLD}; font-size:20px; font-weight:800; }
+
+/* Business plan */
+.coursi-content .biz-wrap { background:rgba(255,255,255,0.02); border:1px solid ${BORDER}; border-radius:16px; padding:18px 20px; margin:18px 0 24px; }
+.coursi-content .biz-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:10px 0 14px; }
+.coursi-content .biz-field { display:flex; flex-direction:column; gap:6px; grid-column:span 2; }
+.coursi-content .biz-field span { color:#B6AECC; font-size:12.5px; font-weight:700; }
+.coursi-content .biz-field input, .coursi-content .biz-field textarea { background:#0D0820; border:1px solid ${BORDER}; border-radius:10px; padding:10px 12px; color:#fff; font-family:${font}; font-size:14px; outline:none; resize:vertical; transition:border-color .2s; }
+.coursi-content .biz-field input:focus, .coursi-content .biz-field textarea:focus { border-color:${GOLD}; }
+.coursi-content .biz-actions { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+.coursi-content .biz-btn { background:rgba(255,255,255,0.04); border:1px solid ${BORDER}; color:#CFC8DE; border-radius:10px; padding:9px 16px; font-family:${font}; font-size:13px; font-weight:700; cursor:pointer; transition:all .2s; }
+.coursi-content .biz-btn:hover { border-color:${GOLD}; color:${GOLD}; }
+.coursi-content .biz-btn.gold { background:linear-gradient(135deg, ${GOLD}, ${PURPLE}); color:#1a1208; border-color:transparent; }
+.coursi-content .biz-btn.gold:hover { color:#1a1208; transform:translateY(-1px); }
+.coursi-content .biz-saved { color:${CYAN}; font-size:11.5px; font-weight:700; opacity:0; transition:opacity .3s; }
+.coursi-content .biz-saved.show { opacity:1; }
+
+/* Gallery */
+.coursi-content .gallery-wrap { margin:18px 0 24px; }
+.coursi-content .gallery-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:14px; margin-top:14px; }
+.coursi-content .gallery-card { background:linear-gradient(180deg, rgba(212,175,55,0.06), rgba(123,53,255,0.03)); border:1px solid rgba(212,175,55,0.20); border-radius:14px; padding:16px 18px; transition:all .2s; }
+.coursi-content .gallery-card:hover { transform:translateY(-3px); border-color:${GOLD}; box-shadow:0 8px 24px rgba(212,175,55,0.12); }
+.coursi-content .gallery-emoji { font-size:32px; margin-bottom:8px; }
+.coursi-content .gallery-name { color:#fff; font-weight:800; font-size:15px; margin-bottom:6px; }
+.coursi-content .gallery-desc { color:#B6AECC; font-size:13px; line-height:1.65; margin-bottom:10px; }
+.coursi-content .gallery-stack { color:${GOLD}; font-size:11.5px; font-weight:700; letter-spacing:0.3px; padding-top:8px; border-top:1px solid rgba(212,175,55,0.15); }
 `;
+
 
 function ContentTab({
   chapterIndex,
@@ -645,9 +743,49 @@ function ContentTab({
     "الإجراء: ما يحدث استجابةً للحدث. يمكن أن يكون استدعاء نموذج ذكاء اصطناعي لصياغة رد، أو ترجمة، أو تصنيف، أو استخراج بيانات.",
     "النتيجة: المخرَج النهائي القابل للقياس — رسالة مرسلة، صف مُضاف، إشعار صادر، تقرير محفوظ. هنا تُقاس قيمة الأتمتة الحقيقية.",
   ];
+  const archDetails = [
+    "واجهة المستخدم: نقطة الالتقاء مع المستخدم — تطبيق ويب، روبوت محادثة، إضافة متصفّح. تصمَّم لتكون بسيطة تخفي التعقيد الخلفي.",
+    "طبقة المنطق: العقل المنظِّم — تستقبل الطلب، تقرر أيّ نموذج تستدعي، تطبّق قواعد العمل، وتُعيد النتيجة. هنا يعيش منتجك الحقيقي.",
+    "النموذج اللغوي: المحرك الذكي — يفهم ويولّد ويستنتج. تختار بين GPT أو Claude أو Gemini حسب طبيعة المهمة والتكلفة.",
+    "قاعدة المعرفة (RAG): مكتبتك الخاصة المتاحة للنموذج. ملفات، مستندات، تاريخ. يبحث فيها قبل الإجابة لضمان الدقة.",
+    "الذاكرة الدائمة: قاعدة بيانات تحفظ المحادثات والإعدادات لكل مستخدم — تمنح المنتج استمرارية حقيقية بين الجلسات.",
+    "أدوات وAPIs: امتدادات تنفّذ إجراءات في العالم — إرسال بريد، حجز موعد، إنشاء صورة، البحث الحي.",
+  ];
+  const formatMoney = (n: number) => `$${n.toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
+  const recompute = (root: HTMLElement) => {
+    const get = (k: string) =>
+      Number((root.querySelector<HTMLInputElement>(`[data-calc="${k}"]`)?.value) ?? 0) || 0;
+    const price = get("price");
+    const customers = get("customers");
+    const cost = get("cost");
+    const aicost = get("aicost");
+    const revenue = price * customers;
+    const profit = revenue - cost - aicost * customers;
+    const margin = price - aicost;
+    const breakeven = margin > 0 ? Math.ceil(cost / margin) : 0;
+    const annual = profit * 12;
+    const set = (k: string, v: string) => {
+      const el = root.querySelector<HTMLElement>(`[data-calc-out="${k}"]`);
+      if (el) el.textContent = v;
+    };
+    set("revenue", formatMoney(revenue));
+    set("profit", formatMoney(profit));
+    set("breakeven", breakeven ? String(breakeven) : "—");
+    set("annual", formatMoney(annual));
+  };
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
+    // Initial compute
+    if (root.querySelector("[data-calc]")) recompute(root);
+    // Restore biz plan from localStorage
+    root.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>("[data-biz]").forEach((el) => {
+      const key = el.dataset.biz;
+      if (!key) return;
+      const stored = localStorage.getItem(`coursi-biz-${key}`);
+      if (stored !== null) el.value = stored;
+    });
+
     const onClick = (e: Event) => {
       const target = e.target as HTMLElement;
       const item = target.closest<HTMLElement>(".try-item");
@@ -655,18 +793,80 @@ function ContentTab({
         item.classList.toggle("done");
         return;
       }
-      const node = target.closest<HTMLElement>(".flow-node");
-      if (node) {
-        const idx = Number(node.dataset.flowNode ?? "0");
+      const flow = target.closest<HTMLElement>(".flow-node");
+      if (flow) {
+        const idx = Number(flow.dataset.flowNode ?? "0");
         root.querySelectorAll(".flow-node").forEach((n) => n.classList.remove("active"));
-        node.classList.add("active");
+        flow.classList.add("active");
         const detail = root.querySelector<HTMLElement>("[data-flow-detail]");
         if (detail) detail.textContent = flowDetails[idx] ?? "";
+        return;
+      }
+      const arch = target.closest<HTMLElement>(".arch-node");
+      if (arch) {
+        const idx = Number(arch.dataset.archNode ?? "0");
+        root.querySelectorAll(".arch-node").forEach((n) => n.classList.remove("active"));
+        arch.classList.add("active");
+        const detail = root.querySelector<HTMLElement>("[data-arch-detail]");
+        if (detail) detail.textContent = archDetails[idx] ?? "";
+        return;
+      }
+      if (target.closest("[data-biz-clear]")) {
+        root.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>("[data-biz]").forEach((el) => {
+          el.value = "";
+          if (el.dataset.biz) localStorage.removeItem(`coursi-biz-${el.dataset.biz}`);
+        });
+        return;
+      }
+      if (target.closest("[data-biz-export]")) {
+        const fields: Record<string, string> = {};
+        root.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>("[data-biz]").forEach((el) => {
+          if (el.dataset.biz) fields[el.dataset.biz] = el.value;
+        });
+        const labels: Record<string, string> = {
+          name: "اسم المنتج", problem: "المشكلة", solution: "الحل", audience: "الجمهور المستهدف",
+          mvp: "أصغر نسخة قابلة للإطلاق", pricing: "نموذج التسعير", channels: "قنوات التسويق", kpi: "مؤشر النجاح الأول",
+        };
+        const html = `<!doctype html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>خطة العمل — ${fields.name || "منتج جديد"}</title><style>body{font-family:Cairo,Tahoma,sans-serif;background:#fff;color:#111;padding:48px;max-width:780px;margin:auto;line-height:1.8}h1{color:#7B35FF;border-bottom:3px solid #D4AF37;padding-bottom:12px}h2{color:#D4AF37;margin-top:28px;font-size:18px}p{white-space:pre-wrap;background:#fafafa;padding:12px 16px;border-right:3px solid #00D4C8;border-radius:8px}@media print{body{padding:24px}}</style></head><body><h1>خطة العمل — ${fields.name || "بدون اسم"}</h1>${Object.entries(labels).map(([k, label]) => `<h2>${label}</h2><p>${(fields[k] || "—").replace(/</g, "&lt;")}</p>`).join("")}<p style="margin-top:40px;text-align:center;color:#888;border:none;background:none">— كورسي · COURSI —</p></body></html>`;
+        const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `business-plan-${(fields.name || "coursi").replace(/\s+/g, "-")}.html`;
+        a.click();
+        URL.revokeObjectURL(url);
+        return;
       }
     };
+
+    const onInput = (e: Event) => {
+      const target = e.target as HTMLElement;
+      if (target.matches("[data-calc]")) {
+        recompute(root);
+        return;
+      }
+      if (target.matches("[data-biz]")) {
+        const el = target as HTMLInputElement | HTMLTextAreaElement;
+        const key = el.dataset.biz;
+        if (key) {
+          localStorage.setItem(`coursi-biz-${key}`, el.value);
+          const saved = root.querySelector<HTMLElement>("[data-biz-saved]");
+          if (saved) {
+            saved.classList.add("show");
+            window.setTimeout(() => saved.classList.remove("show"), 1200);
+          }
+        }
+      }
+    };
+
     root.addEventListener("click", onClick);
-    return () => root.removeEventListener("click", onClick);
+    root.addEventListener("input", onInput);
+    return () => {
+      root.removeEventListener("click", onClick);
+      root.removeEventListener("input", onInput);
+    };
   }, [chapterHtml]);
+
 
   return (
     <div style={{ padding: "28px 32px" }}>
@@ -718,6 +918,8 @@ function QuizTab({
   score,
   isLast,
   courseName,
+  level,
+  userName,
   onAnswer,
   onNextChapter,
 }: {
@@ -730,9 +932,12 @@ function QuizTab({
   score: number;
   isLast: boolean;
   courseName: string;
+  level: Level;
+  userName: string;
   onAnswer: (i: number) => void;
   onNextChapter: () => void;
 }) {
+
   if (quizComplete) {
     return (
       <div style={{ padding: "28px 32px" }}>
@@ -761,51 +966,56 @@ function QuizTab({
         </div>
 
         {isLast ? (
-          <div
-            style={{
-              margin: 24,
-              background: "linear-gradient(135deg, rgba(123,53,255,0.08), rgba(0,212,200,0.04))",
-              border: "1px solid rgba(123,53,255,0.2)",
-              borderRadius: 20,
-              padding: "48px 36px",
-              textAlign: "center",
-            }}
-          >
-            <div style={{ fontSize: 64, marginBottom: 16 }}>🏆</div>
-            <div style={{ color: "#fff", fontWeight: 700, fontSize: 28, marginBottom: 12 }}>
-              مبروك! أتممت الكورس بنجاح
-            </div>
+          level === "advanced" ? (
+            <GraduationCertificate userName={userName} courseName={courseName} />
+          ) : (
             <div
               style={{
-                color: "#AAA",
-                fontSize: 15,
-                lineHeight: 1.8,
-                maxWidth: 440,
-                margin: "0 auto 28px",
+                margin: 24,
+                background: "linear-gradient(135deg, rgba(123,53,255,0.08), rgba(0,212,200,0.04))",
+                border: "1px solid rgba(123,53,255,0.2)",
+                borderRadius: 20,
+                padding: "48px 36px",
+                textAlign: "center",
               }}
             >
-              لقد أكملت {courseName}. أنت الآن جاهز للمستوى التالي.
+              <div style={{ fontSize: 64, marginBottom: 16 }}>🏆</div>
+              <div style={{ color: "#fff", fontWeight: 700, fontSize: 28, marginBottom: 12 }}>
+                مبروك! أتممت الكورس بنجاح
+              </div>
+              <div
+                style={{
+                  color: "#AAA",
+                  fontSize: 15,
+                  lineHeight: 1.8,
+                  maxWidth: 440,
+                  margin: "0 auto 28px",
+                }}
+              >
+                لقد أكملت {courseName}. أنت الآن جاهز للمستوى التالي.
+              </div>
+              <button
+                onClick={() => {
+                  window.location.href = "https://coursi.ai/ai/payment";
+                }}
+                style={{
+                  background: "linear-gradient(135deg,#7B35FF,#00D4C8)",
+                  color: "#fff",
+                  fontSize: 15,
+                  fontWeight: 700,
+                  padding: "14px 32px",
+                  borderRadius: 50,
+                  border: "none",
+                  cursor: "pointer",
+                  fontFamily: font,
+                  boxShadow: "0 0 24px rgba(123,53,255,0.3)",
+                }}
+              >
+                🚀 انتقل للمستوى التالي
+              </button>
             </div>
-            <button
-              onClick={() => {
-                window.location.href = "https://coursi.ai/ai/payment";
-              }}
-              style={{
-                background: "linear-gradient(135deg,#7B35FF,#00D4C8)",
-                color: "#fff",
-                fontSize: 15,
-                fontWeight: 700,
-                padding: "14px 32px",
-                borderRadius: 50,
-                border: "none",
-                cursor: "pointer",
-                fontFamily: font,
-                boxShadow: "0 0 24px rgba(123,53,255,0.3)",
-              }}
-            >
-              🚀 انتقل للمستوى التالي
-            </button>
-          </div>
+          )
+
         ) : (
           <button
             onClick={onNextChapter}
@@ -947,6 +1157,70 @@ function QuizTab({
           {q.feedback}
         </div>
       )}
+    </div>
+  );
+}
+
+function GraduationCertificate({ userName, courseName }: { userName: string; courseName: string }) {
+  const today = new Date().toLocaleDateString("ar-EG", { year: "numeric", month: "long", day: "numeric" });
+  const handlePrint = () => window.print();
+  return (
+    <div style={{ margin: 24 }}>
+      <style>{`@media print { body * { visibility:hidden } .coursi-cert, .coursi-cert * { visibility:visible } .coursi-cert { position:absolute; inset:0; margin:0; box-shadow:none } }`}</style>
+      <div
+        className="coursi-cert"
+        style={{
+          background: "linear-gradient(135deg, #0B0820, #1a0f2e)",
+          border: `2px solid ${GOLD}`,
+          borderRadius: 20,
+          padding: "48px 36px",
+          textAlign: "center",
+          boxShadow: `0 0 60px rgba(212,175,55,0.20)`,
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        <div style={{ position: "absolute", inset: 12, border: `1px solid rgba(212,175,55,0.35)`, borderRadius: 14, pointerEvents: "none" }} />
+        <div style={{ fontSize: 56, marginBottom: 8 }}>🏆</div>
+        <div style={{ color: GOLD, fontSize: 12, letterSpacing: 4, fontWeight: 800, marginBottom: 8 }}>شهادة إتمام</div>
+        <div style={{ color: "#fff", fontWeight: 800, fontSize: 24, marginBottom: 18, fontFamily: font }}>
+          المستوى المتقدم — إتقان الذكاء الاصطناعي
+        </div>
+        <div style={{ color: "#B6AECC", fontSize: 13, marginBottom: 4 }}>تُمنح هذه الشهادة إلى</div>
+        <div style={{ color: GOLD, fontWeight: 800, fontSize: 30, fontFamily: font, padding: "10px 0", borderTop: `1px solid rgba(212,175,55,0.30)`, borderBottom: `1px solid rgba(212,175,55,0.30)`, margin: "10px 0 18px" }}>
+          {userName}
+        </div>
+        <div style={{ color: "#CFC8DE", fontSize: 14, lineHeight: 1.9, maxWidth: 520, margin: "0 auto 18px" }}>
+          لإكماله بنجاح {courseName} بمستوياته الثلاثة: المبتدئ، المتوسط، والمتقدم — وبنائه منتج ذكاء اصطناعي حقيقي كمشروع تخرّج.
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-around", marginTop: 24, color: "#9590A8", fontSize: 12 }}>
+          <div><div style={{ color: GOLD, fontWeight: 800, marginBottom: 4 }}>التاريخ</div>{today}</div>
+          <div><div style={{ color: GOLD, fontWeight: 800, marginBottom: 4 }}>المنصة</div>COURSI · كورسي</div>
+        </div>
+        <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap", marginTop: 26 }}>
+          <button onClick={handlePrint} style={{ background: `linear-gradient(135deg, ${GOLD}, ${PURPLE})`, color: "#1a1208", fontWeight: 800, fontSize: 14, padding: "12px 24px", borderRadius: 50, border: "none", cursor: "pointer", fontFamily: font }}>
+            🖨 طباعة / حفظ PDF
+          </button>
+          <button onClick={() => (window.location.href = "https://coursi.ai")} style={{ background: "transparent", color: GOLD, fontWeight: 700, fontSize: 14, padding: "12px 24px", borderRadius: 50, border: `1px solid ${GOLD}`, cursor: "pointer", fontFamily: font }}>
+            الخطوات التالية ←
+          </button>
+        </div>
+      </div>
+      <div style={{ marginTop: 24, padding: 20, background: "rgba(255,255,255,0.02)", border: `1px solid ${BORDER}`, borderRadius: 14 }}>
+        <div style={{ color: "#fff", fontWeight: 800, fontSize: 15, marginBottom: 10 }}>رحلتك في كورسي</div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 10 }}>
+          {[
+            { lvl: "المبتدئ", desc: "أساسيات الذكاء الاصطناعي والأدوات اليومية", c: CYAN },
+            { lvl: "المتوسط", desc: "هندسة الطلب، الأتمتة، وبناء روبوتات احترافية", c: PURPLE },
+            { lvl: "المتقدم", desc: "بناء منتجات SaaS كاملة بـAI من الصفر للسوق", c: GOLD },
+          ].map((s, i) => (
+            <div key={i} style={{ padding: 12, borderRadius: 10, background: "rgba(255,255,255,0.03)", borderRight: `3px solid ${s.c}` }}>
+              <div style={{ color: s.c, fontWeight: 800, fontSize: 13, marginBottom: 4 }}>✓ {s.lvl}</div>
+              <div style={{ color: "#B6AECC", fontSize: 12, lineHeight: 1.6 }}>{s.desc}</div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
