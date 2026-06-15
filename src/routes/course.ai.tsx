@@ -662,7 +662,69 @@ const CONTENT_CSS = `
 @media (max-width: 720px) {
   .coursi-content .flow-arrow { flex-basis:100%; height:24px; transform:rotate(90deg); }
 }
+
+/* ===== Advanced: gold accents ===== */
+.coursi-content .gold-ic { background:linear-gradient(135deg, ${GOLD}, ${PURPLE}) !important; color:#1a1208 !important; }
+.coursi-content .learn-box.gold { background:rgba(212,175,55,0.06); border-color:rgba(212,175,55,0.25); }
+.coursi-content .learn-box.gold li::before { color:${GOLD}; }
+.coursi-content .exercise-box.gold { background:linear-gradient(135deg, rgba(212,175,55,0.10), rgba(212,175,55,0.02)); border-color:rgba(212,175,55,0.30); }
+.coursi-content .info-box.gold { background:rgba(212,175,55,0.06); border-right-color:${GOLD}; }
+.coursi-content .info-box.gold .box-title { color:${GOLD}; }
+.coursi-content .adv-tool-card.gold:hover { border-color:rgba(212,175,55,0.55); box-shadow:0 8px 24px rgba(212,175,55,0.10); }
+.coursi-content .adv-tool-btn.gold { color:${GOLD}; }
+.coursi-content .adv-tool-btn.gold:hover { color:${PURPLE}; }
+.coursi-content .try-box.gold { background:linear-gradient(135deg, rgba(212,175,55,0.08), rgba(123,53,255,0.04)); border-color:rgba(212,175,55,0.25); }
+.coursi-content .try-item.done .try-check.gold { background:linear-gradient(135deg,${GOLD},${PURPLE}); }
+@keyframes adv-shine { 0%{transform:translateX(-100%)} 60%,100%{transform:translateX(200%)} }
+.adv-shine-badge::after { content:""; position:absolute; top:0; bottom:0; width:30%; background:linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent); animation:adv-shine 3s ease-in-out infinite; }
+
+/* Architecture diagram */
+.coursi-content .arch-wrap { background:rgba(255,255,255,0.02); border:1px solid ${BORDER}; border-radius:16px; padding:18px 20px; margin:18px 0 24px; }
+.coursi-content .arch-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:12px; margin:8px 0 6px; }
+.coursi-content .arch-node { background:linear-gradient(180deg, rgba(212,175,55,0.08), rgba(123,53,255,0.04)); border:1.5px solid rgba(212,175,55,0.25); border-radius:14px; padding:14px 10px; text-align:center; cursor:pointer; transition:all .25s; }
+.coursi-content .arch-node:hover, .coursi-content .arch-node.active { border-color:${GOLD}; transform:translateY(-3px); box-shadow:0 8px 24px rgba(212,175,55,0.18); }
+.coursi-content .arch-node .arch-ic { font-size:24px; margin-bottom:6px; }
+.coursi-content .arch-node .arch-t { color:#fff; font-weight:800; font-size:13px; }
+.coursi-content .arch-detail { margin-top:16px; background:rgba(212,175,55,0.06); border-right:3px solid ${GOLD}; border-radius:10px; padding:14px 16px; color:#CFC8DE; font-size:14px; line-height:1.8; min-height:48px; }
+
+/* Calculator */
+.coursi-content .calc-wrap { background:rgba(255,255,255,0.02); border:1px solid ${BORDER}; border-radius:16px; padding:18px 20px; margin:18px 0 24px; }
+.coursi-content .calc-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:12px; margin:10px 0 16px; }
+.coursi-content .calc-field { display:flex; flex-direction:column; gap:6px; }
+.coursi-content .calc-field span { color:#B6AECC; font-size:12.5px; font-weight:600; }
+.coursi-content .calc-field input { background:#0D0820; border:1px solid ${BORDER}; border-radius:10px; padding:10px 12px; color:#fff; font-family:${font}; font-size:14px; outline:none; transition:border-color .2s; }
+.coursi-content .calc-field input:focus { border-color:${GOLD}; }
+.coursi-content .calc-results { display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:10px; margin-top:8px; }
+.coursi-content .calc-stat { background:linear-gradient(180deg, rgba(212,175,55,0.10), rgba(123,53,255,0.04)); border:1px solid rgba(212,175,55,0.25); border-radius:12px; padding:12px 14px; text-align:center; }
+.coursi-content .calc-stat .calc-lbl { color:#9590A8; font-size:11.5px; font-weight:700; margin-bottom:4px; }
+.coursi-content .calc-stat .calc-val { color:${GOLD}; font-size:20px; font-weight:800; }
+
+/* Business plan */
+.coursi-content .biz-wrap { background:rgba(255,255,255,0.02); border:1px solid ${BORDER}; border-radius:16px; padding:18px 20px; margin:18px 0 24px; }
+.coursi-content .biz-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:10px 0 14px; }
+.coursi-content .biz-field { display:flex; flex-direction:column; gap:6px; grid-column:span 2; }
+.coursi-content .biz-field span { color:#B6AECC; font-size:12.5px; font-weight:700; }
+.coursi-content .biz-field input, .coursi-content .biz-field textarea { background:#0D0820; border:1px solid ${BORDER}; border-radius:10px; padding:10px 12px; color:#fff; font-family:${font}; font-size:14px; outline:none; resize:vertical; transition:border-color .2s; }
+.coursi-content .biz-field input:focus, .coursi-content .biz-field textarea:focus { border-color:${GOLD}; }
+.coursi-content .biz-actions { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+.coursi-content .biz-btn { background:rgba(255,255,255,0.04); border:1px solid ${BORDER}; color:#CFC8DE; border-radius:10px; padding:9px 16px; font-family:${font}; font-size:13px; font-weight:700; cursor:pointer; transition:all .2s; }
+.coursi-content .biz-btn:hover { border-color:${GOLD}; color:${GOLD}; }
+.coursi-content .biz-btn.gold { background:linear-gradient(135deg, ${GOLD}, ${PURPLE}); color:#1a1208; border-color:transparent; }
+.coursi-content .biz-btn.gold:hover { color:#1a1208; transform:translateY(-1px); }
+.coursi-content .biz-saved { color:${CYAN}; font-size:11.5px; font-weight:700; opacity:0; transition:opacity .3s; }
+.coursi-content .biz-saved.show { opacity:1; }
+
+/* Gallery */
+.coursi-content .gallery-wrap { margin:18px 0 24px; }
+.coursi-content .gallery-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:14px; margin-top:14px; }
+.coursi-content .gallery-card { background:linear-gradient(180deg, rgba(212,175,55,0.06), rgba(123,53,255,0.03)); border:1px solid rgba(212,175,55,0.20); border-radius:14px; padding:16px 18px; transition:all .2s; }
+.coursi-content .gallery-card:hover { transform:translateY(-3px); border-color:${GOLD}; box-shadow:0 8px 24px rgba(212,175,55,0.12); }
+.coursi-content .gallery-emoji { font-size:32px; margin-bottom:8px; }
+.coursi-content .gallery-name { color:#fff; font-weight:800; font-size:15px; margin-bottom:6px; }
+.coursi-content .gallery-desc { color:#B6AECC; font-size:13px; line-height:1.65; margin-bottom:10px; }
+.coursi-content .gallery-stack { color:${GOLD}; font-size:11.5px; font-weight:700; letter-spacing:0.3px; padding-top:8px; border-top:1px solid rgba(212,175,55,0.15); }
 `;
+
 
 function ContentTab({
   chapterIndex,
