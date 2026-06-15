@@ -91,8 +91,16 @@ function CourseAIPage() {
       setUserId(uid);
       setLevel(((profile?.level as Level) ?? "beginner"));
       setTier(((subscription?.tier as Tier) ?? "course"));
+      const meta = (session.user.user_metadata ?? {}) as Record<string, unknown>;
+      const fullName =
+        (profile && (profile as Record<string, unknown>).full_name as string) ||
+        (meta.full_name as string) ||
+        (meta.name as string) ||
+        (session.user.email?.split("@")[0] ?? "طالب كورسي");
+      setUserName(fullName);
       await fetchProgress(uid);
       setLoading(false);
+
     })();
     return () => {
       mounted = false;
