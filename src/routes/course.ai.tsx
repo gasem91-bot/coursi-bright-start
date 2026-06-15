@@ -219,7 +219,25 @@ function CourseAIPage() {
         >
           <img src={coursiLogo} alt="COURSI" style={{ height: 28, display: "block" }} />
         </button>
-        <div style={{ color: "#B8B0D0", fontSize: 13, fontWeight: 600 }}>{course.name}</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{ color: "#B8B0D0", fontSize: 13, fontWeight: 600 }}>{course.name}</div>
+          {level === "intermediate" && (
+            <span
+              style={{
+                background: `linear-gradient(135deg, rgba(0,212,200,0.18), rgba(123,53,255,0.18))`,
+                border: `1px solid ${CYAN}`,
+                color: CYAN,
+                fontSize: 11,
+                fontWeight: 800,
+                padding: "4px 10px",
+                borderRadius: 999,
+                letterSpacing: 0.4,
+              }}
+            >
+              المستوى المتوسط
+            </span>
+          )}
+        </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{ color: CYAN, fontWeight: 700, fontSize: 13 }}>{toAr(pct)}%</div>
           <div style={{ width: 100, height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 4, overflow: "hidden" }}>
@@ -554,6 +572,60 @@ const CONTENT_CSS = `
 .coursi-content .tool-desc { color:#9590A8; font-size:13px; line-height:1.65; flex:1; }
 .coursi-content .tool-btn { color:${CYAN}; font-size:12px; font-weight:700; text-decoration:none; border-top:1px solid ${BORDER}; padding-top:8px; margin-top:auto; }
 .coursi-content .tool-btn:hover { color:${PURPLE}; }
+
+/* ===== Intermediate: advanced tool cards ===== */
+.coursi-content .adv-tools-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:14px; margin:16px 0 24px; }
+.coursi-content .adv-tool-card { background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.015)); border:1px solid ${BORDER}; border-radius:16px; padding:16px 18px; display:flex; flex-direction:column; gap:10px; transition:border-color .2s, transform .2s, box-shadow .2s; }
+.coursi-content .adv-tool-card:hover { border-color:rgba(0,212,200,0.45); transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,212,200,0.08); }
+.coursi-content .adv-tool-head { display:flex; justify-content:space-between; align-items:flex-start; gap:10px; flex-wrap:wrap; }
+.coursi-content .adv-tool-name { color:#fff; font-weight:800; font-size:16px; }
+.coursi-content .adv-tool-badges { display:flex; gap:6px; flex-wrap:wrap; }
+.coursi-content .badge { font-size:10.5px; font-weight:800; padding:3px 8px; border-radius:999px; letter-spacing:.3px; }
+.coursi-content .badge-easy { background:rgba(0,212,200,0.12); color:${CYAN}; border:1px solid rgba(0,212,200,0.35); }
+.coursi-content .badge-mid  { background:rgba(255,170,60,0.12); color:#FFB857; border:1px solid rgba(255,170,60,0.35); }
+.coursi-content .badge-hard { background:rgba(255,90,120,0.12); color:#FF7A93; border:1px solid rgba(255,90,120,0.35); }
+.coursi-content .badge-free    { background:rgba(123,53,255,0.12); color:#B591FF; border:1px solid rgba(123,53,255,0.35); }
+.coursi-content .badge-paid    { background:rgba(255,255,255,0.06); color:#CFC8DE; border:1px solid rgba(255,255,255,0.18); }
+.coursi-content .badge-partial { background:rgba(0,212,200,0.08); color:#7ee7df; border:1px solid rgba(0,212,200,0.25); }
+.coursi-content .adv-tool-desc { color:#B6AECC; font-size:13.5px; line-height:1.7; flex:1; }
+.coursi-content .adv-tool-btn { color:${CYAN}; font-size:12.5px; font-weight:800; text-decoration:none; border-top:1px solid ${BORDER}; padding-top:10px; margin-top:auto; }
+.coursi-content .adv-tool-btn:hover { color:${PURPLE}; }
+
+/* ===== Intermediate: comparison table ===== */
+.coursi-content .compare-wrap { margin:18px 0 24px; background:rgba(255,255,255,0.02); border:1px solid ${BORDER}; border-radius:14px; padding:16px 18px; }
+.coursi-content .compare-table { width:100%; border-collapse:collapse; margin-top:8px; font-size:13.5px; }
+.coursi-content .compare-table th { color:${CYAN}; font-weight:800; padding:10px 8px; text-align:right; border-bottom:1px solid rgba(0,212,200,0.25); }
+.coursi-content .compare-table td { color:#CFC8DE; padding:10px 8px; border-bottom:1px solid rgba(255,255,255,0.05); vertical-align:top; line-height:1.6; }
+.coursi-content .compare-table .cmp-label { color:#8C84A6; font-weight:700; width:30%; }
+
+/* ===== Intermediate: try-it checklist ===== */
+.coursi-content .try-box { background:linear-gradient(135deg, rgba(0,212,200,0.08), rgba(123,53,255,0.04)); border:1px solid rgba(0,212,200,0.22); border-radius:14px; padding:18px 20px; margin:22px 0; }
+.coursi-content .try-list { list-style:none; padding:0; margin:8px 0 0; }
+.coursi-content .try-item { display:flex; gap:12px; align-items:flex-start; padding:9px 0; cursor:pointer; user-select:none; transition:opacity .2s; }
+.coursi-content .try-check { flex-shrink:0; width:22px; height:22px; border-radius:6px; border:1.5px solid rgba(255,255,255,0.18); margin-top:2px; display:flex; align-items:center; justify-content:center; transition:all .2s; }
+.coursi-content .try-text { color:#CFC8DE; font-size:14.5px; line-height:1.75; }
+.coursi-content .try-item:hover .try-check { border-color:${CYAN}; }
+.coursi-content .try-item.done .try-check { background:linear-gradient(135deg,${CYAN},${PURPLE}); border-color:transparent; }
+.coursi-content .try-item.done .try-check::after { content:"✓"; color:#fff; font-size:13px; font-weight:800; }
+.coursi-content .try-item.done .try-text { color:#7A7390; text-decoration:line-through; }
+
+/* ===== Intermediate: automation flow diagram ===== */
+.coursi-content .flow-wrap { background:rgba(255,255,255,0.02); border:1px solid ${BORDER}; border-radius:16px; padding:18px 20px; margin:18px 0 24px; }
+.coursi-content .flow-caption { color:#9590A8; font-size:13px; margin:0 0 14px; line-height:1.7; }
+.coursi-content .flow-diagram { display:flex; align-items:stretch; gap:8px; flex-wrap:wrap; justify-content:center; }
+.coursi-content .flow-node { flex:1 1 180px; min-width:180px; background:linear-gradient(180deg, rgba(123,53,255,0.10), rgba(0,212,200,0.04)); border:1.5px solid rgba(123,53,255,0.28); border-radius:14px; padding:16px 14px; text-align:center; cursor:pointer; transition:all .25s; }
+.coursi-content .flow-node:hover, .coursi-content .flow-node.active { border-color:${CYAN}; transform:translateY(-3px); box-shadow:0 8px 28px rgba(0,212,200,0.18); }
+.coursi-content .flow-node .flow-ic { width:38px; height:38px; border-radius:50%; background:linear-gradient(135deg,${PURPLE},${CYAN}); color:#fff; font-size:18px; font-weight:800; display:flex; align-items:center; justify-content:center; margin:0 auto 10px; }
+.coursi-content .flow-node .flow-title-s { color:#fff; font-weight:800; font-size:14px; margin-bottom:4px; }
+.coursi-content .flow-node .flow-desc-s { color:#B6AECC; font-size:12.5px; line-height:1.55; }
+.coursi-content .flow-arrow { flex:0 0 28px; display:flex; align-items:center; justify-content:center; position:relative; }
+.coursi-content .flow-arrow::before { content:""; height:2px; width:100%; background:linear-gradient(90deg, transparent, ${PURPLE}, ${CYAN}, transparent); border-radius:2px; }
+.coursi-content .flow-arrow-dot { position:absolute; width:8px; height:8px; border-radius:50%; background:${CYAN}; box-shadow:0 0 12px ${CYAN}; animation:coursi-flow-dot 2.2s linear infinite; }
+@keyframes coursi-flow-dot { 0%{transform:translateX(-14px);opacity:0} 20%{opacity:1} 80%{opacity:1} 100%{transform:translateX(14px);opacity:0} }
+.coursi-content .flow-detail { margin-top:16px; background:rgba(0,212,200,0.06); border-right:3px solid ${CYAN}; border-radius:10px; padding:14px 16px; color:#CFC8DE; font-size:14px; line-height:1.8; min-height:48px; transition:all .25s; }
+@media (max-width: 720px) {
+  .coursi-content .flow-arrow { flex-basis:100%; height:24px; transform:rotate(90deg); }
+}
 `;
 
 function ContentTab({
@@ -567,6 +639,35 @@ function ContentTab({
   chapterHtml: string;
   onGoQuiz: () => void;
 }) {
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const flowDetails = [
+    "الحدث المحفّز: أي شيء يبدأ السلسلة — رسالة، نموذج مُعبّأ، صف جديد في جدول بيانات، أو موعد في الوقت. كلما كان التعريف أدق، كانت الأتمتة أكثر موثوقية.",
+    "الإجراء: ما يحدث استجابةً للحدث. يمكن أن يكون استدعاء نموذج ذكاء اصطناعي لصياغة رد، أو ترجمة، أو تصنيف، أو استخراج بيانات.",
+    "النتيجة: المخرَج النهائي القابل للقياس — رسالة مرسلة، صف مُضاف، إشعار صادر، تقرير محفوظ. هنا تُقاس قيمة الأتمتة الحقيقية.",
+  ];
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    const onClick = (e: Event) => {
+      const target = e.target as HTMLElement;
+      const item = target.closest<HTMLElement>(".try-item");
+      if (item) {
+        item.classList.toggle("done");
+        return;
+      }
+      const node = target.closest<HTMLElement>(".flow-node");
+      if (node) {
+        const idx = Number(node.dataset.flowNode ?? "0");
+        root.querySelectorAll(".flow-node").forEach((n) => n.classList.remove("active"));
+        node.classList.add("active");
+        const detail = root.querySelector<HTMLElement>("[data-flow-detail]");
+        if (detail) detail.textContent = flowDetails[idx] ?? "";
+      }
+    };
+    root.addEventListener("click", onClick);
+    return () => root.removeEventListener("click", onClick);
+  }, [chapterHtml]);
+
   return (
     <div style={{ padding: "28px 32px" }}>
       <style>{CONTENT_CSS}</style>
@@ -582,7 +683,7 @@ function ContentTab({
         <span>🎯 مهمة عملية</span>
       </div>
 
-      <div className="coursi-content" dir="rtl" dangerouslySetInnerHTML={{ __html: chapterHtml }} />
+      <div ref={rootRef} className="coursi-content" dir="rtl" dangerouslySetInnerHTML={{ __html: chapterHtml }} />
 
       <button
         onClick={onGoQuiz}
