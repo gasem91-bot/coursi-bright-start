@@ -219,11 +219,11 @@ function CourseAIPage() {
         >
           <img src={coursiLogo} alt="COURSI" style={{ height: 28, display: "block" }} />
         </button>
-        <div style={{ color: "#888", fontSize: 13 }}>{course.name}</div>
+        <div style={{ color: "#B8B0D0", fontSize: 13, fontWeight: 600 }}>{course.name}</div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ color: "#40C8C8", fontWeight: 700, fontSize: 13 }}>{toAr(pct)}%</div>
-          <div style={{ width: 80, height: 3, background: "#1E1E1E", borderRadius: 2, overflow: "hidden" }}>
-            <div style={{ width: `${pct}%`, height: "100%", background: "linear-gradient(90deg,#7B35C0,#40C8C8)" }} />
+          <div style={{ color: CYAN, fontWeight: 700, fontSize: 13 }}>{toAr(pct)}%</div>
+          <div style={{ width: 100, height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 4, overflow: "hidden" }}>
+            <div style={{ width: `${pct}%`, height: "100%", background: `linear-gradient(90deg,${PURPLE},${CYAN})`, transition: "width 600ms ease" }} />
           </div>
         </div>
       </div>
@@ -233,29 +233,29 @@ function CourseAIPage() {
         {/* Sidebar (right in RTL = first child) */}
         <aside
           style={{
-            width: 280,
+            width: 300,
             flexShrink: 0,
-            background: "#050505",
-            borderLeft: "1px solid #1E1E1E",
+            background: BG_SOFT,
+            borderLeft: `1px solid ${BORDER}`,
             overflowY: "auto",
           }}
         >
           <div
             style={{
-              padding: 16,
-              borderBottom: "1px solid #0a0a0a",
+              padding: "18px 18px 16px",
+              borderBottom: `1px solid ${BORDER}`,
               position: "sticky",
               top: 0,
-              background: "#050505",
+              background: BG_SOFT,
               zIndex: 1,
             }}
           >
-            <div style={{ color: "#fff", fontWeight: 700, fontSize: 13, marginBottom: 4 }}>{course.name}</div>
-            <div style={{ color: "#888", fontSize: 11, marginBottom: 10 }}>{course.meta}</div>
-            <div style={{ height: 3, background: "#1E1E1E", borderRadius: 2, overflow: "hidden", marginBottom: 6 }}>
-              <div style={{ width: `${pct}%`, height: "100%", background: "linear-gradient(90deg,#7B35C0,#40C8C8)" }} />
+            <div style={{ color: "#fff", fontWeight: 800, fontSize: 14, marginBottom: 4 }}>{course.name}</div>
+            <div style={{ color: "#888", fontSize: 11, marginBottom: 12 }}>{course.meta}</div>
+            <div style={{ height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 4, overflow: "hidden", marginBottom: 6 }}>
+              <div style={{ width: `${pct}%`, height: "100%", background: `linear-gradient(90deg,${PURPLE},${CYAN})`, transition: "width 600ms ease" }} />
             </div>
-            <div style={{ color: "#40C8C8", fontSize: 10, fontWeight: 700 }}>
+            <div style={{ color: CYAN, fontSize: 10, fontWeight: 700 }}>
               {toAr(completedCount)} / {toAr(total)} مكتمل · {toAr(pct)}%
             </div>
           </div>
@@ -263,6 +263,7 @@ function CourseAIPage() {
           {course.chapters.map((ch, i) => {
             const isActive = i === activeChapter;
             const isDone = completedIds.has(chapterId(level, i));
+            const status: "done" | "current" | "upcoming" = isDone ? "done" : isActive ? "current" : "upcoming";
             return (
               <div
                 key={i}
@@ -272,55 +273,73 @@ function CourseAIPage() {
                   display: "flex",
                   alignItems: "center",
                   gap: 10,
-                  borderBottom: "1px solid #0a0a0a",
+                  borderBottom: `1px solid ${BORDER}`,
                   cursor: "pointer",
-                  background: isActive ? "rgba(123,53,192,0.08)" : "transparent",
-                  borderRight: isActive ? "2px solid #7B35C0" : "2px solid transparent",
+                  background: isActive ? "rgba(123,53,255,0.10)" : "transparent",
+                  borderRight: isActive ? `2px solid ${PURPLE}` : "2px solid transparent",
                   transition: "background 0.15s",
                 }}
                 onMouseEnter={(e) => {
-                  if (!isActive) (e.currentTarget as HTMLDivElement).style.background = "#0a0a0a";
+                  if (!isActive) (e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.03)";
                 }}
                 onMouseLeave={(e) => {
                   if (!isActive) (e.currentTarget as HTMLDivElement).style.background = "transparent";
                 }}
               >
-                <div style={{ width: 28, color: "#555", fontSize: 10, fontWeight: 700 }}>{pad2(i + 1)}</div>
+                <div style={{ width: 26, color: isDone ? CYAN : isActive ? "#fff" : "#555", fontSize: 11, fontWeight: 800 }}>{pad2(i + 1)}</div>
                 <div
                   style={{
                     flex: 1,
-                    fontSize: 12,
-                    lineHeight: 1.4,
-                    color: isDone ? "#444" : isActive ? "#bbb" : "#888",
+                    fontSize: 12.5,
+                    lineHeight: 1.5,
+                    color: isDone ? "#666" : isActive ? "#fff" : "#9590A8",
+                    fontWeight: isActive ? 700 : 500,
                   }}
                 >
                   {ch.title}
                 </div>
-                <div
-                  style={{
-                    width: 10,
-                    height: 10,
-                    borderRadius: "50%",
-                    border: isDone ? "none" : "1.5px solid #1E1E1E",
-                    background: isDone ? "linear-gradient(135deg,#7B35C0,#40C8C8)" : "transparent",
-                    flexShrink: 0,
-                  }}
-                />
+                {status === "done" ? (
+                  <div
+                    style={{
+                      width: 18, height: 18, borderRadius: "50%",
+                      background: `linear-gradient(135deg,${PURPLE},${CYAN})`,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      color: "#fff", fontSize: 11, fontWeight: 800, flexShrink: 0,
+                    }}
+                  >
+                    ✓
+                  </div>
+                ) : status === "current" ? (
+                  <div
+                    style={{
+                      width: 14, height: 14, borderRadius: "50%",
+                      background: CYAN, flexShrink: 0,
+                      animation: "coursi-pulse-dot 1.6s ease-out infinite",
+                    }}
+                  />
+                ) : (
+                  <div
+                    style={{
+                      width: 14, height: 14, borderRadius: "50%",
+                      border: "1.5px solid rgba(255,255,255,0.15)", flexShrink: 0,
+                    }}
+                  />
+                )}
               </div>
             );
           })}
         </aside>
 
         {/* Content */}
-        <main ref={contentScrollRef} style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", minWidth: 0 }}>
+        <main ref={contentScrollRef} style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", minWidth: 0, background: BG }}>
           {/* Tabs */}
           <div
             style={{
               padding: "16px 24px 0",
               display: "flex",
               gap: 8,
-              borderBottom: "1px solid #1E1E1E",
-              background: "#000",
+              borderBottom: `1px solid ${BORDER}`,
+              background: BG,
               position: "sticky",
               top: 0,
               zIndex: 10,
