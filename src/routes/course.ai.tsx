@@ -171,7 +171,7 @@ function CourseAIPage() {
       <div
         style={{
           minHeight: "100vh",
-          background: "#000",
+          background: BG,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -184,25 +184,25 @@ function CourseAIPage() {
             width: 56,
             height: 56,
             borderRadius: "50%",
-            border: "3px solid #1E1E1E",
-            borderTopColor: "#7B35C0",
-            borderRightColor: "#40C8C8",
-            animation: "spin 1s linear infinite",
+            border: "3px solid rgba(255,255,255,0.08)",
+            borderTopColor: PURPLE,
+            borderRightColor: CYAN,
+            animation: "coursi-spin 1s linear infinite",
           }}
         />
         <div style={{ marginTop: 18, color: "#888", fontSize: 14 }}>جاري تحميل الكورس...</div>
-        <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
       </div>
     );
   }
 
   return (
-    <div style={{ background: "#000", color: "#fff", height: "100vh", display: "flex", flexDirection: "column", fontFamily: font, overflow: "hidden" }}>
+    <div style={{ background: BG, color: "#fff", height: "100vh", display: "flex", flexDirection: "column", fontFamily: font, overflow: "hidden" }}>
       {/* Top bar */}
       <div
         style={{
-          background: "#000",
-          borderBottom: "1px solid #1E1E1E",
+          background: "rgba(6,4,16,0.85)",
+          backdropFilter: "blur(10px)",
+          borderBottom: `1px solid ${BORDER}`,
           padding: "12px 24px",
           display: "flex",
           alignItems: "center",
