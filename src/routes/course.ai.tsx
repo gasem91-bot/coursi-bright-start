@@ -743,9 +743,49 @@ function ContentTab({
     "الإجراء: ما يحدث استجابةً للحدث. يمكن أن يكون استدعاء نموذج ذكاء اصطناعي لصياغة رد، أو ترجمة، أو تصنيف، أو استخراج بيانات.",
     "النتيجة: المخرَج النهائي القابل للقياس — رسالة مرسلة، صف مُضاف، إشعار صادر، تقرير محفوظ. هنا تُقاس قيمة الأتمتة الحقيقية.",
   ];
+  const archDetails = [
+    "واجهة المستخدم: نقطة الالتقاء مع المستخدم — تطبيق ويب، روبوت محادثة، إضافة متصفّح. تصمَّم لتكون بسيطة تخفي التعقيد الخلفي.",
+    "طبقة المنطق: العقل المنظِّم — تستقبل الطلب، تقرر أيّ نموذج تستدعي، تطبّق قواعد العمل، وتُعيد النتيجة. هنا يعيش منتجك الحقيقي.",
+    "النموذج اللغوي: المحرك الذكي — يفهم ويولّد ويستنتج. تختار بين GPT أو Claude أو Gemini حسب طبيعة المهمة والتكلفة.",
+    "قاعدة المعرفة (RAG): مكتبتك الخاصة المتاحة للنموذج. ملفات، مستندات، تاريخ. يبحث فيها قبل الإجابة لضمان الدقة.",
+    "الذاكرة الدائمة: قاعدة بيانات تحفظ المحادثات والإعدادات لكل مستخدم — تمنح المنتج استمرارية حقيقية بين الجلسات.",
+    "أدوات وAPIs: امتدادات تنفّذ إجراءات في العالم — إرسال بريد، حجز موعد، إنشاء صورة، البحث الحي.",
+  ];
+  const formatMoney = (n: number) => `$${n.toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
+  const recompute = (root: HTMLElement) => {
+    const get = (k: string) =>
+      Number((root.querySelector<HTMLInputElement>(`[data-calc="${k}"]`)?.value) ?? 0) || 0;
+    const price = get("price");
+    const customers = get("customers");
+    const cost = get("cost");
+    const aicost = get("aicost");
+    const revenue = price * customers;
+    const profit = revenue - cost - aicost * customers;
+    const margin = price - aicost;
+    const breakeven = margin > 0 ? Math.ceil(cost / margin) : 0;
+    const annual = profit * 12;
+    const set = (k: string, v: string) => {
+      const el = root.querySelector<HTMLElement>(`[data-calc-out="${k}"]`);
+      if (el) el.textContent = v;
+    };
+    set("revenue", formatMoney(revenue));
+    set("profit", formatMoney(profit));
+    set("breakeven", breakeven ? String(breakeven) : "—");
+    set("annual", formatMoney(annual));
+  };
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
+    // Initial compute
+    if (root.querySelector("[data-calc]")) recompute(root);
+    // Restore biz plan from localStorage
+    root.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>("[data-biz]").forEach((el) => {
+      const key = el.dataset.biz;
+      if (!key) return;
+      const stored = localStorage.getItem(`coursi-biz-${key}`);
+      if (stored !== null) el.value = stored;
+    });
+
     const onClick = (e: Event) => {
       const target = e.target as HTMLElement;
       const item = target.closest<HTMLElement>(".try-item");
@@ -753,18 +793,80 @@ function ContentTab({
         item.classList.toggle("done");
         return;
       }
-      const node = target.closest<HTMLElement>(".flow-node");
-      if (node) {
-        const idx = Number(node.dataset.flowNode ?? "0");
+      const flow = target.closest<HTMLElement>(".flow-node");
+      if (flow) {
+        const idx = Number(flow.dataset.flowNode ?? "0");
         root.querySelectorAll(".flow-node").forEach((n) => n.classList.remove("active"));
-        node.classList.add("active");
+        flow.classList.add("active");
         const detail = root.querySelector<HTMLElement>("[data-flow-detail]");
         if (detail) detail.textContent = flowDetails[idx] ?? "";
+        return;
+      }
+      const arch = target.closest<HTMLElement>(".arch-node");
+      if (arch) {
+        const idx = Number(arch.dataset.archNode ?? "0");
+        root.querySelectorAll(".arch-node").forEach((n) => n.classList.remove("active"));
+        arch.classList.add("active");
+        const detail = root.querySelector<HTMLElement>("[data-arch-detail]");
+        if (detail) detail.textContent = archDetails[idx] ?? "";
+        return;
+      }
+      if (target.closest("[data-biz-clear]")) {
+        root.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>("[data-biz]").forEach((el) => {
+          el.value = "";
+          if (el.dataset.biz) localStorage.removeItem(`coursi-biz-${el.dataset.biz}`);
+        });
+        return;
+      }
+      if (target.closest("[data-biz-export]")) {
+        const fields: Record<string, string> = {};
+        root.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>("[data-biz]").forEach((el) => {
+          if (el.dataset.biz) fields[el.dataset.biz] = el.value;
+        });
+        const labels: Record<string, string> = {
+          name: "اسم المنتج", problem: "المشكلة", solution: "الحل", audience: "الجمهور المستهدف",
+          mvp: "أصغر نسخة قابلة للإطلاق", pricing: "نموذج التسعير", channels: "قنوات التسويق", kpi: "مؤشر النجاح الأول",
+        };
+        const html = `<!doctype html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>خطة العمل — ${fields.name || "منتج جديد"}</title><style>body{font-family:Cairo,Tahoma,sans-serif;background:#fff;color:#111;padding:48px;max-width:780px;margin:auto;line-height:1.8}h1{color:#7B35FF;border-bottom:3px solid #D4AF37;padding-bottom:12px}h2{color:#D4AF37;margin-top:28px;font-size:18px}p{white-space:pre-wrap;background:#fafafa;padding:12px 16px;border-right:3px solid #00D4C8;border-radius:8px}@media print{body{padding:24px}}</style></head><body><h1>خطة العمل — ${fields.name || "بدون اسم"}</h1>${Object.entries(labels).map(([k, label]) => `<h2>${label}</h2><p>${(fields[k] || "—").replace(/</g, "&lt;")}</p>`).join("")}<p style="margin-top:40px;text-align:center;color:#888;border:none;background:none">— كورسي · COURSI —</p></body></html>`;
+        const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `business-plan-${(fields.name || "coursi").replace(/\s+/g, "-")}.html`;
+        a.click();
+        URL.revokeObjectURL(url);
+        return;
       }
     };
+
+    const onInput = (e: Event) => {
+      const target = e.target as HTMLElement;
+      if (target.matches("[data-calc]")) {
+        recompute(root);
+        return;
+      }
+      if (target.matches("[data-biz]")) {
+        const el = target as HTMLInputElement | HTMLTextAreaElement;
+        const key = el.dataset.biz;
+        if (key) {
+          localStorage.setItem(`coursi-biz-${key}`, el.value);
+          const saved = root.querySelector<HTMLElement>("[data-biz-saved]");
+          if (saved) {
+            saved.classList.add("show");
+            window.setTimeout(() => saved.classList.remove("show"), 1200);
+          }
+        }
+      }
+    };
+
     root.addEventListener("click", onClick);
-    return () => root.removeEventListener("click", onClick);
+    root.addEventListener("input", onInput);
+    return () => {
+      root.removeEventListener("click", onClick);
+      root.removeEventListener("input", onInput);
+    };
   }, [chapterHtml]);
+
 
   return (
     <div style={{ padding: "28px 32px" }}>
