@@ -249,7 +249,26 @@ function CourseAIPage() {
               المستوى المتوسط
             </span>
           )}
-        </div>
+          {level === "advanced" && (
+            <span
+              className="adv-shine-badge"
+              style={{
+                background: `linear-gradient(135deg, rgba(212,175,55,0.20), rgba(123,53,255,0.18))`,
+                border: `1px solid ${GOLD}`,
+                color: GOLD,
+                fontSize: 11,
+                fontWeight: 800,
+                padding: "4px 10px",
+                borderRadius: 999,
+                letterSpacing: 0.4,
+                position: "relative",
+                overflow: "hidden",
+              }}
+            >
+              المستوى المتقدم
+            </span>
+          )}
+
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{ color: CYAN, fontWeight: 700, fontSize: 13 }}>{toAr(pct)}%</div>
           <div style={{ width: 100, height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 4, overflow: "hidden" }}>
