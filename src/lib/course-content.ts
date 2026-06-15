@@ -3,6 +3,7 @@
 // Intermediate & Advanced remain inline below.
 
 import { BEGINNER_CHAPTERS } from "./course-beginner";
+import { INTERMEDIATE_CHAPTERS } from "./course-intermediate";
 export type { QuizQuestion } from "./course-content-types";
 
 export const COURSE_CONTENT = {
