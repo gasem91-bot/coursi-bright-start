@@ -639,6 +639,35 @@ function ContentTab({
   chapterHtml: string;
   onGoQuiz: () => void;
 }) {
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const flowDetails = [
+    "الحدث المحفّز: أي شيء يبدأ السلسلة — رسالة، نموذج مُعبّأ، صف جديد في جدول بيانات، أو موعد في الوقت. كلما كان التعريف أدق، كانت الأتمتة أكثر موثوقية.",
+    "الإجراء: ما يحدث استجابةً للحدث. يمكن أن يكون استدعاء نموذج ذكاء اصطناعي لصياغة رد، أو ترجمة، أو تصنيف، أو استخراج بيانات.",
+    "النتيجة: المخرَج النهائي القابل للقياس — رسالة مرسلة، صف مُضاف، إشعار صادر، تقرير محفوظ. هنا تُقاس قيمة الأتمتة الحقيقية.",
+  ];
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    const onClick = (e: Event) => {
+      const target = e.target as HTMLElement;
+      const item = target.closest<HTMLElement>(".try-item");
+      if (item) {
+        item.classList.toggle("done");
+        return;
+      }
+      const node = target.closest<HTMLElement>(".flow-node");
+      if (node) {
+        const idx = Number(node.dataset.flowNode ?? "0");
+        root.querySelectorAll(".flow-node").forEach((n) => n.classList.remove("active"));
+        node.classList.add("active");
+        const detail = root.querySelector<HTMLElement>("[data-flow-detail]");
+        if (detail) detail.textContent = flowDetails[idx] ?? "";
+      }
+    };
+    root.addEventListener("click", onClick);
+    return () => root.removeEventListener("click", onClick);
+  }, [chapterHtml]);
+
   return (
     <div style={{ padding: "28px 32px" }}>
       <style>{CONTENT_CSS}</style>
