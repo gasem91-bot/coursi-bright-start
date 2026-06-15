@@ -754,6 +754,8 @@ function QuizTab({
   score,
   isLast,
   courseName,
+  level,
+  userName,
   onAnswer,
   onNextChapter,
 }: {
@@ -766,9 +768,12 @@ function QuizTab({
   score: number;
   isLast: boolean;
   courseName: string;
+  level: Level;
+  userName: string;
   onAnswer: (i: number) => void;
   onNextChapter: () => void;
 }) {
+
   if (quizComplete) {
     return (
       <div style={{ padding: "28px 32px" }}>
