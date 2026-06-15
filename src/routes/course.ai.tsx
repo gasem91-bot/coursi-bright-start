@@ -268,6 +268,8 @@ function CourseAIPage() {
               المستوى المتقدم
             </span>
           )}
+        </div>
+
 
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{ color: CYAN, fontWeight: 700, fontSize: 13 }}>{toAr(pct)}%</div>
