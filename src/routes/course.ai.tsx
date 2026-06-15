@@ -802,51 +802,56 @@ function QuizTab({
         </div>
 
         {isLast ? (
-          <div
-            style={{
-              margin: 24,
-              background: "linear-gradient(135deg, rgba(123,53,255,0.08), rgba(0,212,200,0.04))",
-              border: "1px solid rgba(123,53,255,0.2)",
-              borderRadius: 20,
-              padding: "48px 36px",
-              textAlign: "center",
-            }}
-          >
-            <div style={{ fontSize: 64, marginBottom: 16 }}>🏆</div>
-            <div style={{ color: "#fff", fontWeight: 700, fontSize: 28, marginBottom: 12 }}>
-              مبروك! أتممت الكورس بنجاح
-            </div>
+          level === "advanced" ? (
+            <GraduationCertificate userName={userName} courseName={courseName} />
+          ) : (
             <div
               style={{
-                color: "#AAA",
-                fontSize: 15,
-                lineHeight: 1.8,
-                maxWidth: 440,
-                margin: "0 auto 28px",
+                margin: 24,
+                background: "linear-gradient(135deg, rgba(123,53,255,0.08), rgba(0,212,200,0.04))",
+                border: "1px solid rgba(123,53,255,0.2)",
+                borderRadius: 20,
+                padding: "48px 36px",
+                textAlign: "center",
               }}
             >
-              لقد أكملت {courseName}. أنت الآن جاهز للمستوى التالي.
+              <div style={{ fontSize: 64, marginBottom: 16 }}>🏆</div>
+              <div style={{ color: "#fff", fontWeight: 700, fontSize: 28, marginBottom: 12 }}>
+                مبروك! أتممت الكورس بنجاح
+              </div>
+              <div
+                style={{
+                  color: "#AAA",
+                  fontSize: 15,
+                  lineHeight: 1.8,
+                  maxWidth: 440,
+                  margin: "0 auto 28px",
+                }}
+              >
+                لقد أكملت {courseName}. أنت الآن جاهز للمستوى التالي.
+              </div>
+              <button
+                onClick={() => {
+                  window.location.href = "https://coursi.ai/ai/payment";
+                }}
+                style={{
+                  background: "linear-gradient(135deg,#7B35FF,#00D4C8)",
+                  color: "#fff",
+                  fontSize: 15,
+                  fontWeight: 700,
+                  padding: "14px 32px",
+                  borderRadius: 50,
+                  border: "none",
+                  cursor: "pointer",
+                  fontFamily: font,
+                  boxShadow: "0 0 24px rgba(123,53,255,0.3)",
+                }}
+              >
+                🚀 انتقل للمستوى التالي
+              </button>
             </div>
-            <button
-              onClick={() => {
-                window.location.href = "https://coursi.ai/ai/payment";
-              }}
-              style={{
-                background: "linear-gradient(135deg,#7B35FF,#00D4C8)",
-                color: "#fff",
-                fontSize: 15,
-                fontWeight: 700,
-                padding: "14px 32px",
-                borderRadius: 50,
-                border: "none",
-                cursor: "pointer",
-                fontFamily: font,
-                boxShadow: "0 0 24px rgba(123,53,255,0.3)",
-              }}
-            >
-              🚀 انتقل للمستوى التالي
-            </button>
-          </div>
+          )
+
         ) : (
           <button
             onClick={onNextChapter}
