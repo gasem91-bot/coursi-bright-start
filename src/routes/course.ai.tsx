@@ -17,7 +17,9 @@ const BG = "#060410";
 const BG_SOFT = "#0B0820";
 const PURPLE = "#7B35FF";
 const CYAN = "#00D4C8";
+const GOLD = "#D4AF37";
 const BORDER = "rgba(255,255,255,0.08)";
+
 
 const COURSE = COURSE_CONTENT;
 
