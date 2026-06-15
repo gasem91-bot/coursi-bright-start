@@ -683,7 +683,7 @@ function ContentTab({
         <span>🎯 مهمة عملية</span>
       </div>
 
-      <div className="coursi-content" dir="rtl" dangerouslySetInnerHTML={{ __html: chapterHtml }} />
+      <div ref={rootRef} className="coursi-content" dir="rtl" dangerouslySetInnerHTML={{ __html: chapterHtml }} />
 
       <button
         onClick={onGoQuiz}
