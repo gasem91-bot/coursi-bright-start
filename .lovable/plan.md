@@ -1,61 +1,75 @@
-## خطة بناء كورس الذكاء الاصطناعي — المستوى المبتدئ
+# COURSI Portal — Theme System + Mobile Overhaul
 
-### الملفات الجديدة والمعدّلة
+Two-part change, fully additive. No desktop regressions.
 
-1. **`src/lib/course-content-beginner.ts`** (جديد)
-   - بناء `BEGINNER_COURSE` يحتوي ١٢ فصلاً، مأخوذة حرفياً من `COURSI_FULL_AI_COURSE.md` (الأسطر ٢٤–٧٣٦).
-   - كل فصل: `id`, `title`, `intro` (مقدمة الفصل)، `learn` (مصفوفة "ما ستتعلمه")، `content` (HTML للمحتوى التفصيلي)، `tools` (مصفوفة بطاقات الأدوات للفصول التي تذكر أدوات: ٢،٣،٥،٦،٧،٩،١٠)، `exercise` (التمرين العملي)، `quiz` (٥ أسئلة باختيارات أ/ب/ج/د والإجابة الصحيحة + تغذية راجعة).
-   - تصدير `QuizQuestion` و `Chapter` و `BEGINNER_COURSE`.
+## Part 1 — Day/Night Theme
 
-2. **`src/lib/course-content.ts`** (تعديل)
-   - استبدال `beginner` بالكورس الجديد من الملف أعلاه (إعادة تصدير).
-   - الإبقاء على `intermediate` كما هو حتى يصل التحديث.
-   - الحفاظ على نوع `QuizQuestion`.
-   - تحديث `meta` إلى `"١٢ فصلاً · ٨ أسابيع"` و `name` إلى `"أساسيات الذكاء الاصطناعي — من الصفر"`.
+**Theme tokens (`src/styles.css`)**
+Add `.theme-dark` and `.theme-light` CSS variable blocks per spec:
+`--bg-primary`, `--bg-secondary`, `--bg-card`, `--border`,
+`--text-primary`, `--text-secondary`, `--text-muted`.
+Brand purple `#7B35FF` and cyan `#00D4C8` stay constant.
+Keep existing `--coursi-*` vars as aliases so nothing breaks mid-refactor.
 
-3. **`src/styles.css`** (تعديل بسيط)
-   - استيراد خط Cairo من Google Fonts عبر `<link>` في `__root.tsx` بدل `@import` (التزاماً بقاعدة Tailwind).
-   - إضافة `--coursi-bg: #060410`, `--coursi-purple: #7B35FF`, `--coursi-cyan: #00D4C8` كمتغيرات.
-   - keyframes مخصصة: `coursi-fade-up`, `coursi-shake`, `coursi-star-pop`, `coursi-count`, `coursi-confetti`.
+**Provider (`src/lib/theme.tsx`)**
+`ThemeProvider` with `useState` initialized from `localStorage.cours_theme`
+(default `dark`), `toggleTheme`, writes `data-theme` + class on
+`document.documentElement` so SSR markup is consistent. Exposes
+`useTheme()` hook.
 
-4. **`src/routes/__root.tsx`** (تعديل خفيف)
-   - إضافة روابط Google Fonts لخط Cairo في `head().links`.
+**Wire-up**
+Wrap `<Outlet />` in `src/routes/__root.tsx` with `ThemeProvider`.
+Add a sun/moon toggle button into:
+- `course.ai.tsx` top bar
+- `dashboard.tsx` header
+- `login.tsx` (top-right corner)
 
-5. **`src/routes/course.ai.tsx`** (إعادة بناء جزئية — فقط طبقة العرض، لا منطق Supabase)
-   - تطبيق لوحة الألوان الجديدة (`#060410` بدل `#000`).
-   - الخط: Cairo.
-   - **الشريط الجانبي** على اليمين (RTL — أول طفل): يعرض ١٢ فصلاً مع أيقونة حالة:
-     - مكتمل: ✓ خضراء في دائرة متدرجة بنفسجي/سيان.
-     - جارٍ: دائرة نابضة سيان.
-     - قادم: دائرة فارغة رمادية.
-   - **محتوى الفصل**:
-     - عنوان كبير بخط Cairo Bold (٣٢px).
-     - صندوق "ما ستتعلمه" بخلفية بنفسجية شفافة، نقاط مع أيقونات ✦.
-     - HTML المحتوى التفصيلي ضمن `prose`-like styling.
-     - بطاقات الأدوات (للفصول التي تحويها): شبكة بطاقات تحوي الاسم، الوصف، رابط، وزر "جرّبها" يفتح الرابط.
-     - صندوق التمرين العملي بخلفية سيان شفافة وحدود متدرجة.
-     - الاختبار: تبويب منفصل، ٥ أسئلة، خيار صحيح يعرض نجمة خضراء متحركة `coursi-star-pop`، خطأ يعرض اهتزاز `coursi-shake` + إبراز الصحيح.
-   - **الرسوم المتحركة**:
-     - دخول كل فصل: `coursi-fade-up` 400ms.
-     - شريط التقدم العلوي ينمو بسلاسة عند إكمال فصل.
-     - عداد متحرك للأرقام (نسبة الإكمال) عبر `requestAnimationFrame`.
-   - **شاشة إكمال الفصل** (تظهر بعد إنهاء الاختبار):
-     - تأثير الكونفيتي/نجوم.
-     - ملخص "أنجزت اليوم: …" يضم ٣ نقاط (مأخوذة من `learn`).
-     - زر "الفصل التالي →" متدرج بنفسجي → سيان.
+**Color migration**
+The hardcoded `BG`, `BG_SOFT`, `BORDER`, white text in
+`course.ai.tsx`, `dashboard.tsx`, `login.tsx` are converted to the new
+CSS variables (via `var(--bg-primary)` etc. in inline styles). Brand
+purple/cyan/gold stay literal. Cards, borders, panel backgrounds, and
+body text all switch with the theme.
 
-### نقاط تقنية مهمة
+## Part 2 — Mobile Overhaul (course portal)
 
-- HTML للمحتوى التفصيلي سيُصاغ مرة واحدة في ملف البيانات (`<h3>`, `<p>`, `<strong>`, `<div class="info-box">`, `<div class="tools-grid">`).
-- الأرقام داخل المحتوى ستبقى عربية كلامياً كما في الملف الأصلي؛ النسب والعدادات في الواجهة بأرقام عربية (`٠–٩`) عبر `toAr`.
-- لن نمسّ منطق Supabase (تخزين التقدم، جلب المستوى، الاشتراك) — فقط طبقة العرض والمحتوى.
-- لن نلمس `/login` ولا `/dashboard`.
+Current problems: `course.ai.tsx` is locked to `100vh` + `overflow:hidden`
+with a fixed 300px sidebar — unusable under ~900px.
 
-### حجم العمل
+**Layout**
+- Drop `100vh`/`overflow:hidden` below `900px`; page scrolls vertically.
+- Sidebar becomes a slide-in drawer (right side, RTL) toggled by a
+  hamburger button in the top bar. Backdrop closes it. Selecting a
+  chapter auto-closes.
+- Top bar: collapses to two rows on mobile (logo + actions row, then
+  level/progress row). Badges and progress shrink; long names truncate.
+- Content column: full width on mobile, generous padding, font sizes
+  step down at `<640px`.
 
-ملف `course-content-beginner.ts` سيكون نحو ١٥٠٠ سطر (المحتوى وحده). `course.ai.tsx` سيُعدّل بحدود ٣٠٠ سطر إجمالاً (إضافات + استبدالات).
+**Interactive widgets**
+- Architecture diagram, automation flow, ROI calculator grid, comparison
+  tables: wrap in `overflow-x-auto` containers with a min-width so they
+  scroll horizontally cleanly instead of breaking the page.
+- Quiz answer buttons, chat panel, CTAs: stack vertically and stretch to
+  full width on mobile.
 
-### خارج النطاق (لاحقاً)
+**Dashboard + Login**
+Light pass: ensure padding/typography scale on small screens, theme
+toggle visible, no horizontal overflow.
 
-- المستوى المتوسط والمتقدم: سيُحدَّثان عندما تصلني الموجّهات الخاصة بهما.
-- شاشة الشهادة النهائية: تبقى كما هي لأن المهمة الحالية تركّز على بناء الفصول.
+## Technical Notes
+
+- Implementation uses a small `useIsMobile()` hook (already present at
+  `src/hooks/use-mobile.tsx`) for sidebar drawer behavior.
+- Inline styles remain (matching existing code style); colors are
+  swapped to `var(--…)` strings so theme switching is reactive without a
+  re-render.
+- No business logic, data fetching, routing, or Supabase code changes.
+- No new dependencies.
+
+## Out of Scope
+
+- Refactoring `course.ai.tsx` into smaller components (would be a
+  separate cleanup pass).
+- Auto theme based on system `prefers-color-scheme` (can be added later;
+  spec says explicit toggle with localStorage).
