@@ -33,19 +33,35 @@ html.theme-dark, .theme-dark {
   --card-glass: rgba(13,13,13,0.55);
   --card-glass-border: rgba(255,255,255,0.08);
   --shader-opacity: 1;
+
+  --journey-current-bg: rgba(123,53,192,0.06);
+  --journey-current-border: rgba(123,53,192,0.3);
+  --journey-completed-bg: rgba(61,214,160,0.04);
+  --journey-completed-border: rgba(61,214,160,0.2);
+  --journey-future-bg: transparent;
+  --journey-future-border: var(--border);
+  --journey-future-opacity: 0.4;
 }
 
 html.theme-light, .theme-light {
-  --bg-primary: #EFEDF5;
-  --bg-secondary: #F7F5FB;
-  --bg-card: #FFFFFF;
-  --border: #D8D5E0;
+  --bg-primary: #E4E0EC;
+  --bg-secondary: #EEEBF5;
+  --bg-card: #F2EFF7;
+  --border: rgba(130, 125, 150, 0.28);
   --text-primary: #15121F;
   --text-secondary: #4A4660;
   --text-muted: #8A8699;
-  --card-glass: rgba(255,255,255,0.78);
-  --card-glass-border: rgba(123,53,192,0.14);
+  --card-glass: rgba(230, 226, 242, 0.60);
+  --card-glass-border: rgba(110, 100, 140, 0.20);
   --shader-opacity: 0.4;
+
+  --journey-current-bg: rgba(123, 53, 192, 0.08);
+  --journey-current-border: rgba(123, 53, 192, 0.22);
+  --journey-completed-bg: rgba(61, 214, 160, 0.08);
+  --journey-completed-border: rgba(61, 214, 160, 0.22);
+  --journey-future-bg: rgba(185, 180, 205, 0.35);
+  --journey-future-border: rgba(140, 135, 160, 0.35);
+  --journey-future-opacity: 0.85;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -195,8 +211,8 @@ html, body {
   }
 
   .theme-light .floating-nav {
-    background: rgba(255,255,255,0.82);
-    border: 1px solid rgba(0,0,0,0.08);
+    background: rgba(230, 226, 242, 0.80);
+    border: 1px solid rgba(110, 100, 140, 0.18);
     box-shadow: 0 8px 32px rgba(0,0,0,0.12);
   }
 
