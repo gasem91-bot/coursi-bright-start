@@ -240,3 +240,10 @@ function DashboardPage() {
     </div>
   );
 }
+
+function DashboardShader() {
+  const { theme } = useTheme();
+  if (theme === "light") return null;
+  return <ShaderBackground />;
+}
+
