@@ -7,21 +7,19 @@ const vsSource = `
   }
 `;
 
-const fsSource = `
+const makeFsSource = (
+  lineColor: [number, number, number, number],
+  bg1: [number, number, number, number],
+  bg2: [number, number, number, number]
+) => `
   precision highp float;
   uniform vec2 iResolution;
   uniform float iTime;
 
   const float overallSpeed = 0.2;
   const float gridSmoothWidth = 0.015;
-  const float axisWidth = 0.05;
-  const float majorLineWidth = 0.025;
-  const float minorLineWidth = 0.0125;
-  const float majorLineFrequency = 5.0;
-  const float minorLineFrequency = 1.0;
-  const vec4 gridColor = vec4(0.5);
   const float scale = 5.0;
-  const vec4 lineColor = vec4(0.4, 0.2, 0.8, 1.0);
+  const vec4 lineColor = vec4(${lineColor[0]}, ${lineColor[1]}, ${lineColor[2]}, ${lineColor[3]});
   const float minLineWidth = 0.01;
   const float maxLineWidth = 0.2;
   const float lineSpeed = 1.0 * overallSpeed;
@@ -39,7 +37,6 @@ const fsSource = `
   #define drawCircle(pos, radius, coord) smoothstep(radius + gridSmoothWidth, radius, length(coord - (pos)))
   #define drawSmoothLine(pos, halfWidth, t) smoothstep(halfWidth, 0.0, abs(pos - (t)))
   #define drawCrispLine(pos, halfWidth, t) smoothstep(halfWidth + gridSmoothWidth, halfWidth, abs(pos - (t)))
-  #define drawPeriodicLine(freq, width, t) drawCrispLine(freq / 2.0, width, abs(mod(t, freq) - (freq) / 2.0))
 
   float random(float t) {
     return (cos(t) + cos(t * 1.3 + 1.3) + cos(t * 1.4 + 1.4)) / 3.0;
@@ -62,8 +59,8 @@ const fsSource = `
     space.x += random(space.y * warpFrequency + iTime * warpSpeed + 2.0) * warpAmplitude * horizontalFade;
 
     vec4 lines = vec4(0.0);
-    vec4 bgColor1 = vec4(0.1, 0.1, 0.3, 1.0);
-    vec4 bgColor2 = vec4(0.3, 0.1, 0.5, 1.0);
+    vec4 bgColor1 = vec4(${bg1[0]}, ${bg1[1]}, ${bg1[2]}, ${bg1[3]});
+    vec4 bgColor2 = vec4(${bg2[0]}, ${bg2[1]}, ${bg2[2]}, ${bg2[3]});
 
     for(int l = 0; l < linesPerGroup; l++) {
       float normalizedLineIndex = float(l) / float(linesPerGroup);
@@ -91,6 +88,19 @@ const fsSource = `
     gl_FragColor = fragColor;
   }
 `;
+
+const fsSourceDark = makeFsSource(
+  [0.4, 0.2, 0.8, 1.0],
+  [0.1, 0.1, 0.3, 1.0],
+  [0.3, 0.1, 0.5, 1.0]
+);
+
+// Light mode: brand teal lines on a soft lavender wash
+const fsSourceLight = makeFsSource(
+  [0.25, 0.78, 0.78, 1.0],
+  [0.93, 0.93, 0.96, 1.0],
+  [0.88, 0.83, 0.93, 1.0]
+);
 
 const loadShader = (gl: WebGLRenderingContext, type: number, source: string) => {
   const shader = gl.createShader(type);
