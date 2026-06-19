@@ -210,10 +210,10 @@ function DashboardPage() {
                 const isCurrent = i === currentIdx;
                 const isCompleted = i < currentIdx;
                 const boxStyle: React.CSSProperties = isCurrent
-                  ? { border: "1px solid rgba(123,53,192,0.3)", background: "rgba(123,53,192,0.06)" }
+                  ? { border: "1px solid var(--journey-current-border)", background: "var(--journey-current-bg)" }
                   : isCompleted
-                  ? { border: "1px solid rgba(61,214,160,0.2)", background: "rgba(61,214,160,0.04)", opacity: 0.6 }
-                  : { border: "1px solid var(--border)", background: "transparent", opacity: 0.4 };
+                  ? { border: "1px solid var(--journey-completed-border)", background: "var(--journey-completed-bg)", opacity: 0.6 }
+                  : { border: "1px solid var(--journey-future-border)", background: "var(--journey-future-bg)", opacity: "var(--journey-future-opacity)" };
                 const labelText = isCurrent ? "مستواك الحالي" : isCompleted ? "✓ أتممته" : "المستوى التالي";
                 const labelColor = isCurrent ? "#40C8C8" : isCompleted ? "#3DD6A0" : "var(--text-secondary)";
                 return (
