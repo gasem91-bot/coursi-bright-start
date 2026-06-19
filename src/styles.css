@@ -402,6 +402,7 @@ html, body {
     justify-content: flex-end;
     padding: 20px 32px;
     pointer-events: auto;
+    position: relative;
   }
 
   .desktop-logo-btn {
