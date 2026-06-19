@@ -328,16 +328,10 @@ html, body {
   gap: 12px;
 }
 
-.mt-logo {
-  font-family: 'Inter', system-ui, sans-serif;
-  font-weight: 900;
-  font-size: 18px;
-  letter-spacing: 0.5px;
-  background: linear-gradient(135deg, #7B35C0, #40C8C8);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
+.mt-logo-img {
+  height: 32px;
+  width: auto;
+  display: block;
 }
 
 .mt-bell {
