@@ -132,6 +132,7 @@ function CourseAIPage() {
     setSelectedAnswer(null);
     setQuizComplete(false);
     setScore(0);
+    setSidebarOpen(false);
     contentScrollRef.current?.scrollTo({ top: 0 });
   };
 
