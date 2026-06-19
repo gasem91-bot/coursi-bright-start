@@ -243,7 +243,7 @@ function DashboardPage() {
 
 function DashboardShader() {
   const { theme } = useTheme();
-  if (theme === "light") return null;
-  return <ShaderBackground />;
+  return <ShaderBackground variant={theme === "light" ? "light" : "dark"} />;
 }
+
 
