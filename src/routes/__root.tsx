@@ -9,6 +9,7 @@ import {
 import appCss from "../styles.css?url";
 import { ThemeProvider } from "@/lib/theme";
 import FloatingNav from "@/components/floating-nav";
+import MobileTopbar from "@/components/mobile-topbar";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
@@ -58,6 +59,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
+        <MobileTopbar />
         <Outlet />
         <FloatingNav />
       </ThemeProvider>
