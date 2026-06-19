@@ -16,7 +16,7 @@ export const Route = createFileRoute("/login")({
 
 const inputStyle: React.CSSProperties = {
   width: "100%",
-  background: "#141414",
+  background: "var(--bg-card)",
   border: "1.5px solid #1E1E1E",
   borderRadius: "10px",
   padding: "14px 16px",
@@ -66,7 +66,7 @@ function LoginPage() {
         position: "relative",
         minHeight: "100vh",
         width: "100%",
-        background: "#000",
+        background: "var(--bg-primary)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -105,18 +105,18 @@ function LoginPage() {
           alt="COURSI"
           style={{ display: "block", margin: "0 auto", width: "140px", height: "auto" }}
         />
-        <p style={{ color: "#AAAAAA", fontSize: "13px", textAlign: "center", marginTop: "6px" }}>
+        <p style={{ color: "var(--text-secondary)", fontSize: "13px", textAlign: "center", marginTop: "6px" }}>
           بوابة كورس الذكاء الاصطناعي
         </p>
 
         <div style={{ borderTop: "1px solid #1E1E1E", margin: "24px 0" }} />
 
-        <h2 style={{ color: "#fff", fontWeight: 700, fontSize: "22px", textAlign: "center" }}>
+        <h2 style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: "22px", textAlign: "center" }}>
           مرحباً بك
         </h2>
         <p
           style={{
-            color: "#AAAAAA",
+            color: "var(--text-secondary)",
             fontSize: "14px",
             textAlign: "center",
             marginTop: "6px",
@@ -134,7 +134,7 @@ function LoginPage() {
           autoComplete="email"
           style={{ ...inputStyle, marginBottom: "12px" }}
           onFocus={(e) => (e.target.style.borderColor = "#7B35C0")}
-          onBlur={(e) => (e.target.style.borderColor = "#1E1E1E")}
+          onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
         />
 
         <input
@@ -145,7 +145,7 @@ function LoginPage() {
           autoComplete="current-password"
           style={{ ...inputStyle, marginBottom: "20px" }}
           onFocus={(e) => (e.target.style.borderColor = "#7B35C0")}
-          onBlur={(e) => (e.target.style.borderColor = "#1E1E1E")}
+          onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
         />
 
         <button
@@ -181,7 +181,7 @@ function LoginPage() {
             alignItems: "center",
             gap: "12px",
             margin: "20px 0",
-            color: "#AAAAAA",
+            color: "var(--text-secondary)",
             fontSize: "13px",
           }}
         >
@@ -201,7 +201,7 @@ function LoginPage() {
             style={{
               background: "transparent",
               border: "1px solid #1E1E1E",
-              color: "#AAAAAA",
+              color: "var(--text-secondary)",
               fontSize: "14px",
               fontWeight: 600,
               padding: "13px",
@@ -217,7 +217,7 @@ function LoginPage() {
 
         <p
           style={{
-            color: "#AAAAAA",
+            color: "var(--text-secondary)",
             fontSize: "12px",
             textAlign: "center",
             marginTop: "20px",

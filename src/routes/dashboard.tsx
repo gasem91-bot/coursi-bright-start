@@ -90,18 +90,18 @@ function DashboardPage() {
 
   if (loading) {
     return (
-      <div style={{ minHeight: "100vh", background: "#000", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, fontFamily: font }}>
+      <div style={{ minHeight: "100vh", background: "var(--bg-primary)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, fontFamily: font }}>
         <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
         <div style={{ width: 44, height: 44, borderRadius: "50%", border: "3px solid #1E1E1E", borderTopColor: "#7B35C0", borderRightColor: "#40C8C8", animation: "spin 0.9s linear infinite" }} />
-        <p style={{ color: "#AAAAAA", fontSize: 14 }}>جاري تحميل بياناتك...</p>
+        <p style={{ color: "var(--text-secondary)", fontSize: 14 }}>جاري تحميل بياناتك...</p>
       </div>
     );
   }
 
   if (notFound) {
     return (
-      <div style={{ minHeight: "100vh", background: "#000", display: "flex", alignItems: "center", justifyContent: "center", padding: 24, fontFamily: font }}>
-        <div style={{ background: "rgba(13,13,13,0.55)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: "28px 32px", maxWidth: 480, textAlign: "center", color: "#fff" }}>
+      <div style={{ minHeight: "100vh", background: "var(--bg-primary)", display: "flex", alignItems: "center", justifyContent: "center", padding: 24, fontFamily: font }}>
+        <div style={{ background: "rgba(13,13,13,0.55)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: "28px 32px", maxWidth: 480, textAlign: "center", color: "var(--text-primary)" }}>
           لم يتم العثور على بياناتك. تواصل مع الدعم على support@coursi.ai
         </div>
       </div>
@@ -116,7 +116,7 @@ function DashboardPage() {
 
   const tierBadge = subscription?.tier === "course_ai"
     ? { label: "باقة الكورس + مساعد AI", bg: "linear-gradient(135deg,rgba(123,53,192,0.15),rgba(64,200,200,0.1))", border: "rgba(123,53,192,0.3)", color: "#40C8C8" }
-    : { label: "باقة الكورس", bg: "#141414", border: "#1E1E1E", color: "#AAAAAA" };
+    : { label: "باقة الكورس", bg: "var(--bg-card)", border: "var(--border)", color: "var(--text-secondary)" };
 
   const journeyLevels: { key: Level; emoji: string; name: string }[] = [
     { key: "beginner", emoji: "🌱", name: "المبتدئ" },
@@ -133,18 +133,18 @@ function DashboardPage() {
       : null;
 
   return (
-    <div style={{ minHeight: "100vh", background: "#000", fontFamily: font, direction: "rtl", position: "relative" }}>
+    <div style={{ minHeight: "100vh", background: "var(--bg-primary)", fontFamily: font, direction: "rtl", position: "relative" }}>
       <ShaderBackground />
       <div style={{ position: "relative", zIndex: 1 }}>
       {/* Navbar */}
       <nav style={{ position: "sticky", top: 0, zIndex: 10, background: "rgba(0,0,0,0.7)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", borderBottom: "1px solid #1E1E1E", padding: "14px 28px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <img src={coursiLogo} alt="COURSI" style={{ height: 32, width: "auto" }} />
-        <span style={{ color: "#AAAAAA", fontSize: 13 }}>بوابة الذكاء الاصطناعي</span>
+        <span style={{ color: "var(--text-secondary)", fontSize: 13 }}>بوابة الذكاء الاصطناعي</span>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <span style={{ color: "#AAAAAA", fontSize: 12 }}>{userEmail}</span>
+          <span style={{ color: "var(--text-secondary)", fontSize: 12 }}>{userEmail}</span>
           <button
             onClick={handleLogout}
-            style={{ background: "transparent", border: "1px solid #1E1E1E", color: "#AAAAAA", fontSize: 12, padding: "6px 14px", borderRadius: 20, cursor: "pointer", marginRight: 10, fontFamily: font }}
+            style={{ background: "transparent", border: "1px solid #1E1E1E", color: "var(--text-secondary)", fontSize: 12, padding: "6px 14px", borderRadius: 20, cursor: "pointer", marginRight: 10, fontFamily: font }}
           >
             خروج
           </button>
@@ -155,8 +155,8 @@ function DashboardPage() {
         {/* Card 1: Welcome */}
         <section style={{ background: "rgba(13,13,13,0.55)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: "24px 28px", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
           <div>
-            <h2 style={{ color: "#fff", fontWeight: 700, fontSize: 20 }}>مرحباً بك في COURSI</h2>
-            <p style={{ color: "#AAAAAA", fontSize: 13, marginTop: 4 }}>{profile?.email}</p>
+            <h2 style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: 20 }}>مرحباً بك في COURSI</h2>
+            <p style={{ color: "var(--text-secondary)", fontSize: 13, marginTop: 4 }}>{profile?.email}</p>
           </div>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 0 }}>
             <span style={{ borderRadius: 30, padding: "8px 18px", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", gap: 8, background: lb.bg, border: `1px solid ${lb.border}`, color: lb.color }}>
@@ -174,13 +174,13 @@ function DashboardPage() {
             <span style={{ color: "#9B55E0", fontSize: 11, letterSpacing: 2, textTransform: "uppercase", fontWeight: 700 }}>تقدّمك في الكورس</span>
             <span style={{ color: "#40C8C8", fontWeight: 700, fontSize: 22 }}>{percentage}%</span>
           </div>
-          <div style={{ width: "100%", height: 8, background: "#1E1E1E", borderRadius: 4, margin: "14px 0 10px", overflow: "hidden" }}>
+          <div style={{ width: "100%", height: 8, background: "var(--border)", borderRadius: 4, margin: "14px 0 10px", overflow: "hidden" }}>
             <div style={{ height: "100%", background: "linear-gradient(90deg, #7B35C0, #40C8C8)", borderRadius: 4, width: `${percentage}%`, transition: "width 0.8s ease" }} />
           </div>
           {percentage === 0 ? (
-            <p style={{ color: "#AAAAAA", fontSize: 13 }}>ابدأ كورسك الآن وتتبّع تقدّمك هنا</p>
+            <p style={{ color: "var(--text-secondary)", fontSize: 13 }}>ابدأ كورسك الآن وتتبّع تقدّمك هنا</p>
           ) : (
-            <p style={{ color: "#AAAAAA", fontSize: 13 }}>{completedChapters} من {course.total} فصل مكتمل</p>
+            <p style={{ color: "var(--text-secondary)", fontSize: 13 }}>{completedChapters} من {course.total} فصل مكتمل</p>
           )}
         </section>
 
@@ -188,8 +188,8 @@ function DashboardPage() {
         <section style={{ background: "linear-gradient(160deg, rgba(123,53,192,0.07), rgba(64,200,200,0.03))", border: "1px solid rgba(123,53,192,0.2)", borderRadius: 16, padding: "24px 28px", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
           <div>
             <div style={{ color: "#9B55E0", fontSize: 11, letterSpacing: 2, textTransform: "uppercase", fontWeight: 700 }}>✦ كورسك الحالي</div>
-            <div style={{ color: "#fff", fontWeight: 700, fontSize: 18, marginTop: 6 }}>{course.name}</div>
-            <div style={{ color: "#AAAAAA", fontSize: 13, marginTop: 4 }}>{course.meta}</div>
+            <div style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: 18, marginTop: 6 }}>{course.name}</div>
+            <div style={{ color: "var(--text-secondary)", fontSize: 13, marginTop: 4 }}>{course.meta}</div>
           </div>
           <button
             onClick={() => { window.location.href = "/course/ai"; }}
@@ -213,23 +213,23 @@ function DashboardPage() {
                   ? { border: "1px solid rgba(61,214,160,0.2)", background: "rgba(61,214,160,0.04)", opacity: 0.6 }
                   : { border: "1px solid #1A1A1A", background: "transparent", opacity: 0.4 };
                 const labelText = isCurrent ? "مستواك الحالي" : isCompleted ? "✓ أتممته" : "المستوى التالي";
-                const labelColor = isCurrent ? "#40C8C8" : isCompleted ? "#3DD6A0" : "#AAAAAA";
+                const labelColor = isCurrent ? "#40C8C8" : isCompleted ? "#3DD6A0" : "var(--text-secondary)";
                 return (
                   <Fragment key={jl.key}>
                     <div style={{ flex: 1, textAlign: "center", padding: 14, borderRadius: 12, ...boxStyle }}>
                       <div style={{ fontSize: 28 }}>{jl.emoji}</div>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: "#fff", marginTop: 4 }}>{jl.name}</div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text-primary)", marginTop: 4 }}>{jl.name}</div>
                       <div style={{ fontSize: 11, color: labelColor, marginTop: 4 }}>{labelText}</div>
                     </div>
                     {i < journeyLevels.length - 1 && (
-                      <div style={{ flexShrink: 0, fontSize: 20, color: "#AAAAAA", opacity: 0.3, alignSelf: "center" }}>←</div>
+                      <div style={{ flexShrink: 0, fontSize: 20, color: "var(--text-secondary)", opacity: 0.3, alignSelf: "center" }}>←</div>
                     )}
                   </Fragment>
                 );
               })}
             </div>
             {upgradeMsg && (
-              <p style={{ color: "#AAAAAA", fontSize: 13, textAlign: "center", marginTop: 14 }}>{upgradeMsg}</p>
+              <p style={{ color: "var(--text-secondary)", fontSize: 13, textAlign: "center", marginTop: 14 }}>{upgradeMsg}</p>
             )}
           </section>
         )}
