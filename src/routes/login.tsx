@@ -75,9 +75,7 @@ function LoginPage() {
         overflow: "hidden",
       }}
     >
-      <div style={{ position: "absolute", inset: 0, opacity: 0.55 }}>
-        <ShaderBackground />
-      </div>
+      <LoginShader />
       <div
         style={{
           position: "absolute",
@@ -87,18 +85,21 @@ function LoginPage() {
           pointerEvents: "none",
         }}
       />
+      <div style={{ position: "absolute", top: 16, left: 16, zIndex: 2 }}>
+        <ThemeToggle />
+      </div>
       <div
         style={{
           position: "relative",
           zIndex: 1,
           width: "100%",
           maxWidth: "440px",
-          background: "rgba(13,13,13,0.82)",
+          background: "var(--bg-card)",
           backdropFilter: "blur(12px)",
           WebkitBackdropFilter: "blur(12px)",
-          border: "1px solid #1E1E1E",
+          border: "1px solid var(--border)",
           borderRadius: "20px",
-          padding: "40px 36px",
+          padding: "32px 24px",
         }}
       >
         <img
