@@ -44,6 +44,13 @@ html.theme-light, .theme-light {
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+::placeholder { color: var(--text-muted); opacity: 1; }
+.theme-light ::placeholder { color: #8E8E93; }
+:-ms-input-placeholder { color: var(--text-muted); }
+.theme-light :-ms-input-placeholder { color: #8E8E93; }
+::-ms-input-placeholder { color: var(--text-muted); }
+.theme-light ::-ms-input-placeholder { color: #8E8E93; }
+
 html, body {
   font-family: 'Cairo', 'Noto Sans Arabic', sans-serif;
   background: var(--bg-primary);
