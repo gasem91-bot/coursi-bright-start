@@ -33,11 +33,11 @@ html.theme-dark, .theme-dark {
 }
 
 html.theme-light, .theme-light {
-  --bg-primary: #F5F5F7;
+  --bg-primary: #E8E8EC;
   --bg-secondary: #FFFFFF;
-  --bg-card: #F0F0F2;
-  --border: #E5E5EA;
-  --text-primary: #1C1C1E;
+  --bg-card: #EAEAEE;
+  --border: #C7C7CC;
+  --text-primary: #000000;
   --text-secondary: #3A3A3C;
   --text-muted: #636366;
 }
