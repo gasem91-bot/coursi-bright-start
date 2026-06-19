@@ -179,7 +179,8 @@ const ShaderBackground = ({ className, style, variant = "dark" }: ShaderBackgrou
     let raf = 0;
     const render = () => {
       const t = (Date.now() - start) / 1000;
-      gl.clearColor(0, 0, 0, 1);
+      if (variant === "light") gl.clearColor(0.93, 0.93, 0.96, 1);
+      else gl.clearColor(0, 0, 0, 1);
       gl.clear(gl.COLOR_BUFFER_BIT);
       gl.useProgram(program);
       gl.uniform2f(uResolution, canvas.width, canvas.height);
