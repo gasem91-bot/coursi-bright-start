@@ -3,6 +3,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import coursiLogo from "@/assets/coursi-logo.png";
 import { COURSE_CONTENT, type QuizQuestion } from "@/lib/course-content";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { ThemeToggle } from "@/lib/theme";
 
 export const Route = createFileRoute("/course/ai")({
   component: CourseAIPage,
@@ -13,12 +15,12 @@ type Level = "beginner" | "intermediate" | "advanced";
 type Tier = "course" | "course_ai";
 
 const font = "Cairo, 'Noto Sans Arabic', sans-serif";
-const BG = "#060410";
-const BG_SOFT = "#0B0820";
+const BG = "var(--bg-primary)";
+const BG_SOFT = "var(--bg-secondary)";
 const PURPLE = "#7B35FF";
 const CYAN = "#00D4C8";
 const GOLD = "#D4AF37";
-const BORDER = "rgba(255,255,255,0.08)";
+const BORDER = "var(--border)";
 
 
 const COURSE = COURSE_CONTENT;
@@ -32,6 +34,8 @@ const ARABIC_LETTERS = ["أ", "ب", "ج", "د"];
 
 function CourseAIPage() {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [level, setLevel] = useState<Level>("beginner");
   const [tier, setTier] = useState<Tier>("course");
@@ -128,6 +132,7 @@ function CourseAIPage() {
     setSelectedAnswer(null);
     setQuizComplete(false);
     setScore(0);
+    setSidebarOpen(false);
     contentScrollRef.current?.scrollTo({ top: 0 });
   };
 
@@ -202,93 +207,96 @@ function CourseAIPage() {
             animation: "coursi-spin 1s linear infinite",
           }}
         />
-        <div style={{ marginTop: 18, color: "#888", fontSize: 14 }}>جاري تحميل الكورس...</div>
+        <div style={{ marginTop: 18, color: "var(--text-secondary)", fontSize: 14 }}>جاري تحميل الكورس...</div>
       </div>
     );
   }
 
   return (
-    <div style={{ background: BG, color: "#fff", height: "100vh", display: "flex", flexDirection: "column", fontFamily: font, overflow: "hidden" }}>
+    <div
+      className={isMobile ? "coursi-shell-mobile" : undefined}
+      style={{ background: BG, color: "var(--text-primary)", height: "100vh", display: "flex", flexDirection: "column", fontFamily: font, overflow: "hidden" }}
+    >
       {/* Top bar */}
       <div
         style={{
-          background: "rgba(6,4,16,0.85)",
+          background: "color-mix(in srgb, var(--bg-primary) 85%, transparent)",
           backdropFilter: "blur(10px)",
           borderBottom: `1px solid ${BORDER}`,
-          padding: "12px 24px",
+          padding: isMobile ? "10px 14px" : "12px 24px",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
+          gap: 10,
           position: "sticky",
           top: 0,
           zIndex: 50,
         }}
       >
-        <button
-          onClick={() => navigate({ to: "/dashboard" })}
-          style={{ background: "transparent", border: "none", cursor: "pointer", padding: 0 }}
-          aria-label="العودة للوحة التحكم"
-        >
-          <img src={coursiLogo} alt="COURSI" style={{ height: 28, display: "block" }} />
-        </button>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ color: "#B8B0D0", fontSize: 13, fontWeight: 600 }}>{course.name}</div>
-          {level === "intermediate" && (
-            <span
+        <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
+          {isMobile && (
+            <button
+              onClick={() => setSidebarOpen(true)}
+              aria-label="فتح قائمة الفصول"
               style={{
-                background: `linear-gradient(135deg, rgba(0,212,200,0.18), rgba(123,53,255,0.18))`,
-                border: `1px solid ${CYAN}`,
-                color: CYAN,
-                fontSize: 11,
-                fontWeight: 800,
-                padding: "4px 10px",
-                borderRadius: 999,
-                letterSpacing: 0.4,
+                width: 36, height: 36, borderRadius: 10,
+                background: "var(--bg-card)", border: `1px solid ${BORDER}`,
+                color: "var(--text-primary)", cursor: "pointer", fontSize: 18,
+                display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
               }}
             >
-              المستوى المتوسط
-            </span>
+              ☰
+            </button>
           )}
-          {level === "advanced" && (
-            <span
-              className="adv-shine-badge"
-              style={{
-                background: `linear-gradient(135deg, rgba(212,175,55,0.20), rgba(123,53,255,0.18))`,
-                border: `1px solid ${GOLD}`,
-                color: GOLD,
-                fontSize: 11,
-                fontWeight: 800,
-                padding: "4px 10px",
-                borderRadius: 999,
-                letterSpacing: 0.4,
-                position: "relative",
-                overflow: "hidden",
-              }}
-            >
-              المستوى المتقدم
-            </span>
-          )}
+          <button
+            onClick={() => navigate({ to: "/dashboard" })}
+            style={{ background: "transparent", border: "none", cursor: "pointer", padding: 0, flexShrink: 0 }}
+            aria-label="العودة للوحة التحكم"
+          >
+            <img src={coursiLogo} alt="COURSI" style={{ height: isMobile ? 24 : 28, display: "block" }} />
+          </button>
         </div>
 
+        {!isMobile && (
+          <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
+            <div style={{ color: "var(--text-secondary)", fontSize: 13, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{course.name}</div>
+            {level === "intermediate" && (
+              <span style={{ background: `linear-gradient(135deg, rgba(0,212,200,0.18), rgba(123,53,255,0.18))`, border: `1px solid ${CYAN}`, color: CYAN, fontSize: 11, fontWeight: 800, padding: "4px 10px", borderRadius: 999, letterSpacing: 0.4 }}>
+                المستوى المتوسط
+              </span>
+            )}
+            {level === "advanced" && (
+              <span className="adv-shine-badge" style={{ background: `linear-gradient(135deg, rgba(212,175,55,0.20), rgba(123,53,255,0.18))`, border: `1px solid ${GOLD}`, color: GOLD, fontSize: 11, fontWeight: 800, padding: "4px 10px", borderRadius: 999, letterSpacing: 0.4, position: "relative", overflow: "hidden" }}>
+                المستوى المتقدم
+              </span>
+            )}
+          </div>
+        )}
 
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
           <div style={{ color: CYAN, fontWeight: 700, fontSize: 13 }}>{toAr(pct)}%</div>
-          <div style={{ width: 100, height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 4, overflow: "hidden" }}>
+          <div style={{ width: isMobile ? 60 : 100, height: 4, background: "color-mix(in srgb, var(--text-primary) 6%, transparent)", borderRadius: 4, overflow: "hidden" }}>
             <div style={{ width: `${pct}%`, height: "100%", background: `linear-gradient(90deg,${PURPLE},${CYAN})`, transition: "width 600ms ease" }} />
           </div>
+          <ThemeToggle style={{ width: 32, height: 32, fontSize: 14 }} />
         </div>
       </div>
 
       {/* Body: sidebar + content */}
-      <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
-        {/* Sidebar (right in RTL = first child) */}
+      <div style={{ display: "flex", flex: 1, minHeight: 0, position: "relative" }}>
+        {isMobile && sidebarOpen && (
+          <div className="coursi-sidebar-overlay" onClick={() => setSidebarOpen(false)} />
+        )}
+        {/* Sidebar (right in RTL) */}
         <aside
+          className={isMobile ? "coursi-sidebar-drawer" : undefined}
           style={{
             width: 300,
             flexShrink: 0,
             background: BG_SOFT,
             borderLeft: `1px solid ${BORDER}`,
             overflowY: "auto",
+            display: isMobile && !sidebarOpen ? "none" : "block",
           }}
         >
           <div
@@ -301,8 +309,8 @@ function CourseAIPage() {
               zIndex: 1,
             }}
           >
-            <div style={{ color: "#fff", fontWeight: 800, fontSize: 14, marginBottom: 4 }}>{course.name}</div>
-            <div style={{ color: "#888", fontSize: 11, marginBottom: 12 }}>{course.meta}</div>
+            <div style={{ color: "var(--text-primary)", fontWeight: 800, fontSize: 14, marginBottom: 4 }}>{course.name}</div>
+            <div style={{ color: "var(--text-secondary)", fontSize: 11, marginBottom: 12 }}>{course.meta}</div>
             <div style={{ height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 4, overflow: "hidden", marginBottom: 6 }}>
               <div style={{ width: `${pct}%`, height: "100%", background: `linear-gradient(90deg,${PURPLE},${CYAN})`, transition: "width 600ms ease" }} />
             </div>
@@ -337,13 +345,13 @@ function CourseAIPage() {
                   if (!isActive) (e.currentTarget as HTMLDivElement).style.background = "transparent";
                 }}
               >
-                <div style={{ width: 26, color: isDone ? CYAN : isActive ? "#fff" : "#555", fontSize: 11, fontWeight: 800 }}>{pad2(i + 1)}</div>
+                <div style={{ width: 26, color: isDone ? CYAN : isActive ? "var(--text-primary)" : "#555", fontSize: 11, fontWeight: 800 }}>{pad2(i + 1)}</div>
                 <div
                   style={{
                     flex: 1,
                     fontSize: 12.5,
                     lineHeight: 1.5,
-                    color: isDone ? "#666" : isActive ? "#fff" : "#9590A8",
+                    color: isDone ? "var(--text-muted)" : isActive ? "var(--text-primary)" : "#9590A8",
                     fontWeight: isActive ? 700 : 500,
                   }}
                 >
@@ -355,7 +363,7 @@ function CourseAIPage() {
                       width: 18, height: 18, borderRadius: "50%",
                       background: `linear-gradient(135deg,${PURPLE},${CYAN})`,
                       display: "flex", alignItems: "center", justifyContent: "center",
-                      color: "#fff", fontSize: 11, fontWeight: 800, flexShrink: 0,
+                      color: "var(--text-primary)", fontSize: 11, fontWeight: 800, flexShrink: 0,
                     }}
                   >
                     ✓
@@ -405,7 +413,7 @@ function CourseAIPage() {
                   onClick={() => setActiveTab(t)}
                   style={{
                     background: isActive ? "linear-gradient(135deg,#7B35FF,#00D4C8)" : "transparent",
-                    color: isActive ? "#fff" : "#666",
+                    color: isActive ? "var(--text-primary)" : "var(--text-muted)",
                     border: isActive ? "none" : "1px solid #1E1E1E",
                     borderBottom: "none",
                     padding: "8px 20px",
@@ -483,7 +491,7 @@ function CourseAIPage() {
               left: 0,
               bottom: 0,
               width: 340,
-              background: "#050505",
+              background: "var(--bg-primary)",
               borderRight: "1px solid #1E1E1E",
               display: "flex",
               flexDirection: "column",
@@ -501,10 +509,10 @@ function CourseAIPage() {
                 justifyContent: "space-between",
               }}
             >
-              <div style={{ color: "#fff", fontWeight: 700, fontSize: 14 }}>🤖 مساعد AI كورس</div>
+              <div style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: 14 }}>🤖 مساعد AI كورس</div>
               <button
                 onClick={() => setChatOpen(false)}
-                style={{ background: "transparent", border: "none", color: "#888", fontSize: 20, cursor: "pointer" }}
+                style={{ background: "transparent", border: "none", color: "var(--text-secondary)", fontSize: 20, cursor: "pointer" }}
                 aria-label="إغلاق"
               >
                 ×
@@ -515,14 +523,14 @@ function CourseAIPage() {
                 <div
                   key={i}
                   style={{
-                    background: m.from === "ai" ? "#141414" : "rgba(0,212,200,0.12)",
+                    background: m.from === "ai" ? "var(--bg-card)" : "rgba(0,212,200,0.12)",
                     borderRadius: m.from === "ai" ? "12px 12px 12px 0" : "12px 12px 0 12px",
                     padding: "12px 16px",
                     maxWidth: "85%",
                     marginBottom: 12,
                     marginLeft: m.from === "user" ? "auto" : 0,
                     fontSize: 14,
-                    color: m.from === "ai" ? "#AAA" : "#fff",
+                    color: m.from === "ai" ? "var(--text-secondary)" : "var(--text-primary)",
                     lineHeight: 1.7,
                   }}
                 >
@@ -539,11 +547,11 @@ function CourseAIPage() {
                 dir="rtl"
                 style={{
                   flex: 1,
-                  background: "#0D0D0D",
+                  background: "var(--bg-secondary)",
                   border: "1px solid #1E1E1E",
                   borderRadius: 20,
                   padding: "8px 14px",
-                  color: "#fff",
+                  color: "var(--text-primary)",
                   fontFamily: font,
                   fontSize: 13,
                   outline: "none",
@@ -558,7 +566,7 @@ function CourseAIPage() {
                   background: "linear-gradient(135deg,#7B35FF,#00D4C8)",
                   border: "none",
                   cursor: "pointer",
-                  color: "#fff",
+                  color: "var(--text-primary)",
                   fontSize: 16,
                   flexShrink: 0,
                 }}
@@ -871,13 +879,13 @@ function ContentTab({
   return (
     <div style={{ padding: "28px 32px" }}>
       <style>{CONTENT_CSS}</style>
-      <div style={{ color: "#666", fontSize: 11, letterSpacing: 2, marginBottom: 8 }}>
+      <div style={{ color: "var(--text-muted)", fontSize: 11, letterSpacing: 2, marginBottom: 8 }}>
         الفصل {toAr(chapterIndex + 1)}
       </div>
-      <h1 style={{ color: "#fff", fontWeight: 700, fontSize: 24, marginBottom: 12, fontFamily: font }}>
+      <h1 style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: 24, marginBottom: 12, fontFamily: font }}>
         {chapterTitle}
       </h1>
-      <div style={{ display: "flex", gap: 16, color: "#888", fontSize: 12, marginBottom: 12 }}>
+      <div style={{ display: "flex", gap: 16, color: "var(--text-secondary)", fontSize: 12, marginBottom: 12 }}>
         <span>📖 محتوى تفصيلي</span>
         <span>✦ اختبار في النهاية</span>
         <span>🎯 مهمة عملية</span>
@@ -889,7 +897,7 @@ function ContentTab({
         onClick={onGoQuiz}
         style={{
           background: "linear-gradient(135deg,#7B35FF,#00D4C8)",
-          color: "#fff",
+          color: "var(--text-primary)",
           fontSize: 15,
           fontWeight: 700,
           padding: 16,
@@ -955,13 +963,13 @@ function QuizTab({
             boxShadow: "0 0 40px rgba(123,53,255,0.4)",
           }}
         >
-          <div style={{ color: "#fff", fontWeight: 700, fontSize: 36, lineHeight: 1 }}>{toAr(score)}</div>
+          <div style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: 36, lineHeight: 1 }}>{toAr(score)}</div>
           <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 12, marginTop: 4 }}>/{toAr(questions.length)}</div>
         </div>
-        <div style={{ color: "#fff", fontWeight: 700, fontSize: 22, textAlign: "center" }}>
+        <div style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: 22, textAlign: "center" }}>
           أحسنت! أكملت اختبار الفصل {toAr(chapterIndex + 1)}
         </div>
-        <div style={{ color: "#888", textAlign: "center", marginTop: 8, marginBottom: 28 }}>
+        <div style={{ color: "var(--text-secondary)", textAlign: "center", marginTop: 8, marginBottom: 28 }}>
           {isLast ? "أنهيت جميع الفصول 🎉" : "انتقلت بنجاح للفصل التالي"}
         </div>
 
@@ -980,12 +988,12 @@ function QuizTab({
               }}
             >
               <div style={{ fontSize: 64, marginBottom: 16 }}>🏆</div>
-              <div style={{ color: "#fff", fontWeight: 700, fontSize: 28, marginBottom: 12 }}>
+              <div style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: 28, marginBottom: 12 }}>
                 مبروك! أتممت الكورس بنجاح
               </div>
               <div
                 style={{
-                  color: "#AAA",
+                  color: "var(--text-secondary)",
                   fontSize: 15,
                   lineHeight: 1.8,
                   maxWidth: 440,
@@ -1000,7 +1008,7 @@ function QuizTab({
                 }}
                 style={{
                   background: "linear-gradient(135deg,#7B35FF,#00D4C8)",
-                  color: "#fff",
+                  color: "var(--text-primary)",
                   fontSize: 15,
                   fontWeight: 700,
                   padding: "14px 32px",
@@ -1021,7 +1029,7 @@ function QuizTab({
             onClick={onNextChapter}
             style={{
               background: "linear-gradient(135deg,#7B35FF,#00D4C8)",
-              color: "#fff",
+              color: "var(--text-primary)",
               fontSize: 15,
               fontWeight: 700,
               padding: 16,
@@ -1042,21 +1050,21 @@ function QuizTab({
 
   const q = questions[currentQ];
   if (!q) {
-    return <div style={{ padding: 32, color: "#888" }}>لا توجد أسئلة لهذا الفصل.</div>;
+    return <div style={{ padding: 32, color: "var(--text-secondary)" }}>لا توجد أسئلة لهذا الفصل.</div>;
   }
   const correct = q.correct;
   const progressPct = ((currentQ + (answered ? 1 : 0)) / questions.length) * 100;
 
   return (
     <div style={{ padding: "28px 32px" }}>
-      <h2 style={{ color: "#fff", fontWeight: 700, fontSize: 22, fontFamily: font }}>
+      <h2 style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: 22, fontFamily: font }}>
         اختبار الفصل {toAr(chapterIndex + 1)}
       </h2>
-      <div style={{ color: "#888", fontSize: 12, marginTop: 4, marginBottom: 20 }}>
+      <div style={{ color: "var(--text-secondary)", fontSize: 12, marginTop: 4, marginBottom: 20 }}>
         {toAr(questions.length)} أسئلة · تظهر الإجابة الصحيحة فوراً
       </div>
 
-      <div style={{ height: 3, background: "#1E1E1E", borderRadius: 2, overflow: "hidden", marginBottom: 24 }}>
+      <div style={{ height: 3, background: "var(--border)", borderRadius: 2, overflow: "hidden", marginBottom: 24 }}>
         <div
           style={{
             width: `${progressPct}%`,
@@ -1067,7 +1075,7 @@ function QuizTab({
         />
       </div>
 
-      <div style={{ color: "#666", fontSize: 11, letterSpacing: 2, marginBottom: 10 }}>
+      <div style={{ color: "var(--text-muted)", fontSize: 11, letterSpacing: 2, marginBottom: 10 }}>
         السؤال {toAr(currentQ + 1)}
       </div>
       <div style={{ color: "#DDD", fontSize: 18, fontWeight: 700, marginBottom: 20, lineHeight: 1.6 }}>
@@ -1077,22 +1085,22 @@ function QuizTab({
       {q.options.map((opt, i) => {
         const isCorrect = i === correct;
         const isPicked = selectedAnswer === i;
-        let borderColor = "#1E1E1E";
-        let bg = "#0D0D0D";
-        let circleBg = "#1E1E1E";
-        let circleColor = "#666";
+        let borderColor = "var(--border)";
+        let bg = "var(--bg-secondary)";
+        let circleBg = "var(--border)";
+        let circleColor = "var(--text-muted)";
 
         if (answered) {
           if (isCorrect) {
             borderColor = "#00D4C8";
             bg = "rgba(0,212,200,0.07)";
             circleBg = "#00D4C8";
-            circleColor = "#000";
+            circleColor = "var(--bg-primary)";
           } else if (isPicked) {
             borderColor = "#C5545E";
             bg = "rgba(197,84,94,0.07)";
             circleBg = "#C5545E";
-            circleColor = "#fff";
+            circleColor = "var(--text-primary)";
           }
         }
 
@@ -1183,7 +1191,7 @@ function GraduationCertificate({ userName, courseName }: { userName: string; cou
         <div style={{ position: "absolute", inset: 12, border: `1px solid rgba(212,175,55,0.35)`, borderRadius: 14, pointerEvents: "none" }} />
         <div style={{ fontSize: 56, marginBottom: 8 }}>🏆</div>
         <div style={{ color: GOLD, fontSize: 12, letterSpacing: 4, fontWeight: 800, marginBottom: 8 }}>شهادة إتمام</div>
-        <div style={{ color: "#fff", fontWeight: 800, fontSize: 24, marginBottom: 18, fontFamily: font }}>
+        <div style={{ color: "var(--text-primary)", fontWeight: 800, fontSize: 24, marginBottom: 18, fontFamily: font }}>
           المستوى المتقدم — إتقان الذكاء الاصطناعي
         </div>
         <div style={{ color: "#B6AECC", fontSize: 13, marginBottom: 4 }}>تُمنح هذه الشهادة إلى</div>
@@ -1207,7 +1215,7 @@ function GraduationCertificate({ userName, courseName }: { userName: string; cou
         </div>
       </div>
       <div style={{ marginTop: 24, padding: 20, background: "rgba(255,255,255,0.02)", border: `1px solid ${BORDER}`, borderRadius: 14 }}>
-        <div style={{ color: "#fff", fontWeight: 800, fontSize: 15, marginBottom: 10 }}>رحلتك في كورسي</div>
+        <div style={{ color: "var(--text-primary)", fontWeight: 800, fontSize: 15, marginBottom: 10 }}>رحلتك في كورسي</div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 10 }}>
           {[
             { lvl: "المبتدئ", desc: "أساسيات الذكاء الاصطناعي والأدوات اليومية", c: CYAN },
