@@ -329,7 +329,7 @@ html, body {
 }
 
 .mt-logo-img {
-  height: 32px;
+  height: 40px;
   width: auto;
   display: block;
 }
@@ -408,7 +408,7 @@ html, body {
   }
 
   .desktop-logo-img {
-    height: 64px;
+    height: 96px;
     width: auto;
     display: block;
     line-height: 1;
@@ -487,7 +487,7 @@ html, body {
   }
 
   body {
-    padding-top: 112px;
+    padding-top: 140px;
   }
 }
 

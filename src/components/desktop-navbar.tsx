@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useRouter } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
-import logoAsset from "@/assets/Arabic_Logo.png.asset.json";
+import logoAsset from "@/assets/coursi-logo.png.asset.json";
 
 const menuItems = [
   { label: "لوحة التحكم", path: "/dashboard" },
