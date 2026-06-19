@@ -135,22 +135,23 @@ function DashboardPage() {
 
   return (
     <div style={{ minHeight: "100vh", background: "var(--bg-primary)", fontFamily: font, direction: "rtl", position: "relative" }}>
-      <ShaderBackground />
+      <DashboardShader />
       <div style={{ position: "relative", zIndex: 1 }}>
       {/* Navbar */}
-      <nav style={{ position: "sticky", top: 0, zIndex: 10, background: "rgba(0,0,0,0.7)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", borderBottom: "1px solid #1E1E1E", padding: "14px 28px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <img src={coursiLogo} alt="COURSI" style={{ height: 32, width: "auto" }} />
-        <span style={{ color: "var(--text-secondary)", fontSize: 13 }}>بوابة الذكاء الاصطناعي</span>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <span style={{ color: "var(--text-secondary)", fontSize: 12 }}>{userEmail}</span>
+      <nav style={{ position: "sticky", top: 0, zIndex: 10, background: "color-mix(in srgb, var(--bg-primary) 75%, transparent)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", borderBottom: "1px solid var(--border)", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
+        <img src={coursiLogo} alt="COURSI" style={{ height: 28, width: "auto", flexShrink: 0 }} />
+        <span style={{ color: "var(--text-secondary)", fontSize: 12, flex: "1 1 auto", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{userEmail || "بوابة الذكاء الاصطناعي"}</span>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+          <ThemeToggle style={{ width: 32, height: 32, fontSize: 14 }} />
           <button
             onClick={handleLogout}
-            style={{ background: "transparent", border: "1px solid #1E1E1E", color: "var(--text-secondary)", fontSize: 12, padding: "6px 14px", borderRadius: 20, cursor: "pointer", marginRight: 10, fontFamily: font }}
+            style={{ background: "transparent", border: "1px solid var(--border)", color: "var(--text-secondary)", fontSize: 12, padding: "6px 14px", borderRadius: 20, cursor: "pointer", fontFamily: font }}
           >
             خروج
           </button>
         </div>
       </nav>
+
 
       <main style={{ maxWidth: 860, margin: "0 auto", padding: "32px 24px" }}>
         {/* Card 1: Welcome */}
