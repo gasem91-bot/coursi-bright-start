@@ -60,6 +60,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
+        <DesktopNavbar />
         <MobileTopbar />
         <Outlet />
         <FloatingNav />
