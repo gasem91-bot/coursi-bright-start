@@ -231,3 +231,14 @@ function LoginPage() {
     </div>
   );
 }
+
+function LoginShader() {
+  const { theme } = useTheme();
+  if (theme === "light") return null;
+  return (
+    <div style={{ position: "absolute", inset: 0, opacity: 0.55 }}>
+      <ShaderBackground />
+    </div>
+  );
+}
+
