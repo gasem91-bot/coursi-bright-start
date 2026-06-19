@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useRouter } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
+import logoAsset from "@/assets/Arabic_Logo.png.asset.json";
 
 const menuItems = [
   { label: "لوحة التحكم", path: "/dashboard" },
@@ -36,14 +37,13 @@ export default function DesktopNavbar() {
   return (
     <header className="desktop-navbar" ref={ref}>
       <div className="desktop-navbar-inner">
-        <div className="desktop-nav-spacer" />
         <button
           className="desktop-logo-btn"
           onClick={() => setOpen((v) => !v)}
           aria-haspopup="menu"
           aria-expanded={open}
         >
-          <span className="desktop-logo-text">كورسي</span>
+          <img src={logoAsset.url} alt="كورسي" className="desktop-logo-img" />
         </button>
 
         {open && (

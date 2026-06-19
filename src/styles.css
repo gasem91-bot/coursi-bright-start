@@ -328,16 +328,10 @@ html, body {
   gap: 12px;
 }
 
-.mt-logo {
-  font-family: 'Inter', system-ui, sans-serif;
-  font-weight: 900;
-  font-size: 18px;
-  letter-spacing: 0.5px;
-  background: linear-gradient(135deg, #7B35C0, #40C8C8);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
+.mt-logo-img {
+  height: 32px;
+  width: auto;
+  display: block;
 }
 
 .mt-bell {
@@ -409,24 +403,20 @@ html, body {
     background: transparent;
     border: none;
     cursor: pointer;
-    padding: 4px 8px;
+    padding: 4px 0;
     position: relative;
   }
 
-  .desktop-logo-text {
-    font-family: 'Cairo', 'Noto Sans Arabic', sans-serif;
-    font-weight: 900;
-    font-size: 38px;
-    letter-spacing: 0.5px;
-    background: linear-gradient(135deg, #7B35C0, #40C8C8);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
+  .desktop-logo-img {
+    height: 64px;
+    width: auto;
+    display: block;
     line-height: 1;
+    transition: transform 0.2s ease, filter 0.2s ease;
   }
 
-  .desktop-logo-btn:hover .desktop-logo-text {
+  .desktop-logo-btn:hover .desktop-logo-img {
+    transform: scale(1.04);
     filter: brightness(1.15);
   }
 
@@ -497,7 +487,7 @@ html, body {
   }
 
   body {
-    padding-top: 72px;
+    padding-top: 112px;
   }
 }
 
