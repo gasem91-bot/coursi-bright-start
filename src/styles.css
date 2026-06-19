@@ -415,7 +415,7 @@ html, body {
   .desktop-logo-text {
     font-family: 'Cairo', 'Noto Sans Arabic', sans-serif;
     font-weight: 900;
-    font-size: 28px;
+    font-size: 38px;
     letter-spacing: 0.5px;
     background: linear-gradient(135deg, #7B35C0, #40C8C8);
     -webkit-background-clip: text;
