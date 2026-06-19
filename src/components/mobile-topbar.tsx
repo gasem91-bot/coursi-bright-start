@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useNavigate } from "@tanstack/react-router";
 import { Bell } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import logoAsset from "@/assets/Arabic_Logo.png.asset.json";
 
 export default function MobileTopbar() {
   const router = useRouter();
