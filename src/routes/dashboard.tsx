@@ -213,7 +213,7 @@ function DashboardPage() {
                   ? { border: "1px solid rgba(123,53,192,0.3)", background: "rgba(123,53,192,0.06)" }
                   : isCompleted
                   ? { border: "1px solid rgba(61,214,160,0.2)", background: "rgba(61,214,160,0.04)", opacity: 0.6 }
-                  : { border: "1px solid #1A1A1A", background: "transparent", opacity: 0.4 };
+                  : { border: "1px solid var(--border)", background: "transparent", opacity: 0.4 };
                 const labelText = isCurrent ? "مستواك الحالي" : isCompleted ? "✓ أتممته" : "المستوى التالي";
                 const labelColor = isCurrent ? "#40C8C8" : isCompleted ? "#3DD6A0" : "var(--text-secondary)";
                 return (
