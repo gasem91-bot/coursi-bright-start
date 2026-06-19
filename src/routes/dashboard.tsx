@@ -102,7 +102,7 @@ function DashboardPage() {
   if (notFound) {
     return (
       <div style={{ minHeight: "100vh", background: "var(--bg-primary)", display: "flex", alignItems: "center", justifyContent: "center", padding: 24, fontFamily: font }}>
-        <div style={{ background: "rgba(13,13,13,0.55)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: "28px 32px", maxWidth: 480, textAlign: "center", color: "var(--text-primary)" }}>
+        <div style={{ background: "var(--card-glass)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)", border: "1px solid var(--card-glass-border)", borderRadius: 16, padding: "28px 32px", maxWidth: 480, textAlign: "center", color: "var(--text-primary)" }}>
           لم يتم العثور على بياناتك. تواصل مع الدعم على support@coursi.ai
         </div>
       </div>
@@ -155,7 +155,7 @@ function DashboardPage() {
 
       <main style={{ maxWidth: 860, margin: "0 auto", padding: "32px 24px" }}>
         {/* Card 1: Welcome */}
-        <section style={{ background: "rgba(13,13,13,0.55)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: "24px 28px", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+        <section style={{ background: "var(--card-glass)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)", border: "1px solid var(--card-glass-border)", borderRadius: 16, padding: "24px 28px", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
           <div>
             <h2 style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: 20 }}>مرحباً بك في COURSI</h2>
             <p style={{ color: "var(--text-secondary)", fontSize: 13, marginTop: 4 }}>{profile?.email}</p>
@@ -171,7 +171,7 @@ function DashboardPage() {
         </section>
 
         {/* Card 2: Progress */}
-        <section style={{ background: "rgba(13,13,13,0.55)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: "24px 28px", marginBottom: 16 }}>
+        <section style={{ background: "var(--card-glass)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)", border: "1px solid var(--card-glass-border)", borderRadius: 16, padding: "24px 28px", marginBottom: 16 }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <span style={{ color: "#9B55E0", fontSize: 11, letterSpacing: 2, textTransform: "uppercase", fontWeight: 700 }}>تقدّمك في الكورس</span>
             <span style={{ color: "#40C8C8", fontWeight: 700, fontSize: 22 }}>{percentage}%</span>
@@ -203,7 +203,7 @@ function DashboardPage() {
 
         {/* Card 4: Upgrade (only beginner/intermediate) */}
         {level !== "advanced" && (
-          <section style={{ background: "rgba(13,13,13,0.55)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: "20px 28px" }}>
+          <section style={{ background: "var(--card-glass)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)", border: "1px solid var(--card-glass-border)", borderRadius: 16, padding: "20px 28px" }}>
             <div style={{ color: "#9B55E0", fontSize: 11, letterSpacing: 2, textTransform: "uppercase", fontWeight: 700, marginBottom: 16 }}>✦ رحلتك لا تنتهي هنا</div>
             <div style={{ display: "flex", alignItems: "stretch", gap: 8 }}>
               {journeyLevels.map((jl, i) => {
@@ -213,7 +213,7 @@ function DashboardPage() {
                   ? { border: "1px solid rgba(123,53,192,0.3)", background: "rgba(123,53,192,0.06)" }
                   : isCompleted
                   ? { border: "1px solid rgba(61,214,160,0.2)", background: "rgba(61,214,160,0.04)", opacity: 0.6 }
-                  : { border: "1px solid #1A1A1A", background: "transparent", opacity: 0.4 };
+                  : { border: "1px solid var(--border)", background: "transparent", opacity: 0.4 };
                 const labelText = isCurrent ? "مستواك الحالي" : isCompleted ? "✓ أتممته" : "المستوى التالي";
                 const labelColor = isCurrent ? "#40C8C8" : isCompleted ? "#3DD6A0" : "var(--text-secondary)";
                 return (
@@ -243,7 +243,8 @@ function DashboardPage() {
 
 function DashboardShader() {
   const { theme } = useTheme();
-  return <ShaderBackground variant={theme === "light" ? "light" : "dark"} />;
+  const isLight = theme === "light";
+  return <ShaderBackground variant={isLight ? "light" : "dark"} style={{ opacity: isLight ? 0.4 : 1 }} />;
 }
 
 
