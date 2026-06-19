@@ -33,6 +33,14 @@ html.theme-dark, .theme-dark {
   --card-glass: rgba(13,13,13,0.55);
   --card-glass-border: rgba(255,255,255,0.08);
   --shader-opacity: 1;
+
+  --journey-current-bg: rgba(123,53,192,0.06);
+  --journey-current-border: rgba(123,53,192,0.3);
+  --journey-completed-bg: rgba(61,214,160,0.04);
+  --journey-completed-border: rgba(61,214,160,0.2);
+  --journey-future-bg: transparent;
+  --journey-future-border: var(--border);
+  --journey-future-opacity: 0.4;
 }
 
 html.theme-light, .theme-light {
