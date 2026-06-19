@@ -390,7 +390,7 @@ function CourseAIPage() {
         </aside>
 
         {/* Content */}
-        <main ref={contentScrollRef} style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", minWidth: 0, background: BG }}>
+        <main ref={contentScrollRef} style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", minWidth: 0, background: BG, paddingBottom: isMobile ? 100 : 0 }}>
           {/* Tabs */}
           <div
             style={{
