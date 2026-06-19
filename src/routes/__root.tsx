@@ -59,6 +59,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <Outlet />
+        <FloatingNav />
       </ThemeProvider>
     </QueryClientProvider>
   );
