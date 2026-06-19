@@ -380,3 +380,131 @@ html, body {
   transform: scale(1.05);
 }
 
+/* ===== Desktop navbar ===== */
+.desktop-navbar {
+  display: none;
+}
+
+@media (min-width: 769px) {
+  .desktop-navbar {
+    display: block;
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 60;
+    pointer-events: none;
+  }
+
+  .desktop-navbar-inner {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 20px 32px;
+    pointer-events: auto;
+    position: relative;
+  }
+
+  .desktop-logo-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    position: relative;
+  }
+
+  .desktop-logo-text {
+    font-family: 'Cairo', 'Noto Sans Arabic', sans-serif;
+    font-weight: 900;
+    font-size: 38px;
+    letter-spacing: 0.5px;
+    background: linear-gradient(135deg, #7B35C0, #40C8C8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    line-height: 1;
+  }
+
+  .desktop-logo-btn:hover .desktop-logo-text {
+    filter: brightness(1.15);
+  }
+
+  .desktop-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 200px;
+    background: var(--card-glass);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--card-glass-border);
+    border-radius: 16px;
+    padding: 8px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+    animation: coursi-fade-up 160ms ease-out both;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .theme-light .desktop-dropdown {
+    box-shadow: 0 12px 40px rgba(44, 36, 66, 0.18);
+  }
+
+  .desktop-dropdown-item {
+    display: block;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-family: 'Cairo', 'Noto Sans Arabic', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  .desktop-dropdown-item:hover,
+  .desktop-dropdown-item.active {
+    background: var(--accent-purple-soft);
+    color: var(--accent-purple-text);
+  }
+
+  .desktop-dropdown-sep {
+    height: 1px;
+    background: var(--border);
+    margin: 4px 8px;
+  }
+
+  .desktop-dropdown-logout {
+    display: block;
+    width: 100%;
+    text-align: inherit;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-family: 'Cairo', 'Noto Sans Arabic', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #c55;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .desktop-dropdown-logout:hover {
+    background: rgba(200, 60, 60, 0.08);
+  }
+
+  body {
+    padding-top: 72px;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    padding-top: 0;
+  }
+}
+
+
