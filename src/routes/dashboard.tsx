@@ -34,10 +34,10 @@ const font = "Noto Sans Arabic, sans-serif";
 
 const levelBadge = (level: Level) => {
   if (level === "beginner")
-    return { label: "🌱 مستوى المبتدئ", bg: "rgba(61,214,160,0.08)", border: "rgba(61,214,160,0.25)", color: "#3DD6A0" };
+    return { label: "🌱 مستوى المبتدئ", bg: "var(--accent-green-soft)", border: "var(--accent-green-border)", color: "var(--accent-green-text)" };
   if (level === "intermediate")
-    return { label: "📈 مستوى المتوسط", bg: "rgba(64,200,200,0.08)", border: "rgba(64,200,200,0.25)", color: "#40C8C8" };
-  return { label: "🔥 مستوى المتقدم", bg: "rgba(123,53,192,0.08)", border: "rgba(123,53,192,0.25)", color: "#9B55E0" };
+    return { label: "📈 مستوى المتوسط", bg: "var(--accent-cyan-soft)", border: "var(--accent-cyan-border)", color: "var(--accent-cyan-text)" };
+  return { label: "🔥 مستوى المتقدم", bg: "var(--accent-purple-soft)", border: "var(--accent-purple-border)", color: "var(--accent-purple-text)" };
 };
 
 const courseInfo = (level: Level) => {
@@ -116,7 +116,7 @@ function DashboardPage() {
   const percentage = course.total > 0 ? Math.round((completedChapters / course.total) * 100) : 0;
 
   const tierBadge = subscription?.tier === "course_ai"
-    ? { label: "باقة الكورس + مساعد AI", bg: "linear-gradient(135deg,rgba(123,53,192,0.15),rgba(64,200,200,0.1))", border: "rgba(123,53,192,0.3)", color: "#40C8C8" }
+    ? { label: "باقة الكورس + مساعد AI", bg: "linear-gradient(135deg, var(--accent-purple-soft), var(--accent-cyan-soft))", border: "var(--accent-purple-border)", color: "var(--accent-cyan-text)" }
     : { label: "باقة الكورس", bg: "var(--bg-card)", border: "var(--border)", color: "var(--text-secondary)" };
 
   const journeyLevels: { key: Level; emoji: string; name: string }[] = [
@@ -173,8 +173,8 @@ function DashboardPage() {
         {/* Card 2: Progress */}
         <section style={{ background: "var(--card-glass)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)", border: "1px solid var(--card-glass-border)", borderRadius: 16, padding: "24px 28px", marginBottom: 16 }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <span style={{ color: "#9B55E0", fontSize: 11, letterSpacing: 2, textTransform: "uppercase", fontWeight: 700 }}>تقدّمك في الكورس</span>
-            <span style={{ color: "#40C8C8", fontWeight: 700, fontSize: 22 }}>{percentage}%</span>
+            <span style={{ color: "var(--accent-purple-text)", fontSize: 11, letterSpacing: 2, textTransform: "uppercase", fontWeight: 700 }}>تقدّمك في الكورس</span>
+            <span style={{ color: "var(--accent-cyan-text)", fontWeight: 700, fontSize: 22 }}>{percentage}%</span>
           </div>
           <div style={{ width: "100%", height: 8, background: "var(--border)", borderRadius: 4, margin: "14px 0 10px", overflow: "hidden" }}>
             <div style={{ height: "100%", background: "linear-gradient(90deg, #7B35C0, #40C8C8)", borderRadius: 4, width: `${percentage}%`, transition: "width 0.8s ease" }} />
@@ -187,9 +187,9 @@ function DashboardPage() {
         </section>
 
         {/* Card 3: Course */}
-        <section style={{ background: "linear-gradient(160deg, rgba(123,53,192,0.07), rgba(64,200,200,0.03))", border: "1px solid rgba(123,53,192,0.2)", borderRadius: 16, padding: "24px 28px", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+        <section style={{ background: "var(--dashboard-course-bg)", border: "1px solid var(--dashboard-course-border)", borderRadius: 16, padding: "24px 28px", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
           <div>
-            <div style={{ color: "#9B55E0", fontSize: 11, letterSpacing: 2, textTransform: "uppercase", fontWeight: 700 }}>✦ كورسك الحالي</div>
+            <div style={{ color: "var(--accent-purple-text)", fontSize: 11, letterSpacing: 2, textTransform: "uppercase", fontWeight: 700 }}>✦ كورسك الحالي</div>
             <div style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: 18, marginTop: 6 }}>{course.name}</div>
             <div style={{ color: "var(--text-secondary)", fontSize: 13, marginTop: 4 }}>{course.meta}</div>
           </div>
@@ -204,7 +204,7 @@ function DashboardPage() {
         {/* Card 4: Upgrade (only beginner/intermediate) */}
         {level !== "advanced" && (
           <section style={{ background: "var(--card-glass)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)", border: "1px solid var(--card-glass-border)", borderRadius: 16, padding: "20px 28px" }}>
-            <div style={{ color: "#9B55E0", fontSize: 11, letterSpacing: 2, textTransform: "uppercase", fontWeight: 700, marginBottom: 16 }}>✦ رحلتك لا تنتهي هنا</div>
+            <div style={{ color: "var(--accent-purple-text)", fontSize: 11, letterSpacing: 2, textTransform: "uppercase", fontWeight: 700, marginBottom: 16 }}>✦ رحلتك لا تنتهي هنا</div>
             <div style={{ display: "flex", alignItems: "stretch", gap: 8 }}>
               {journeyLevels.map((jl, i) => {
                 const isCurrent = i === currentIdx;
@@ -215,7 +215,7 @@ function DashboardPage() {
                   ? { border: "1px solid var(--journey-completed-border)", background: "var(--journey-completed-bg)", opacity: 0.6 }
                   : { border: "1px solid var(--journey-future-border)", background: "var(--journey-future-bg)", opacity: "var(--journey-future-opacity)" };
                 const labelText = isCurrent ? "مستواك الحالي" : isCompleted ? "✓ أتممته" : "المستوى التالي";
-                const labelColor = isCurrent ? "#40C8C8" : isCompleted ? "#3DD6A0" : "var(--text-secondary)";
+                const labelColor = isCurrent ? "var(--accent-cyan-text)" : isCompleted ? "var(--accent-green-text)" : "var(--text-secondary)";
                 return (
                   <Fragment key={jl.key}>
                     <div style={{ flex: 1, textAlign: "center", padding: 14, borderRadius: 12, ...boxStyle }}>
@@ -244,7 +244,7 @@ function DashboardPage() {
 function DashboardShader() {
   const { theme } = useTheme();
   const isLight = theme === "light";
-  return <ShaderBackground variant={isLight ? "light" : "dark"} style={{ opacity: isLight ? 0.4 : 1 }} />;
+  return <ShaderBackground variant={isLight ? "light" : "dark"} style={{ opacity: isLight ? 0.28 : 1 }} />;
 }
 
 
