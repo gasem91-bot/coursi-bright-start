@@ -244,7 +244,7 @@ function DashboardPage() {
 function DashboardShader() {
   const { theme } = useTheme();
   const isLight = theme === "light";
-  return <ShaderBackground variant={isLight ? "light" : "dark"} style={{ opacity: isLight ? 0.4 : 1 }} />;
+  return <ShaderBackground variant={isLight ? "light" : "dark"} style={{ opacity: isLight ? 0.28 : 1 }} />;
 }
 
 

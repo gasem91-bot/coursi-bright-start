@@ -244,9 +244,9 @@ html, body {
   }
 
   .theme-light .floating-nav {
-    background: rgba(230, 226, 242, 0.80);
-    border: 1px solid rgba(110, 100, 140, 0.18);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    background: rgba(210, 204, 224, 0.86);
+    border: 1px solid rgba(84, 73, 116, 0.30);
+    box-shadow: 0 8px 32px rgba(44, 36, 66, 0.18);
   }
 
   body {
