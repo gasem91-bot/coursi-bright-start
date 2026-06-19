@@ -3,6 +3,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import coursiLogo from "@/assets/coursi-logo.png";
 import { COURSE_CONTENT, type QuizQuestion } from "@/lib/course-content";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { ThemeToggle } from "@/lib/theme";
 
 export const Route = createFileRoute("/course/ai")({
   component: CourseAIPage,
@@ -13,12 +15,12 @@ type Level = "beginner" | "intermediate" | "advanced";
 type Tier = "course" | "course_ai";
 
 const font = "Cairo, 'Noto Sans Arabic', sans-serif";
-const BG = "#060410";
-const BG_SOFT = "#0B0820";
+const BG = "var(--bg-primary)";
+const BG_SOFT = "var(--bg-secondary)";
 const PURPLE = "#7B35FF";
 const CYAN = "#00D4C8";
 const GOLD = "#D4AF37";
-const BORDER = "rgba(255,255,255,0.08)";
+const BORDER = "var(--border)";
 
 
 const COURSE = COURSE_CONTENT;
