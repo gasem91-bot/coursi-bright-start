@@ -17,11 +17,11 @@ export const Route = createFileRoute("/login")({
 
 const inputStyle: React.CSSProperties = {
   width: "100%",
-  background: "var(--bg-card)",
-  border: "1.5px solid #1E1E1E",
+  background: "var(--bg-secondary)",
+  border: "1.5px solid var(--border)",
   borderRadius: "10px",
   padding: "14px 16px",
-  color: "white",
+  color: "var(--text-primary)",
   fontSize: "16px",
   direction: "rtl",
   outline: "none",
@@ -111,7 +111,7 @@ function LoginPage() {
           بوابة كورس الذكاء الاصطناعي
         </p>
 
-        <div style={{ borderTop: "1px solid #1E1E1E", margin: "24px 0" }} />
+        <div style={{ borderTop: "1px solid var(--border)", margin: "24px 0" }} />
 
         <h2 style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: "22px", textAlign: "center" }}>
           مرحباً بك
@@ -187,9 +187,9 @@ function LoginPage() {
             fontSize: "13px",
           }}
         >
-          <div style={{ flex: 1, borderTop: "1px solid #1E1E1E" }} />
+          <div style={{ flex: 1, borderTop: "1px solid var(--border)" }} />
           <span>أو</span>
-          <div style={{ flex: 1, borderTop: "1px solid #1E1E1E" }} />
+          <div style={{ flex: 1, borderTop: "1px solid var(--border)" }} />
         </div>
 
         {magicSent ? (
