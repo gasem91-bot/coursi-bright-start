@@ -253,7 +253,7 @@ function CourseAIPage() {
             style={{ background: "transparent", border: "none", cursor: "pointer", padding: 0, flexShrink: 0 }}
             aria-label="العودة للوحة التحكم"
           >
-            <img src={coursiLogo} alt="COURSI" style={{ height: isMobile ? 24 : 28, display: "block" }} />
+            <img src={coursiLogo.url} alt="COURSI" style={{ height: isMobile ? 24 : 28, display: "block" }} />
           </button>
         </div>
 
