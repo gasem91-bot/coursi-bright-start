@@ -43,7 +43,7 @@ export default function MobileTopbar() {
           {initial}
         </button>
       </div>
-      <div className="mt-logo">COURS!</div>
+      <img src={logoAsset.url} alt="كورسي" className="mt-logo-img" />
     </header>
   );
 }
