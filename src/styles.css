@@ -1,23 +1,134 @@
 @import "tailwindcss";
 
 :root {
-  --coursi-bg: #060410;
-  --coursi-bg-soft: #0B0820;
+  /* Brand (constant across themes) */
   --coursi-purple: #7B35FF;
   --coursi-cyan: #00D4C8;
-  --coursi-text: #ffffff;
-  --coursi-text-soft: #B8B0D0;
-  --coursi-border: rgba(255,255,255,0.08);
+
+  /* Default = dark */
+  --bg-primary: #060410;
+  --bg-secondary: #0B0820;
+  --bg-card: #141414;
+  --border: rgba(255,255,255,0.08);
+  --text-primary: #ffffff;
+  --text-secondary: #B8B0D0;
+  --text-muted: #666666;
+
+  /* Legacy aliases */
+  --coursi-bg: var(--bg-primary);
+  --coursi-bg-soft: var(--bg-secondary);
+  --coursi-text: var(--text-primary);
+  --coursi-text-soft: var(--text-secondary);
+  --coursi-border: var(--border);
+}
+
+html.theme-dark, .theme-dark {
+  --bg-primary: #060410;
+  --bg-secondary: #0B0820;
+  --bg-card: #141414;
+  --border: rgba(255,255,255,0.08);
+  --text-primary: #ffffff;
+  --text-secondary: #B8B0D0;
+  --text-muted: #666666;
+}
+
+html.theme-light, .theme-light {
+  --bg-primary: #F5F5F7;
+  --bg-secondary: #FFFFFF;
+  --bg-card: #F0F0F2;
+  --border: #E5E5EA;
+  --text-primary: #1C1C1E;
+  --text-secondary: #6C6C70;
+  --text-muted: #AEAEB2;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body {
   font-family: 'Cairo', 'Noto Sans Arabic', sans-serif;
-  background: var(--coursi-bg);
-  color: var(--coursi-text);
+  background: var(--bg-primary);
+  color: var(--text-primary);
   direction: rtl;
   min-height: 100%;
+}
+
+/* ===== Light-theme overrides for the lesson HTML (CONTENT_CSS) ===== */
+.theme-light .coursi-content h3,
+.theme-light .coursi-content strong,
+.theme-light .coursi-content .tool-name,
+.theme-light .coursi-content .adv-tool-name,
+.theme-light .coursi-content .gallery-name,
+.theme-light .coursi-content .block-title,
+.theme-light .coursi-content .flow-node .flow-title-s,
+.theme-light .coursi-content .arch-node .arch-t { color: var(--text-primary); }
+
+.theme-light .coursi-content p,
+.theme-light .coursi-content li,
+.theme-light .coursi-content .tool-desc,
+.theme-light .coursi-content .adv-tool-desc,
+.theme-light .coursi-content .gallery-desc,
+.theme-light .coursi-content .flow-node .flow-desc-s,
+.theme-light .coursi-content .compare-table td,
+.theme-light .coursi-content .try-text,
+.theme-light .coursi-content .info-box p,
+.theme-light .coursi-content .warn-box p,
+.theme-light .coursi-content .exercise-box p,
+.theme-light .coursi-content .action-box p,
+.theme-light .coursi-content .intro-box p,
+.theme-light .coursi-content .flow-detail,
+.theme-light .coursi-content .arch-detail,
+.theme-light .coursi-content .biz-btn { color: var(--text-secondary); }
+
+.theme-light .coursi-content .tool-card,
+.theme-light .coursi-content .adv-tool-card,
+.theme-light .coursi-content .compare-wrap,
+.theme-light .coursi-content .arch-wrap,
+.theme-light .coursi-content .calc-wrap,
+.theme-light .coursi-content .biz-wrap,
+.theme-light .coursi-content .flow-wrap {
+  background: var(--bg-card);
+}
+
+.theme-light .coursi-content .calc-field input,
+.theme-light .coursi-content .biz-field input,
+.theme-light .coursi-content .biz-field textarea {
+  background: #fff;
+  color: var(--text-primary);
+}
+.theme-light .coursi-content .calc-field span,
+.theme-light .coursi-content .biz-field span,
+.theme-light .coursi-content .compare-table .cmp-label,
+.theme-light .coursi-content .calc-stat .calc-lbl { color: var(--text-secondary); }
+
+/* ===== Mobile: course portal ===== */
+.coursi-shell-mobile { height: auto !important; min-height: 100vh; overflow: visible !important; }
+.coursi-sidebar-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 90;
+  animation: coursi-fade-in 180ms ease-out both;
+}
+.coursi-sidebar-drawer {
+  position: fixed !important;
+  top: 0; right: 0; bottom: 0;
+  width: 86vw !important; max-width: 320px;
+  z-index: 100;
+  box-shadow: -8px 0 28px rgba(0,0,0,0.45);
+  animation: coursi-slide-in 220ms ease-out both;
+}
+@keyframes coursi-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes coursi-slide-in { from { transform: translateX(100%); } to { transform: translateX(0); } }
+
+@media (max-width: 720px) {
+  .coursi-content .tools-grid,
+  .coursi-content .adv-tools-grid,
+  .coursi-content .gallery-grid,
+  .coursi-content .arch-grid,
+  .coursi-content .calc-grid,
+  .coursi-content .calc-results { grid-template-columns: 1fr !important; }
+  .coursi-content .biz-grid { grid-template-columns: 1fr !important; }
+  .coursi-content .compare-wrap { overflow-x: auto; }
+  .coursi-content .compare-table { min-width: 480px; }
 }
 
 @keyframes coursi-fade-up {
