@@ -197,7 +197,7 @@ const ShaderBackground = ({ className, style, variant = "dark" }: ShaderBackgrou
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", resize);
     };
-  }, []);
+  }, [variant]);
 
   return (
     <canvas
