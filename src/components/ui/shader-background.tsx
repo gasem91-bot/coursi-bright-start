@@ -134,9 +134,10 @@ const initShaderProgram = (gl: WebGLRenderingContext, vs: string, fs: string) =>
 interface ShaderBackgroundProps {
   className?: string;
   style?: React.CSSProperties;
+  variant?: "dark" | "light";
 }
 
-const ShaderBackground = ({ className, style }: ShaderBackgroundProps) => {
+const ShaderBackground = ({ className, style, variant = "dark" }: ShaderBackgroundProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -148,7 +149,8 @@ const ShaderBackground = ({ className, style }: ShaderBackgroundProps) => {
       return;
     }
 
-    const program = initShaderProgram(gl, vsSource, fsSource);
+    const fs = variant === "light" ? fsSourceLight : fsSourceDark;
+    const program = initShaderProgram(gl, vsSource, fs);
     if (!program) return;
 
     const positionBuffer = gl.createBuffer();
