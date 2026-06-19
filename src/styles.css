@@ -38,8 +38,8 @@ html.theme-light, .theme-light {
   --bg-card: #F0F0F2;
   --border: #E5E5EA;
   --text-primary: #1C1C1E;
-  --text-secondary: #6C6C70;
-  --text-muted: #AEAEB2;
+  --text-secondary: #3A3A3C;
+  --text-muted: #636366;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
