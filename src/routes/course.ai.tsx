@@ -213,87 +213,90 @@ function CourseAIPage() {
   }
 
   return (
-    <div style={{ background: BG, color: "var(--text-primary)", height: "100vh", display: "flex", flexDirection: "column", fontFamily: font, overflow: "hidden" }}>
+    <div
+      className={isMobile ? "coursi-shell-mobile" : undefined}
+      style={{ background: BG, color: "var(--text-primary)", height: "100vh", display: "flex", flexDirection: "column", fontFamily: font, overflow: "hidden" }}
+    >
       {/* Top bar */}
       <div
         style={{
-          background: "rgba(6,4,16,0.85)",
+          background: "color-mix(in srgb, var(--bg-primary) 85%, transparent)",
           backdropFilter: "blur(10px)",
           borderBottom: `1px solid ${BORDER}`,
-          padding: "12px 24px",
+          padding: isMobile ? "10px 14px" : "12px 24px",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
+          gap: 10,
           position: "sticky",
           top: 0,
           zIndex: 50,
         }}
       >
-        <button
-          onClick={() => navigate({ to: "/dashboard" })}
-          style={{ background: "transparent", border: "none", cursor: "pointer", padding: 0 }}
-          aria-label="العودة للوحة التحكم"
-        >
-          <img src={coursiLogo} alt="COURSI" style={{ height: 28, display: "block" }} />
-        </button>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ color: "var(--text-secondary)", fontSize: 13, fontWeight: 600 }}>{course.name}</div>
-          {level === "intermediate" && (
-            <span
+        <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
+          {isMobile && (
+            <button
+              onClick={() => setSidebarOpen(true)}
+              aria-label="فتح قائمة الفصول"
               style={{
-                background: `linear-gradient(135deg, rgba(0,212,200,0.18), rgba(123,53,255,0.18))`,
-                border: `1px solid ${CYAN}`,
-                color: CYAN,
-                fontSize: 11,
-                fontWeight: 800,
-                padding: "4px 10px",
-                borderRadius: 999,
-                letterSpacing: 0.4,
+                width: 36, height: 36, borderRadius: 10,
+                background: "var(--bg-card)", border: `1px solid ${BORDER}`,
+                color: "var(--text-primary)", cursor: "pointer", fontSize: 18,
+                display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
               }}
             >
-              المستوى المتوسط
-            </span>
+              ☰
+            </button>
           )}
-          {level === "advanced" && (
-            <span
-              className="adv-shine-badge"
-              style={{
-                background: `linear-gradient(135deg, rgba(212,175,55,0.20), rgba(123,53,255,0.18))`,
-                border: `1px solid ${GOLD}`,
-                color: GOLD,
-                fontSize: 11,
-                fontWeight: 800,
-                padding: "4px 10px",
-                borderRadius: 999,
-                letterSpacing: 0.4,
-                position: "relative",
-                overflow: "hidden",
-              }}
-            >
-              المستوى المتقدم
-            </span>
-          )}
+          <button
+            onClick={() => navigate({ to: "/dashboard" })}
+            style={{ background: "transparent", border: "none", cursor: "pointer", padding: 0, flexShrink: 0 }}
+            aria-label="العودة للوحة التحكم"
+          >
+            <img src={coursiLogo} alt="COURSI" style={{ height: isMobile ? 24 : 28, display: "block" }} />
+          </button>
         </div>
 
+        {!isMobile && (
+          <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
+            <div style={{ color: "var(--text-secondary)", fontSize: 13, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{course.name}</div>
+            {level === "intermediate" && (
+              <span style={{ background: `linear-gradient(135deg, rgba(0,212,200,0.18), rgba(123,53,255,0.18))`, border: `1px solid ${CYAN}`, color: CYAN, fontSize: 11, fontWeight: 800, padding: "4px 10px", borderRadius: 999, letterSpacing: 0.4 }}>
+                المستوى المتوسط
+              </span>
+            )}
+            {level === "advanced" && (
+              <span className="adv-shine-badge" style={{ background: `linear-gradient(135deg, rgba(212,175,55,0.20), rgba(123,53,255,0.18))`, border: `1px solid ${GOLD}`, color: GOLD, fontSize: 11, fontWeight: 800, padding: "4px 10px", borderRadius: 999, letterSpacing: 0.4, position: "relative", overflow: "hidden" }}>
+                المستوى المتقدم
+              </span>
+            )}
+          </div>
+        )}
 
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
           <div style={{ color: CYAN, fontWeight: 700, fontSize: 13 }}>{toAr(pct)}%</div>
-          <div style={{ width: 100, height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 4, overflow: "hidden" }}>
+          <div style={{ width: isMobile ? 60 : 100, height: 4, background: "color-mix(in srgb, var(--text-primary) 6%, transparent)", borderRadius: 4, overflow: "hidden" }}>
             <div style={{ width: `${pct}%`, height: "100%", background: `linear-gradient(90deg,${PURPLE},${CYAN})`, transition: "width 600ms ease" }} />
           </div>
+          <ThemeToggle style={{ width: 32, height: 32, fontSize: 14 }} />
         </div>
       </div>
 
       {/* Body: sidebar + content */}
-      <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
-        {/* Sidebar (right in RTL = first child) */}
+      <div style={{ display: "flex", flex: 1, minHeight: 0, position: "relative" }}>
+        {isMobile && sidebarOpen && (
+          <div className="coursi-sidebar-overlay" onClick={() => setSidebarOpen(false)} />
+        )}
+        {/* Sidebar (right in RTL) */}
         <aside
+          className={isMobile ? "coursi-sidebar-drawer" : undefined}
           style={{
             width: 300,
             flexShrink: 0,
             background: BG_SOFT,
             borderLeft: `1px solid ${BORDER}`,
             overflowY: "auto",
+            display: isMobile && !sidebarOpen ? "none" : "block",
           }}
         >
           <div
