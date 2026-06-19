@@ -3,6 +3,7 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import coursiLogo from "@/assets/coursi-logo.png";
 import ShaderBackground from "@/components/ui/shader-background";
+import { ThemeToggle, useTheme } from "@/lib/theme";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
