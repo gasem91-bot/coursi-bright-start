@@ -30,16 +30,22 @@ html.theme-dark, .theme-dark {
   --text-primary: #ffffff;
   --text-secondary: #B8B0D0;
   --text-muted: #666666;
+  --card-glass: rgba(13,13,13,0.55);
+  --card-glass-border: rgba(255,255,255,0.08);
+  --shader-opacity: 1;
 }
 
 html.theme-light, .theme-light {
-  --bg-primary: #E8E8EC;
-  --bg-secondary: #FFFFFF;
-  --bg-card: #EAEAEE;
-  --border: #C7C7CC;
-  --text-primary: #000000;
-  --text-secondary: #3A3A3C;
-  --text-muted: #636366;
+  --bg-primary: #EFEDF5;
+  --bg-secondary: #F7F5FB;
+  --bg-card: #FFFFFF;
+  --border: #D8D5E0;
+  --text-primary: #15121F;
+  --text-secondary: #4A4660;
+  --text-muted: #8A8699;
+  --card-glass: rgba(255,255,255,0.78);
+  --card-glass-border: rgba(123,53,192,0.14);
+  --shader-opacity: 0.4;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
