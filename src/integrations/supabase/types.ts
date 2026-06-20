@@ -43,21 +43,30 @@ export type Database = {
       }
       profiles: {
         Row: {
+          country_flag: string | null
+          country_name: string | null
           created_at: string
+          display_name: string | null
           email: string | null
           id: string
           level: Database["public"]["Enums"]["user_level"]
           updated_at: string
         }
         Insert: {
+          country_flag?: string | null
+          country_name?: string | null
           created_at?: string
+          display_name?: string | null
           email?: string | null
           id: string
           level?: Database["public"]["Enums"]["user_level"]
           updated_at?: string
         }
         Update: {
+          country_flag?: string | null
+          country_name?: string | null
           created_at?: string
+          display_name?: string | null
           email?: string | null
           id?: string
           level?: Database["public"]["Enums"]["user_level"]
