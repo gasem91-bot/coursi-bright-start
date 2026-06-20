@@ -328,16 +328,11 @@ html, body {
   gap: 12px;
 }
 
-.mt-logo {
-  font-family: 'Inter', system-ui, sans-serif;
-  font-weight: 900;
-  font-size: 18px;
-  letter-spacing: 0.5px;
-  background: linear-gradient(135deg, #7B35C0, #40C8C8);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
+.mt-logo-img {
+  height: 56px;
+  width: auto;
+  display: block;
+  object-fit: contain;
 }
 
 .mt-bell {
@@ -359,21 +354,25 @@ html, body {
 }
 
 .avatar-btn {
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #7B35C0, #40C8C8);
+  background: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: 14px;
-  font-weight: 700;
-  color: #fff;
-  border: none;
+  padding: 4px;
+  border: 1px solid var(--border);
   cursor: pointer;
-  box-shadow: 0 0 12px rgba(123, 53, 192, 0.3);
+  box-shadow: 0 0 12px rgba(123, 53, 192, 0.25);
   transition: transform 0.2s ease;
+  overflow: hidden;
+}
+
+.avatar-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .avatar-btn:hover {
