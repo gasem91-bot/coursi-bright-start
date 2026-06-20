@@ -10,6 +10,7 @@ import appCss from "../styles.css?url";
 import { ThemeProvider } from "@/lib/theme";
 import FloatingNav from "@/components/floating-nav";
 import MobileTopbar from "@/components/mobile-topbar";
+import { Toaster } from "@/components/ui/sonner";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
