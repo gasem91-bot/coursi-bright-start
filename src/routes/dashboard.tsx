@@ -3,8 +3,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import coursiLogo from "@/assets/coursi-logo.png.asset.json";
-import ShaderBackground from "@/components/ui/shader-background";
-import { ThemeToggle, useTheme } from "@/lib/theme";
+import { ThemeToggle } from "@/lib/theme";
 
 export const Route = createFileRoute("/dashboard")({
   component: DashboardPage,
@@ -135,7 +134,6 @@ function DashboardPage() {
 
   return (
     <div style={{ minHeight: "100vh", background: "var(--bg-primary)", fontFamily: font, direction: "rtl", position: "relative" }}>
-      <DashboardShader />
       <div style={{ position: "relative", zIndex: 1 }}>
       {/* Navbar */}
       <nav style={{ position: "sticky", top: 0, zIndex: 10, background: "color-mix(in srgb, var(--bg-primary) 75%, transparent)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", borderBottom: "1px solid var(--border)", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
@@ -239,12 +237,6 @@ function DashboardPage() {
       </div>
     </div>
   );
-}
-
-function DashboardShader() {
-  const { theme } = useTheme();
-  const isLight = theme === "light";
-  return <ShaderBackground variant={isLight ? "light" : "dark"} style={{ opacity: isLight ? 0.28 : 1 }} />;
 }
 
 
