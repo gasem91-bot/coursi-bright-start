@@ -63,6 +63,7 @@ function RootComponent() {
         <MobileTopbar />
         <Outlet />
         <FloatingNav />
+        <Toaster />
       </ThemeProvider>
     </QueryClientProvider>
   );
