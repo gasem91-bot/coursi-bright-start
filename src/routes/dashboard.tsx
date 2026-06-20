@@ -2,9 +2,16 @@ import { Fragment } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import coursiLogo from "@/assets/coursi-logo.png";
+import arabicLogo from "@/assets/arabic-logo.png.asset.json";
 import ShaderBackground from "@/components/ui/shader-background";
 import { ThemeToggle, useTheme } from "@/lib/theme";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 
 export const Route = createFileRoute("/dashboard")({
   component: DashboardPage,
@@ -139,7 +146,26 @@ function DashboardPage() {
       <div style={{ position: "relative", zIndex: 1 }}>
       {/* Navbar */}
       <nav style={{ position: "sticky", top: 0, zIndex: 10, background: "color-mix(in srgb, var(--bg-primary) 75%, transparent)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", borderBottom: "1px solid var(--border)", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
-        <img src={coursiLogo} alt="COURSI" style={{ height: 28, width: "auto", flexShrink: 0 }} />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              type="button"
+              aria-label="القائمة"
+              style={{ background: "transparent", border: "none", padding: 0, cursor: "pointer", display: "flex", alignItems: "center", flexShrink: 0 }}
+            >
+              <img src={arabicLogo.url} alt="COURSI" style={{ height: 56, width: "auto", display: "block" }} />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" sideOffset={8} style={{ minWidth: 200, fontFamily: font }}>
+            <DropdownMenuItem onSelect={() => navigate({ to: "/dashboard" })}>🏠 الرئيسية</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => navigate({ to: "/course/ai" })}>📚 كورسي</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => navigate({ to: "/offers" })}>🎁 العروض</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => navigate({ to: "/achievements" })}>🏅 إنجازاتي</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => navigate({ to: "/profile" })}>👤 حسابي</DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onSelect={handleLogout}>🚪 خروج</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <span style={{ color: "var(--text-secondary)", fontSize: 12, flex: "1 1 auto", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{userEmail || "بوابة الذكاء الاصطناعي"}</span>
         <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
           <ThemeToggle style={{ width: 32, height: 32, fontSize: 14 }} />
