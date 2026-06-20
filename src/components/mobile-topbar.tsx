@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useRouter, useNavigate } from "@tanstack/react-router";
 import { Bell } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import logoAsset from "@/assets/coursi-logo.png.asset.json";
 
 export default function MobileTopbar() {
   const router = useRouter();
@@ -43,7 +42,7 @@ export default function MobileTopbar() {
           {initial}
         </button>
       </div>
-      <img src={logoAsset.url} alt="كورسي" className="mt-logo-img" />
+      <div className="mt-logo">COURS!</div>
     </header>
   );
 }

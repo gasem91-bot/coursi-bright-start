@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import coursiLogo from "@/assets/coursi-logo.png.asset.json";
+import coursiLogo from "@/assets/coursi-logo.png";
 import { COURSE_CONTENT, type QuizQuestion } from "@/lib/course-content";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ThemeToggle } from "@/lib/theme";
@@ -253,7 +253,7 @@ function CourseAIPage() {
             style={{ background: "transparent", border: "none", cursor: "pointer", padding: 0, flexShrink: 0 }}
             aria-label="العودة للوحة التحكم"
           >
-            <img src={coursiLogo.url} alt="COURSI" style={{ height: isMobile ? 24 : 28, display: "block" }} />
+            <img src={coursiLogo} alt="COURSI" style={{ height: isMobile ? 24 : 28, display: "block" }} />
           </button>
         </div>
 
