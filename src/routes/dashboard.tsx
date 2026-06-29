@@ -246,6 +246,21 @@ function DashboardPage() {
           </button>
         </section>
 
+        {/* Offers teaser */}
+        <section
+          onClick={() => navigate({ to: "/offers" })}
+          style={{ cursor: "pointer", background: "linear-gradient(160deg, rgba(123,53,192,0.08), transparent)", border: "1px solid rgba(123,53,192,0.2)", borderRadius: 14, padding: 16, marginBottom: 16, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}
+        >
+          <div>
+            <div style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: 14 }}>🎁 عرض خاص لك</div>
+            <div style={{ color: "var(--text-secondary)", fontSize: 12, marginTop: 2 }}>ترقَّ للمستوى التالي بخصم ١٥٪</div>
+          </div>
+          <button style={{ background: "linear-gradient(135deg, #7B35C0, #40C8C8)", color: "white", border: "none", padding: "8px 16px", borderRadius: 30, fontFamily: font, fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
+            عرض الآن ←
+          </button>
+        </section>
+
+
         {/* Card 4: Upgrade (only beginner/intermediate) */}
         {level !== "advanced" && (
           <section style={{ background: "var(--card-glass)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)", border: "1px solid var(--card-glass-border)", borderRadius: 16, padding: "20px 28px" }}>
