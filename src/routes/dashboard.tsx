@@ -165,7 +165,7 @@ function DashboardPage() {
             <DropdownMenuItem onSelect={() => navigate({ to: "/course/ai" })}>📚 كورسي</DropdownMenuItem>
             <DropdownMenuItem onSelect={() => navigate({ to: "/offers" })}>🎁 العروض</DropdownMenuItem>
             <DropdownMenuItem onSelect={() => navigate({ to: "/achievements" })}>🏅 إنجازاتي</DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => navigate({ to: "/profile" })}>👤 حسابي</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => window.dispatchEvent(new Event("cours:open-account"))}>👤 حسابي</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onSelect={handleLogout}>🚪 خروج</DropdownMenuItem>
           </DropdownMenuContent>
