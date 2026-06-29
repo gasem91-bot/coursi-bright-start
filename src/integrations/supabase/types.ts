@@ -49,8 +49,18 @@ export type Database = {
           display_name: string | null
           email: string | null
           id: string
+          last_active_date: string | null
           level: Database["public"]["Enums"]["user_level"]
+          nationality_code: string | null
+          nationality_flag: string | null
+          nationality_name: string | null
+          notification_prefs: Json
+          referral_code: string | null
+          streak_days: number
+          telegram_id: string | null
+          theme: string
           updated_at: string
+          xp_points: number
         }
         Insert: {
           country_flag?: string | null
@@ -59,8 +69,18 @@ export type Database = {
           display_name?: string | null
           email?: string | null
           id: string
+          last_active_date?: string | null
           level?: Database["public"]["Enums"]["user_level"]
+          nationality_code?: string | null
+          nationality_flag?: string | null
+          nationality_name?: string | null
+          notification_prefs?: Json
+          referral_code?: string | null
+          streak_days?: number
+          telegram_id?: string | null
+          theme?: string
           updated_at?: string
+          xp_points?: number
         }
         Update: {
           country_flag?: string | null
@@ -69,32 +89,54 @@ export type Database = {
           display_name?: string | null
           email?: string | null
           id?: string
+          last_active_date?: string | null
           level?: Database["public"]["Enums"]["user_level"]
+          nationality_code?: string | null
+          nationality_flag?: string | null
+          nationality_name?: string | null
+          notification_prefs?: Json
+          referral_code?: string | null
+          streak_days?: number
+          telegram_id?: string | null
+          theme?: string
           updated_at?: string
+          xp_points?: number
         }
         Relationships: []
       }
       subscriptions: {
         Row: {
+          amount: number
+          cancelled_at: string | null
           created_at: string
+          currency: string
           id: string
           status: string
+          stripe_session_id: string | null
           tier: Database["public"]["Enums"]["subscription_tier"]
           updated_at: string
           user_id: string
         }
         Insert: {
+          amount?: number
+          cancelled_at?: string | null
           created_at?: string
+          currency?: string
           id?: string
           status?: string
+          stripe_session_id?: string | null
           tier?: Database["public"]["Enums"]["subscription_tier"]
           updated_at?: string
           user_id: string
         }
         Update: {
+          amount?: number
+          cancelled_at?: string | null
           created_at?: string
+          currency?: string
           id?: string
           status?: string
+          stripe_session_id?: string | null
           tier?: Database["public"]["Enums"]["subscription_tier"]
           updated_at?: string
           user_id?: string
