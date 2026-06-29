@@ -10,7 +10,11 @@ import appCss from "../styles.css?url";
 import { ThemeProvider } from "@/lib/theme";
 import FloatingNav from "@/components/floating-nav";
 import MobileTopbar from "@/components/mobile-topbar";
+import AccountPanel from "@/components/account-panel";
 import { Toaster } from "@/components/ui/sonner";
+import { useStreak } from "@/hooks/use-streak";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
@@ -60,11 +64,24 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
+        <StreakRunner />
         <MobileTopbar />
         <Outlet />
         <FloatingNav />
+        <AccountPanel />
         <Toaster />
       </ThemeProvider>
     </QueryClientProvider>
   );
+}
+
+function StreakRunner() {
+  const [uid, setUid] = useState<string | undefined>();
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => setUid(session?.user?.id));
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => setUid(session?.user?.id));
+    return () => sub.subscription.unsubscribe();
+  }, []);
+  useStreak(uid);
+  return null;
 }

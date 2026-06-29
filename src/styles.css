@@ -379,3 +379,106 @@ html, body {
   transform: scale(1.05);
 }
 
+
+/* ── Account Panel ── */
+.panel-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  z-index: 299;
+}
+
+.account-panel {
+  position: fixed;
+  background: var(--bg-secondary);
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@media (min-width: 769px) {
+  .account-panel {
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 380px;
+    border-right: 1px solid var(--border);
+    transform: translateX(-100%);
+  }
+  .account-panel.open { transform: translateX(0); }
+}
+
+@media (max-width: 768px) {
+  .account-panel {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 88vh;
+    border-radius: 20px 20px 0 0;
+    border-top: 1px solid var(--border);
+    transform: translateY(100%);
+    padding-bottom: 24px;
+  }
+  .account-panel.open { transform: translateY(0); }
+}
+
+.panel-header .drawer-handle {
+  width: 40px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border);
+  margin: 12px auto 4px;
+}
+
+.panel-inline-form {
+  margin-top: 8px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.panel-input {
+  width: 100%;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  color: var(--text-primary);
+  font-size: 14px;
+  direction: rtl;
+  outline: none;
+  margin-bottom: 10px;
+  font-family: "Cairo", "Noto Sans Arabic", sans-serif;
+  transition: border-color 0.2s;
+}
+.panel-input:focus { border-color: #7B35C0; }
+
+/* ── Tablet (769–1024) ── */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .floating-nav { display: none !important; }
+  .mobile-topbar { display: none !important; }
+  .page-content { padding: 20px 24px !important; padding-bottom: 32px !important; }
+  .stats-strip {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+    overflow-x: visible !important;
+  }
+  .badges-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+}
+
+/* ── Mobile global ── */
+@media (max-width: 768px) {
+  input, textarea, select { font-size: 16px !important; }
+  button, a[class*="btn"] { min-height: 40px; }
+  .badges-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}

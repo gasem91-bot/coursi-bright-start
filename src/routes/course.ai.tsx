@@ -156,12 +156,23 @@ function CourseAIPage() {
   const markComplete = async () => {
     if (!userId) return;
     const cid = chapterId(level, activeChapter);
+    const alreadyComplete = completedIds.has(cid);
     await supabase
       .from("course_progress")
       .upsert(
         { user_id: userId, chapter_id: cid, completed: true },
         { onConflict: "user_id,chapter_id" },
       );
+    if (!alreadyComplete) {
+      // Award 10 XP for first-time completion
+      const { data: p } = await supabase
+        .from("profiles")
+        .select("xp_points")
+        .eq("id", userId)
+        .maybeSingle();
+      const current = (p as { xp_points?: number } | null)?.xp_points ?? 0;
+      await supabase.from("profiles").update({ xp_points: current + 10 }).eq("id", userId);
+    }
     await fetchProgress(userId);
   };
 

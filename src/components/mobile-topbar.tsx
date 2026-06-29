@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
-import { useRouter, useNavigate } from "@tanstack/react-router";
+import { useRouter } from "@tanstack/react-router";
 import { Bell } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import arabicLogo from "@/assets/arabic-logo.png.asset.json";
 
 export default function MobileTopbar() {
   const router = useRouter();
-  const navigate = useNavigate();
   const pathname = router.state.location.pathname;
   const [, setEmail] = useState<string>("");
 
@@ -32,7 +31,7 @@ export default function MobileTopbar() {
           type="button"
           className="avatar-btn"
           aria-label="فتح الحساب"
-          onClick={() => navigate({ to: "/profile" })}
+          onClick={() => window.dispatchEvent(new Event("cours:open-account"))}
         >
           <img src={arabicLogo.url} alt="" />
         </button>

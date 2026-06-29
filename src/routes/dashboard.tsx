@@ -27,6 +27,10 @@ interface Profile {
   id: string;
   email: string | null;
   level: Level;
+  streak_days?: number | null;
+  xp_points?: number | null;
+  nationality_flag?: string | null;
+  nationality_code?: string | null;
 }
 interface Subscription {
   tier: Tier;
@@ -161,7 +165,7 @@ function DashboardPage() {
             <DropdownMenuItem onSelect={() => navigate({ to: "/course/ai" })}>📚 كورسي</DropdownMenuItem>
             <DropdownMenuItem onSelect={() => navigate({ to: "/offers" })}>🎁 العروض</DropdownMenuItem>
             <DropdownMenuItem onSelect={() => navigate({ to: "/achievements" })}>🏅 إنجازاتي</DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => navigate({ to: "/profile" })}>👤 حسابي</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => window.dispatchEvent(new Event("cours:open-account"))}>👤 حسابي</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onSelect={handleLogout}>🚪 خروج</DropdownMenuItem>
           </DropdownMenuContent>
@@ -196,6 +200,21 @@ function DashboardPage() {
           </div>
         </section>
 
+        {/* Stats strip */}
+        <div className="stats-strip" style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 4, marginBottom: 16 }}>
+          {[
+            { icon: "🔥", value: `${profile?.streak_days ?? 0} يوم`, color: "#fb923c" },
+            { icon: "⭐", value: `${profile?.xp_points ?? 0} XP`, color: "var(--accent-purple-text)" },
+            { icon: "📚", value: `${completedChapters} فصل`, color: "var(--accent-cyan-text)" },
+            { icon: "🏳️", value: profile?.nationality_flag ? `${profile.nationality_flag} ${profile.nationality_code ?? ""}` : "حدّد دولتك", color: "var(--text-primary)" },
+          ].map((s, i) => (
+            <div key={i} style={{ flex: "0 0 auto", background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 30, padding: "10px 18px", fontSize: 13, fontWeight: 700, color: s.color, whiteSpace: "nowrap" }}>
+              {s.icon} {s.value}
+            </div>
+          ))}
+        </div>
+
+
         {/* Card 2: Progress */}
         <section style={{ background: "var(--card-glass)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)", border: "1px solid var(--card-glass-border)", borderRadius: 16, padding: "24px 28px", marginBottom: 16 }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -226,6 +245,21 @@ function DashboardPage() {
             {completedChapters === 0 ? "ابدأ الكورس ←" : "تابع من حيث توقفت ←"}
           </button>
         </section>
+
+        {/* Offers teaser */}
+        <section
+          onClick={() => navigate({ to: "/offers" })}
+          style={{ cursor: "pointer", background: "linear-gradient(160deg, rgba(123,53,192,0.08), transparent)", border: "1px solid rgba(123,53,192,0.2)", borderRadius: 14, padding: 16, marginBottom: 16, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}
+        >
+          <div>
+            <div style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: 14 }}>🎁 عرض خاص لك</div>
+            <div style={{ color: "var(--text-secondary)", fontSize: 12, marginTop: 2 }}>ترقَّ للمستوى التالي بخصم ١٥٪</div>
+          </div>
+          <button style={{ background: "linear-gradient(135deg, #7B35C0, #40C8C8)", color: "white", border: "none", padding: "8px 16px", borderRadius: 30, fontFamily: font, fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
+            عرض الآن ←
+          </button>
+        </section>
+
 
         {/* Card 4: Upgrade (only beginner/intermediate) */}
         {level !== "advanced" && (
