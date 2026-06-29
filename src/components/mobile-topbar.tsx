@@ -32,7 +32,7 @@ export default function MobileTopbar() {
           type="button"
           className="avatar-btn"
           aria-label="فتح الحساب"
-          onClick={() => navigate({ to: "/profile" })}
+          onClick={() => window.dispatchEvent(new Event("cours:open-account"))}
         >
           <img src={arabicLogo.url} alt="" />
         </button>
