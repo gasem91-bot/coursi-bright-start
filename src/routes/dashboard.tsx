@@ -27,6 +27,10 @@ interface Profile {
   id: string;
   email: string | null;
   level: Level;
+  streak_days?: number | null;
+  xp_points?: number | null;
+  nationality_flag?: string | null;
+  nationality_code?: string | null;
 }
 interface Subscription {
   tier: Tier;
