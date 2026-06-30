@@ -140,7 +140,7 @@ function ProfilePage() {
 
   const displayName = profile?.display_name?.trim() || (profile?.email || userEmail).split("@")[0];
   const initial = (displayName || "?").trim().charAt(0).toUpperCase();
-  const memberSince = profile ? arabicMonth(new Date(profile.created_at)) : "";
+  const memberSince = profile?.created_at ? arabicMonth(new Date(profile.created_at)) : "";
 
   const lb = useMemo(() => (profile ? levelBadge(profile.level) : null), [profile]);
   const tierBadge = subscription?.tier === "course_ai"
