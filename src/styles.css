@@ -379,6 +379,58 @@ html, body {
   transform: scale(1.05);
 }
 
+/* ── Desktop navbar logo + account dropdown ── */
+.navbar-logo {
+  background: transparent !important;
+  background-color: transparent !important;
+  mix-blend-mode: normal;
+}
+
+.navbar-logo img {
+  background: transparent !important;
+  background-color: transparent !important;
+  display: block;
+}
+
+.account-dropdown-menu {
+  background: var(--bg-secondary) !important;
+  background-color: var(--bg-secondary) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.5) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  z-index: 500 !important;
+  padding: 8px !important;
+  min-width: 180px;
+  color: var(--text-primary) !important;
+}
+
+.account-dropdown-menu .menu-item {
+  background: transparent !important;
+  padding: 10px 14px !important;
+  border-radius: 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  color: var(--text-primary) !important;
+  font-family: "Cairo", "Noto Sans Arabic", sans-serif !important;
+  transition: background 0.15s !important;
+  cursor: pointer !important;
+  direction: rtl;
+}
+
+.account-dropdown-menu .menu-item:hover,
+.account-dropdown-menu .menu-item:focus {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+}
+
+.account-menu-separator {
+  background: var(--border) !important;
+  margin: 6px 0 !important;
+}
+
 
 /* ── Account Panel ── */
 .panel-overlay {
@@ -457,6 +509,75 @@ html, body {
   transition: border-color 0.2s;
 }
 .panel-input:focus { border-color: #7B35C0; }
+
+.custom-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.dropdown-trigger {
+  width: 100%;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  color: var(--text-primary);
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-family: "Cairo", "Noto Sans Arabic", sans-serif;
+  direction: rtl;
+}
+
+.dropdown-trigger:focus {
+  outline: none;
+  border-color: #7B35C0;
+}
+
+.dropdown-list {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--bg-secondary) !important;
+  background-color: var(--bg-secondary) !important;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  max-height: 260px;
+  overflow-y: auto;
+  z-index: 400;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+}
+
+.dropdown-option {
+  width: 100%;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: "Cairo", "Noto Sans Arabic", sans-serif;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  direction: rtl;
+  text-align: right;
+}
+
+.dropdown-option:last-child {
+  border-bottom: none;
+}
+
+.dropdown-option:hover,
+.dropdown-option:focus,
+.dropdown-option[aria-selected="true"] {
+  background: var(--bg-card);
+  outline: none;
+}
 
 /* ── Tablet (769–1024) ── */
 @media (min-width: 769px) and (max-width: 1024px) {

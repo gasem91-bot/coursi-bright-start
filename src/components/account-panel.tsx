@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, type ReactNode } from "react";
+import { useEffect, useState, useCallback, useRef, type ReactNode } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useTheme } from "@/lib/theme";
@@ -16,6 +16,7 @@ interface ProfileRow {
   display_name?: string | null;
   nationality_flag?: string | null;
   nationality_name?: string | null;
+  nationality_code?: string | null;
   created_at?: string;
 }
 interface SubRow {
@@ -134,7 +135,7 @@ export default function AccountPanel() {
           </PanelItem>
 
           <PanelItem icon="🏳️" label="تغيير الجنسية" open={expanded === "nat"} onClick={() => toggleItem("nat")}>
-            <NationalityPicker onSaved={reload} />
+            <NationalityPicker profile={profile} onSaved={reload} />
           </PanelItem>
 
           <PanelItem icon="🔐" label="تغيير كلمة المرور" open={expanded === "pwd"} onClick={() => toggleItem("pwd")}>
@@ -244,28 +245,72 @@ function DisplayNameForm({ currentName, onSaved }: { currentName: string; onSave
   );
 }
 
-function NationalityPicker({ onSaved }: { onSaved: () => void }) {
-  const [q, setQ] = useState("");
-  const filtered = ARAB_COUNTRIES.filter((c) => c.name.includes(q));
-  const pick = async (c: typeof ARAB_COUNTRIES[number]) => {
+function NationalityPicker({ profile, onSaved }: { profile: ProfileRow | null; onSaved: () => void }) {
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const [nationalityOpen, setNationalityOpen] = useState(false);
+  const [selectedNationality, setSelectedNationality] = useState(profile?.nationality_code || "");
+
+  useEffect(() => {
+    setSelectedNationality(profile?.nationality_code || "");
+  }, [profile?.nationality_code]);
+
+  useEffect(() => {
+    if (!nationalityOpen) return;
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setNationalityOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [nationalityOpen]);
+
+  const selectedCountry = ARAB_COUNTRIES.find((country) => country.code === selectedNationality);
+
+  const handleSelectCountry = async (country: typeof ARAB_COUNTRIES[number]) => {
+    setSelectedNationality(country.code);
+    setNationalityOpen(false);
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return;
     const { error } = await supabase.from("profiles").update({
-      nationality_code: c.code, nationality_name: c.name, nationality_flag: c.flag,
+      nationality_code: country.code,
+      nationality_name: country.name,
+      nationality_flag: country.flag,
     }).eq("id", session.user.id);
-    if (error) toast.error("تعذّر الحفظ"); else { toast.success(`تم اختيار ${c.flag} ${c.name}`); onSaved(); }
+    if (error) toast.error("تعذّر الحفظ");
+    else { toast.success("تم تحديث الجنسية بنجاح ✓"); onSaved(); }
   };
   return (
-    <>
-      <input className="panel-input" placeholder="ابحث عن دولتك" value={q} onChange={(e) => setQ(e.target.value)} />
-      <div style={{ maxHeight: 220, overflowY: "auto" }}>
-        {filtered.map((c) => (
-          <button key={c.code} onClick={() => pick(c)} style={{ width: "100%", textAlign: "right", padding: "10px 12px", background: "transparent", border: "none", color: "var(--text-primary)", fontFamily: font, fontSize: 14, cursor: "pointer", borderBottom: "1px solid var(--border)" }}>
-            {c.flag} {c.name}
+    <div className="custom-dropdown" ref={dropdownRef}>
+      <button
+        type="button"
+        className="dropdown-trigger"
+        aria-haspopup="listbox"
+        aria-expanded={nationalityOpen}
+        onClick={() => setNationalityOpen((isOpen) => !isOpen)}
+      >
+        <span>{selectedCountry ? `${selectedCountry.flag} ${selectedCountry.name}` : "اختر جنسيتك"}</span>
+        <span aria-hidden="true">▾</span>
+      </button>
+
+      {nationalityOpen && (
+        <div className="dropdown-list" role="listbox">
+          {ARAB_COUNTRIES.map((country) => (
+          <button
+            type="button"
+            key={country.code}
+            className="dropdown-option"
+            role="option"
+            aria-selected={country.code === selectedNationality}
+            onClick={() => handleSelectCountry(country)}
+          >
+            <span>{country.flag}</span>
+            <span>{country.name}</span>
           </button>
-        ))}
-      </div>
-    </>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 

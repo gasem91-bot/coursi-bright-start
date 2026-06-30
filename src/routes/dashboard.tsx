@@ -155,19 +155,20 @@ function DashboardPage() {
             <button
               type="button"
               aria-label="القائمة"
+              className="navbar-logo"
               style={{ background: "transparent", border: "none", padding: 0, cursor: "pointer", display: "flex", alignItems: "center", flexShrink: 0 }}
             >
               <img src={arabicLogo.url} alt="COURSI" style={{ height: 56, width: "auto", display: "block" }} />
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" sideOffset={8} style={{ minWidth: 200, fontFamily: font }}>
-            <DropdownMenuItem onSelect={() => navigate({ to: "/dashboard" })}>🏠 الرئيسية</DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => navigate({ to: "/course/ai" })}>📚 كورسي</DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => navigate({ to: "/offers" })}>🎁 العروض</DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => navigate({ to: "/achievements" })}>🏅 إنجازاتي</DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => window.dispatchEvent(new Event("cours:open-account"))}>👤 حسابي</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onSelect={handleLogout}>🚪 خروج</DropdownMenuItem>
+          <DropdownMenuContent align="start" sideOffset={8} className="account-dropdown-menu" style={{ minWidth: 200, fontFamily: font }}>
+            <DropdownMenuItem className="menu-item" onSelect={() => navigate({ to: "/dashboard" })}>🏠 الرئيسية</DropdownMenuItem>
+            <DropdownMenuItem className="menu-item" onSelect={() => navigate({ to: "/course/ai" })}>📚 كورسي</DropdownMenuItem>
+            <DropdownMenuItem className="menu-item" onSelect={() => navigate({ to: "/offers" })}>🎁 العروض</DropdownMenuItem>
+            <DropdownMenuItem className="menu-item" onSelect={() => navigate({ to: "/achievements" })}>🏅 إنجازاتي</DropdownMenuItem>
+            <DropdownMenuItem className="menu-item" onSelect={() => window.dispatchEvent(new Event("cours:open-account"))}>👤 حسابي</DropdownMenuItem>
+            <DropdownMenuSeparator className="account-menu-separator" />
+            <DropdownMenuItem className="menu-item" onSelect={handleLogout}>🚪 خروج</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
         <span style={{ color: "var(--text-secondary)", fontSize: 12, flex: "1 1 auto", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{userEmail || "بوابة الذكاء الاصطناعي"}</span>
