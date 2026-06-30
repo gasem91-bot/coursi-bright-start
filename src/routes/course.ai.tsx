@@ -1,7 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import coursiLogo from "@/assets/coursi-logo.png";
+import coursiLogoAsset from "@/assets/arabic-logo.png.asset.json";
+const coursiLogo = coursiLogoAsset.url;
 import { COURSE_CONTENT, type QuizQuestion } from "@/lib/course-content";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ThemeToggle } from "@/lib/theme";
