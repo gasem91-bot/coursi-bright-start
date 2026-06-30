@@ -103,7 +103,7 @@ function RadarChart({ scores }: { scores: number[] }) {
 
 function ProfilePage() {
   const navigate = useNavigate();
-  const { profile, loading: profileLoading } = useProfile();
+  const { profile } = useProfile();
   const [loading, setLoading] = useState(true);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [progress, setProgress] = useState<Progress[]>([]);
