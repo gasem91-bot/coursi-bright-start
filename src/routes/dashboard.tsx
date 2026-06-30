@@ -202,16 +202,27 @@ function DashboardPage() {
         {/* Stats strip */}
         <div className="stats-strip" style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 4, marginBottom: 16 }}>
           {[
-            { icon: "🔥", value: `${profile?.streak_days ?? 0} يوم`, color: "#fb923c" },
-            { icon: "⭐", value: `${profile?.xp_points ?? 0} XP`, color: "var(--accent-purple-text)" },
-            { icon: "📚", value: `${completedChapters} فصل`, color: "var(--accent-cyan-text)" },
-            { icon: "🏳️", value: profile?.nationality_flag ? `${profile.nationality_flag} ${profile.nationality_code ?? ""}` : "حدّد دولتك", color: "var(--text-primary)" },
-          ].map((s, i) => (
-            <div key={i} style={{ flex: "0 0 auto", background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 30, padding: "10px 18px", fontSize: 13, fontWeight: 700, color: s.color, whiteSpace: "nowrap" }}>
-              {s.icon} {s.value}
-            </div>
-          ))}
+            { icon: "🔥", value: `${profile?.streak_days ?? 0} يوم`, color: "#fb923c", section: null as string | null },
+            { icon: "⭐", value: `${profile?.xp_points ?? 0} XP`, color: "var(--accent-purple-text)", section: null },
+            { icon: "📚", value: `${completedChapters} فصل`, color: "var(--accent-cyan-text)", section: null },
+            { icon: profile?.nationality_flag ? "" : "🏳️", value: profile?.nationality_flag ? `${profile.nationality_flag} ${profile.nationality_name ?? profile.nationality_code ?? ""}` : "حدّد دولتك", color: "var(--text-primary)", section: "nationality" },
+          ].map((s, i) => {
+            const isClickable = !!s.section;
+            return (
+              <div
+                key={i}
+                role={isClickable ? "button" : undefined}
+                tabIndex={isClickable ? 0 : undefined}
+                onClick={isClickable ? () => window.dispatchEvent(new CustomEvent("cours:open-account", { detail: { section: s.section } })) : undefined}
+                onKeyDown={isClickable ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); window.dispatchEvent(new CustomEvent("cours:open-account", { detail: { section: s.section } })); } } : undefined}
+                style={{ flex: "0 0 auto", background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 30, padding: "10px 18px", fontSize: 13, fontWeight: 700, color: s.color, whiteSpace: "nowrap", cursor: isClickable ? "pointer" : "default" }}
+              >
+                {s.icon} {s.value}
+              </div>
+            );
+          })}
         </div>
+
 
 
         {/* Card 2: Progress */}
