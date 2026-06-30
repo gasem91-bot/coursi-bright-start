@@ -119,7 +119,10 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       previousProfile.current = profile;
       // Optimistic update
       setProfile((prev) => (prev ? ({ ...prev, ...updates } as Profile) : prev));
-      const { error } = await supabase.from("profiles").update(updates).eq("id", userId);
+      const { error } = await supabase
+        .from("profiles")
+        .update(updates as never)
+        .eq("id", userId);
       if (error) {
         // Rollback
         setProfile(previousProfile.current);
