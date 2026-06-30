@@ -65,12 +65,14 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <StreakRunner />
-        <MobileTopbar />
-        <Outlet />
-        <FloatingNav />
-        <AccountPanel />
-        <Toaster />
+        <ProfileProvider>
+          <StreakRunner />
+          <MobileTopbar />
+          <Outlet />
+          <FloatingNav />
+          <AccountPanel />
+          <Toaster />
+        </ProfileProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );
