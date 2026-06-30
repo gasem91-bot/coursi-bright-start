@@ -2,23 +2,13 @@ import { useEffect, useState, useCallback, useRef, type ReactNode } from "react"
 import { useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useTheme } from "@/lib/theme";
+import { useProfile } from "@/contexts/ProfileContext";
 import { toast } from "sonner";
 
 const font = "Cairo, 'Noto Sans Arabic', sans-serif";
 
-type Level = "beginner" | "intermediate" | "advanced";
 type Tier = "course" | "course_ai";
 
-interface ProfileRow {
-  id: string;
-  email: string | null;
-  level: Level;
-  display_name?: string | null;
-  nationality_flag?: string | null;
-  nationality_name?: string | null;
-  nationality_code?: string | null;
-  created_at?: string;
-}
 interface SubRow {
   tier: Tier;
   status: string;
@@ -54,39 +44,48 @@ const ARAB_COUNTRIES = [
 export default function AccountPanel() {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
+  const { profile, userId, updateProfile } = useProfile();
   const [open, setOpen] = useState(false);
-  const [profile, setProfile] = useState<ProfileRow | null>(null);
   const [sub, setSub] = useState<SubRow | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
 
   const close = useCallback(() => setOpen(false), []);
 
-  useEffect(() => {
-    const onOpen = () => {
-      setOpen(true);
-      void reload();
-    };
-    window.addEventListener("cours:open-account", onOpen);
-    return () => window.removeEventListener("cours:open-account", onOpen);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const reload = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return;
-    const [{ data: p }, { data: s }] = await Promise.all([
-      supabase.from("profiles").select("*").eq("id", session.user.id).maybeSingle(),
-      supabase.from("subscriptions").select("*").eq("user_id", session.user.id).eq("status", "active").maybeSingle(),
-    ]);
-    setProfile((p as ProfileRow) ?? null);
+  const reloadSub = useCallback(async () => {
+    if (!userId) return;
+    const { data: s } = await supabase
+      .from("subscriptions")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("status", "active")
+      .maybeSingle();
     setSub((s as SubRow) ?? null);
-  };
+  }, [userId]);
+
+  useEffect(() => {
+    const onOpen = (e: Event) => {
+      setOpen(true);
+      void reloadSub();
+      const detail = (e as CustomEvent<{ section?: string }>).detail;
+      if (detail?.section) {
+        setExpanded(detail.section);
+        setTimeout(() => {
+          const el = document.getElementById(`panel-section-${detail.section}`);
+          el?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 300);
+      }
+    };
+    window.addEventListener("cours:open-account", onOpen as EventListener);
+    return () => window.removeEventListener("cours:open-account", onOpen as EventListener);
+  }, [reloadSub]);
 
   if (!open) return null;
 
   const name = profile?.display_name || profile?.email?.split("@")[0] || "طالب كورسي";
   const firstLetter = (name[0] ?? "ك").toUpperCase();
-  const memberSince = profile?.created_at ? new Date(profile.created_at).toLocaleDateString("ar-EG", { month: "long", year: "numeric" }) : "";
+  const memberSince = profile?.created_at
+    ? new Date(profile.created_at).toLocaleDateString("ar-EG", { month: "long", year: "numeric" })
+    : "";
 
   const toggleItem = (id: string) => setExpanded((e) => (e === id ? null : id));
 
@@ -130,19 +129,37 @@ export default function AccountPanel() {
         <div style={{ padding: "0 16px" }}>
           <SectionLabel>✦ إعدادات الحساب</SectionLabel>
 
-          <PanelItem icon="✏️" label="تغيير الاسم المعروض" open={expanded === "name"} onClick={() => toggleItem("name")}>
-            <DisplayNameForm currentName={profile?.display_name ?? ""} onSaved={reload} />
+          <PanelItem id="panel-section-name" icon="✏️" label="تغيير الاسم المعروض" open={expanded === "name"} onClick={() => toggleItem("name")}>
+            <DisplayNameForm
+              currentName={profile?.display_name ?? ""}
+              onSave={async (v) => {
+                const { error } = await updateProfile({ display_name: v });
+                if (error) toast.error("تعذّر الحفظ");
+                else toast.success("تم الحفظ ✓");
+              }}
+            />
           </PanelItem>
 
-          <PanelItem icon="🏳️" label="تغيير الجنسية" open={expanded === "nat"} onClick={() => toggleItem("nat")}>
-            <NationalityPicker profile={profile} onSaved={reload} />
+          <PanelItem id="panel-section-nationality" icon="🏳️" label="تغيير الجنسية" open={expanded === "nationality"} onClick={() => toggleItem("nationality")}>
+            <NationalityPicker
+              currentCode={profile?.nationality_code ?? ""}
+              onSelect={async (country) => {
+                const { error } = await updateProfile({
+                  nationality_code: country.code,
+                  nationality_name: country.name,
+                  nationality_flag: country.flag,
+                });
+                if (error) toast.error("تعذّر الحفظ");
+                else toast.success("تم تحديث الجنسية بنجاح ✓");
+              }}
+            />
           </PanelItem>
 
-          <PanelItem icon="🔐" label="تغيير كلمة المرور" open={expanded === "pwd"} onClick={() => toggleItem("pwd")}>
+          <PanelItem id="panel-section-pwd" icon="🔐" label="تغيير كلمة المرور" open={expanded === "pwd"} onClick={() => toggleItem("pwd")}>
             <PasswordForm />
           </PanelItem>
 
-          <PanelItem icon="📧" label="تغيير البريد الإلكتروني" open={expanded === "email"} onClick={() => toggleItem("email")}>
+          <PanelItem id="panel-section-email" icon="📧" label="تغيير البريد الإلكتروني" open={expanded === "email"} onClick={() => toggleItem("email")}>
             <EmailForm />
           </PanelItem>
 
@@ -207,15 +224,16 @@ function Row({ label, value }: { label: string; value: ReactNode }) {
 }
 
 interface PanelItemProps {
+  id?: string;
   icon: string;
   label: string;
   onClick?: () => void;
   open?: boolean;
   children?: ReactNode;
 }
-function PanelItem({ icon, label, onClick, open, children }: PanelItemProps) {
+function PanelItem({ id, icon, label, onClick, open, children }: PanelItemProps) {
   return (
-    <div style={{ marginBottom: 8 }}>
+    <div id={id} style={{ marginBottom: 8, scrollMarginTop: 80 }}>
       <button onClick={onClick} style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 14px", background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 10, color: "var(--text-primary)", fontFamily: font, fontSize: 14, cursor: "pointer", direction: "rtl" }}>
         <span><span style={{ marginLeft: 8 }}>{icon}</span>{label}</span>
         <span style={{ color: "var(--text-muted)" }}>{open ? "▾" : "‹"}</span>
@@ -225,17 +243,14 @@ function PanelItem({ icon, label, onClick, open, children }: PanelItemProps) {
   );
 }
 
-function DisplayNameForm({ currentName, onSaved }: { currentName: string; onSaved: () => void }) {
+function DisplayNameForm({ currentName, onSave }: { currentName: string; onSave: (v: string) => Promise<void> }) {
   const [name, setName] = useState(currentName);
   const [saving, setSaving] = useState(false);
+  useEffect(() => setName(currentName), [currentName]);
   const save = async () => {
     setSaving(true);
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) { setSaving(false); return; }
-    const { error } = await supabase.from("profiles").update({ display_name: name }).eq("id", session.user.id);
+    await onSave(name);
     setSaving(false);
-    if (error) toast.error("تعذّر الحفظ");
-    else { toast.success("تم الحفظ ✓"); onSaved(); }
   };
   return (
     <>
@@ -245,14 +260,15 @@ function DisplayNameForm({ currentName, onSaved }: { currentName: string; onSave
   );
 }
 
-function NationalityPicker({ profile, onSaved }: { profile: ProfileRow | null; onSaved: () => void }) {
+function NationalityPicker({
+  currentCode,
+  onSelect,
+}: {
+  currentCode: string;
+  onSelect: (country: typeof ARAB_COUNTRIES[number]) => Promise<void>;
+}) {
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const [nationalityOpen, setNationalityOpen] = useState(false);
-  const [selectedNationality, setSelectedNationality] = useState(profile?.nationality_code || "");
-
-  useEffect(() => {
-    setSelectedNationality(profile?.nationality_code || "");
-  }, [profile?.nationality_code]);
 
   useEffect(() => {
     if (!nationalityOpen) return;
@@ -265,21 +281,13 @@ function NationalityPicker({ profile, onSaved }: { profile: ProfileRow | null; o
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [nationalityOpen]);
 
-  const selectedCountry = ARAB_COUNTRIES.find((country) => country.code === selectedNationality);
+  const selectedCountry = ARAB_COUNTRIES.find((country) => country.code === currentCode);
 
   const handleSelectCountry = async (country: typeof ARAB_COUNTRIES[number]) => {
-    setSelectedNationality(country.code);
     setNationalityOpen(false);
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return;
-    const { error } = await supabase.from("profiles").update({
-      nationality_code: country.code,
-      nationality_name: country.name,
-      nationality_flag: country.flag,
-    }).eq("id", session.user.id);
-    if (error) toast.error("تعذّر الحفظ");
-    else { toast.success("تم تحديث الجنسية بنجاح ✓"); onSaved(); }
+    await onSelect(country);
   };
+
   return (
     <div className="custom-dropdown" ref={dropdownRef}>
       <button
@@ -296,17 +304,17 @@ function NationalityPicker({ profile, onSaved }: { profile: ProfileRow | null; o
       {nationalityOpen && (
         <div className="dropdown-list" role="listbox">
           {ARAB_COUNTRIES.map((country) => (
-          <button
-            type="button"
-            key={country.code}
-            className="dropdown-option"
-            role="option"
-            aria-selected={country.code === selectedNationality}
-            onClick={() => handleSelectCountry(country)}
-          >
-            <span>{country.flag}</span>
-            <span>{country.name}</span>
-          </button>
+            <button
+              type="button"
+              key={country.code}
+              className="dropdown-option"
+              role="option"
+              aria-selected={country.code === currentCode}
+              onClick={() => handleSelectCountry(country)}
+            >
+              <span>{country.flag}</span>
+              <span>{country.name}</span>
+            </button>
           ))}
         </div>
       )}
