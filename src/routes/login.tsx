@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import coursiLogo from "@/assets/coursi-logo.png";
+import coursiLogo from "@/assets/arabic-logo.png.asset.json";
 import ShaderBackground from "@/components/ui/shader-background";
 import { ThemeToggle, useTheme } from "@/lib/theme";
 
@@ -103,9 +103,9 @@ function LoginPage() {
         }}
       >
         <img
-          src={coursiLogo}
+          src={coursiLogo.url}
           alt="COURSI"
-          style={{ display: "block", margin: "0 auto", width: "140px", height: "auto" }}
+          style={{ display: "block", margin: "0 auto", width: "180px", height: "auto", background: "transparent" }}
         />
         <p style={{ color: "var(--text-secondary)", fontSize: "13px", textAlign: "center", marginTop: "6px" }}>
           بوابة كورس الذكاء الاصطناعي
