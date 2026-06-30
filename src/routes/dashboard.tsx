@@ -205,7 +205,7 @@ function DashboardPage() {
             { icon: "🔥", value: `${profile?.streak_days ?? 0} يوم`, color: "#fb923c", section: null as string | null },
             { icon: "⭐", value: `${profile?.xp_points ?? 0} XP`, color: "var(--accent-purple-text)", section: null },
             { icon: "📚", value: `${completedChapters} فصل`, color: "var(--accent-cyan-text)", section: null },
-            { icon: profile?.nationality_flag ? "" : "🏳️", value: profile?.nationality_flag ? `${profile.nationality_flag} ${profile.nationality_name ?? profile.nationality_code ?? ""}` : "حدّد دولتك", color: "var(--text-primary)", section: "nationality" },
+            { icon: profile?.nationality_flag ?? "🏳️", value: profile?.nationality_flag ? (profile.nationality_name ?? "") : "حدّد دولتك", color: "var(--text-primary)", section: "nationality" },
           ].map((s, i) => {
             const isClickable = !!s.section;
             return (
