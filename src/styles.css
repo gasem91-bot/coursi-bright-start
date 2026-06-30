@@ -107,7 +107,7 @@ html.theme-light, .theme-light {
 .theme-light ::-ms-input-placeholder { color: #8E8E93; }
 
 html, body {
-  font-family: 'Cairo', 'Noto Sans Arabic', sans-serif;
+  font-family: 'Twemoji Country Flags', 'Cairo', 'Noto Sans Arabic', 'Noto Color Emoji', sans-serif;
   background: var(--bg-primary);
   color: var(--text-primary);
   direction: rtl;
@@ -414,7 +414,7 @@ html, body {
   align-items: center !important;
   gap: 8px !important;
   color: var(--text-primary) !important;
-  font-family: "Cairo", "Noto Sans Arabic", sans-serif !important;
+  font-family: "Twemoji Country Flags", "Cairo", "Noto Sans Arabic", "Noto Color Emoji", sans-serif !important;
   transition: background 0.15s !important;
   cursor: pointer !important;
   direction: rtl;
@@ -505,7 +505,7 @@ html, body {
   direction: rtl;
   outline: none;
   margin-bottom: 10px;
-  font-family: "Cairo", "Noto Sans Arabic", sans-serif;
+  font-family: "Twemoji Country Flags", "Cairo", "Noto Sans Arabic", "Noto Color Emoji", sans-serif;
   transition: border-color 0.2s;
 }
 .panel-input:focus { border-color: #7B35C0; }
@@ -527,7 +527,7 @@ html, body {
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
-  font-family: "Cairo", "Noto Sans Arabic", sans-serif;
+  font-family: "Twemoji Country Flags", "Cairo", "Noto Sans Arabic", "Noto Color Emoji", sans-serif;
   direction: rtl;
 }
 
@@ -560,7 +560,7 @@ html, body {
   cursor: pointer;
   color: var(--text-primary);
   font-size: 14px;
-  font-family: "Cairo", "Noto Sans Arabic", sans-serif;
+  font-family: "Twemoji Country Flags", "Cairo", "Noto Sans Arabic", "Noto Color Emoji", sans-serif;
   background: transparent;
   border: none;
   border-bottom: 1px solid var(--border);
