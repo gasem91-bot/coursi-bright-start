@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useProfile } from "@/contexts/ProfileContext";
 
 export const Route = createFileRoute("/achievements")({
   component: AchievementsPage,
@@ -20,11 +21,9 @@ interface Badge {
 
 function AchievementsPage() {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
-  const [streak, setStreak] = useState(0);
-  const [xp, setXp] = useState(0);
-  const [level, setLevel] = useState<Level>("beginner");
+  const { profile, loading: profileLoading } = useProfile();
   const [completedChapters, setCompletedChapters] = useState(0);
+  const [loadingProgress, setLoadingProgress] = useState(true);
 
   useEffect(() => {
     (async () => {
@@ -33,19 +32,20 @@ function AchievementsPage() {
         navigate({ to: "/login" });
         return;
       }
-      const uid = session.user.id;
-      const [{ data: profile }, { data: progress }] = await Promise.all([
-        supabase.from("profiles").select("streak_days, xp_points, level").eq("id", uid).maybeSingle(),
-        supabase.from("course_progress").select("completed").eq("user_id", uid).eq("completed", true),
-      ]);
-      const p = (profile ?? {}) as { streak_days?: number; xp_points?: number; level?: Level };
-      setStreak(p.streak_days ?? 0);
-      setXp(p.xp_points ?? 0);
-      setLevel(p.level ?? "beginner");
+      const { data: progress } = await supabase
+        .from("course_progress")
+        .select("completed")
+        .eq("user_id", session.user.id)
+        .eq("completed", true);
       setCompletedChapters((progress ?? []).length);
-      setLoading(false);
+      setLoadingProgress(false);
     })();
   }, [navigate]);
+
+  const streak = profile?.streak_days ?? 0;
+  const xp = profile?.xp_points ?? 0;
+  const level: Level = (profile?.level as Level) ?? "beginner";
+  const loading = profileLoading || loadingProgress;
 
   const totals = { beginner: 8, intermediate: 10, advanced: 12 } as const;
   const certificates =

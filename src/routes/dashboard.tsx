@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import arabicLogo from "@/assets/arabic-logo.png.asset.json";
 import ShaderBackground from "@/components/ui/shader-background";
 import { ThemeToggle, useTheme } from "@/lib/theme";
+import { useProfile } from "@/contexts/ProfileContext";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -59,8 +60,8 @@ const courseInfo = (level: Level) => {
 
 function DashboardPage() {
   const navigate = useNavigate();
+  const { profile, loading: profileLoading } = useProfile();
   const [loading, setLoading] = useState(true);
-  const [profile, setProfile] = useState<Profile | null>(null);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [progress, setProgress] = useState<Progress[]>([]);
   const [userEmail, setUserEmail] = useState<string>("");
@@ -76,24 +77,21 @@ function DashboardPage() {
       setUserEmail(session.user.email ?? "");
 
       const userId = session.user.id;
-      const [{ data: p }, { data: s }, { data: pr }] = await Promise.all([
-        supabase.from("profiles").select("*").eq("id", userId).maybeSingle(),
+      const [{ data: s }, { data: pr }] = await Promise.all([
         supabase.from("subscriptions").select("*").eq("user_id", userId).eq("status", "active").maybeSingle(),
         supabase.from("course_progress").select("*").eq("user_id", userId),
       ]);
 
-      if (!p) {
-        setNotFound(true);
-        setLoading(false);
-        return;
-      }
-      setProfile(p as Profile);
       setSubscription(s as Subscription | null);
       setProgress((pr as Progress[]) || []);
       setLoading(false);
     };
     run();
   }, [navigate]);
+
+  useEffect(() => {
+    if (!profileLoading && !profile && !loading) setNotFound(true);
+  }, [profileLoading, profile, loading]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -204,16 +202,27 @@ function DashboardPage() {
         {/* Stats strip */}
         <div className="stats-strip" style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 4, marginBottom: 16 }}>
           {[
-            { icon: "🔥", value: `${profile?.streak_days ?? 0} يوم`, color: "#fb923c" },
-            { icon: "⭐", value: `${profile?.xp_points ?? 0} XP`, color: "var(--accent-purple-text)" },
-            { icon: "📚", value: `${completedChapters} فصل`, color: "var(--accent-cyan-text)" },
-            { icon: "🏳️", value: profile?.nationality_flag ? `${profile.nationality_flag} ${profile.nationality_code ?? ""}` : "حدّد دولتك", color: "var(--text-primary)" },
-          ].map((s, i) => (
-            <div key={i} style={{ flex: "0 0 auto", background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 30, padding: "10px 18px", fontSize: 13, fontWeight: 700, color: s.color, whiteSpace: "nowrap" }}>
-              {s.icon} {s.value}
-            </div>
-          ))}
+            { icon: "🔥", value: `${profile?.streak_days ?? 0} يوم`, color: "#fb923c", section: null as string | null },
+            { icon: "⭐", value: `${profile?.xp_points ?? 0} XP`, color: "var(--accent-purple-text)", section: null },
+            { icon: "📚", value: `${completedChapters} فصل`, color: "var(--accent-cyan-text)", section: null },
+            { icon: profile?.nationality_flag ? "" : "🏳️", value: profile?.nationality_flag ? `${profile.nationality_flag} ${profile.nationality_name ?? profile.nationality_code ?? ""}` : "حدّد دولتك", color: "var(--text-primary)", section: "nationality" },
+          ].map((s, i) => {
+            const isClickable = !!s.section;
+            return (
+              <div
+                key={i}
+                role={isClickable ? "button" : undefined}
+                tabIndex={isClickable ? 0 : undefined}
+                onClick={isClickable ? () => window.dispatchEvent(new CustomEvent("cours:open-account", { detail: { section: s.section } })) : undefined}
+                onKeyDown={isClickable ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); window.dispatchEvent(new CustomEvent("cours:open-account", { detail: { section: s.section } })); } } : undefined}
+                style={{ flex: "0 0 auto", background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 30, padding: "10px 18px", fontSize: 13, fontWeight: 700, color: s.color, whiteSpace: "nowrap", cursor: isClickable ? "pointer" : "default" }}
+              >
+                {s.icon} {s.value}
+              </div>
+            );
+          })}
         </div>
+
 
 
         {/* Card 2: Progress */}

@@ -15,6 +15,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { useStreak } from "@/hooks/use-streak";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { ProfileProvider } from "@/contexts/ProfileContext";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
@@ -64,12 +65,14 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <StreakRunner />
-        <MobileTopbar />
-        <Outlet />
-        <FloatingNav />
-        <AccountPanel />
-        <Toaster />
+        <ProfileProvider>
+          <StreakRunner />
+          <MobileTopbar />
+          <Outlet />
+          <FloatingNav />
+          <AccountPanel />
+          <Toaster />
+        </ProfileProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

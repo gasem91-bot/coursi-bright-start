@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import arabicLogo from "@/assets/arabic-logo.png.asset.json";
 import { ThemeToggle } from "@/lib/theme";
+import { useProfile } from "@/contexts/ProfileContext";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -102,8 +103,8 @@ function RadarChart({ scores }: { scores: number[] }) {
 
 function ProfilePage() {
   const navigate = useNavigate();
+  const { profile } = useProfile();
   const [loading, setLoading] = useState(true);
-  const [profile, setProfile] = useState<Profile | null>(null);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [progress, setProgress] = useState<Progress[]>([]);
   const [userEmail, setUserEmail] = useState("");
@@ -117,12 +118,10 @@ function ProfilePage() {
       }
       setUserEmail(session.user.email ?? "");
       const userId = session.user.id;
-      const [{ data: p }, { data: s }, { data: pr }] = await Promise.all([
-        supabase.from("profiles").select("*").eq("id", userId).maybeSingle(),
+      const [{ data: s }, { data: pr }] = await Promise.all([
         supabase.from("subscriptions").select("*").eq("user_id", userId).eq("status", "active").maybeSingle(),
         supabase.from("course_progress").select("*").eq("user_id", userId),
       ]);
-      setProfile(p as Profile | null);
       setSubscription(s as Subscription | null);
       setProgress((pr as Progress[]) || []);
       setLoading(false);
@@ -141,7 +140,7 @@ function ProfilePage() {
 
   const displayName = profile?.display_name?.trim() || (profile?.email || userEmail).split("@")[0];
   const initial = (displayName || "?").trim().charAt(0).toUpperCase();
-  const memberSince = profile ? arabicMonth(new Date(profile.created_at)) : "";
+  const memberSince = profile?.created_at ? arabicMonth(new Date(profile.created_at)) : "";
 
   const lb = useMemo(() => (profile ? levelBadge(profile.level) : null), [profile]);
   const tierBadge = subscription?.tier === "course_ai"
