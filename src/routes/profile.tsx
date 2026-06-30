@@ -102,8 +102,8 @@ function RadarChart({ scores }: { scores: number[] }) {
 
 function ProfilePage() {
   const navigate = useNavigate();
+  const { profile, loading: profileLoading } = useProfile();
   const [loading, setLoading] = useState(true);
-  const [profile, setProfile] = useState<Profile | null>(null);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [progress, setProgress] = useState<Progress[]>([]);
   const [userEmail, setUserEmail] = useState("");
@@ -117,12 +117,10 @@ function ProfilePage() {
       }
       setUserEmail(session.user.email ?? "");
       const userId = session.user.id;
-      const [{ data: p }, { data: s }, { data: pr }] = await Promise.all([
-        supabase.from("profiles").select("*").eq("id", userId).maybeSingle(),
+      const [{ data: s }, { data: pr }] = await Promise.all([
         supabase.from("subscriptions").select("*").eq("user_id", userId).eq("status", "active").maybeSingle(),
         supabase.from("course_progress").select("*").eq("user_id", userId),
       ]);
-      setProfile(p as Profile | null);
       setSubscription(s as Subscription | null);
       setProgress((pr as Progress[]) || []);
       setLoading(false);
