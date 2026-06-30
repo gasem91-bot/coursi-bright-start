@@ -97,7 +97,12 @@ html.theme-light, .theme-light {
   --journey-future-opacity: 1;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: inherit; }
+
+/* Force flag emoji font everywhere — Windows/Chrome have no native flag glyphs */
+:root, html, body, *, *::before, *::after {
+  font-family: 'Twemoji Country Flags', 'Cairo', 'Noto Sans Arabic', 'Noto Color Emoji', sans-serif;
+}
 
 ::placeholder { color: var(--text-muted); opacity: 1; }
 .theme-light ::placeholder { color: #8E8E93; }
