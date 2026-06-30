@@ -60,8 +60,8 @@ const courseInfo = (level: Level) => {
 
 function DashboardPage() {
   const navigate = useNavigate();
+  const { profile, loading: profileLoading } = useProfile();
   const [loading, setLoading] = useState(true);
-  const [profile, setProfile] = useState<Profile | null>(null);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [progress, setProgress] = useState<Progress[]>([]);
   const [userEmail, setUserEmail] = useState<string>("");
@@ -77,24 +77,21 @@ function DashboardPage() {
       setUserEmail(session.user.email ?? "");
 
       const userId = session.user.id;
-      const [{ data: p }, { data: s }, { data: pr }] = await Promise.all([
-        supabase.from("profiles").select("*").eq("id", userId).maybeSingle(),
+      const [{ data: s }, { data: pr }] = await Promise.all([
         supabase.from("subscriptions").select("*").eq("user_id", userId).eq("status", "active").maybeSingle(),
         supabase.from("course_progress").select("*").eq("user_id", userId),
       ]);
 
-      if (!p) {
-        setNotFound(true);
-        setLoading(false);
-        return;
-      }
-      setProfile(p as Profile);
       setSubscription(s as Subscription | null);
       setProgress((pr as Progress[]) || []);
       setLoading(false);
     };
     run();
   }, [navigate]);
+
+  useEffect(() => {
+    if (!profileLoading && !profile && !loading) setNotFound(true);
+  }, [profileLoading, profile, loading]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
