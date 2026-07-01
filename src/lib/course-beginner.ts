@@ -154,6 +154,11 @@ ${learn([
   "الأدوات المجانية التي يمكنك البدء بها فوراً",
 ])}
 
+<div class="concept-diagram">
+  <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CToPP2SDwUfirzHh6Rbzt3Wuos/hf_20260630_163958_e8886979-0c92-4ec1-bbf4-a3270389f251.png" alt="خريطة أدوات AI الخمس" loading="lazy" />
+  <div class="concept-diagram-caption">خريطة الأدوات الخمس الأساسية لكل مستخدم AI محترف</div>
+</div>
+
 <h3>الفئة الأولى — أدوات الكتابة والمحادثة</h3>
 <p>هذه الأدوات تُجيب على أسئلتك، تكتب لك، تُلخّص، تترجم، وتحلل.</p>
 ${tools([
@@ -380,6 +385,11 @@ ${learn([
   <li><strong>الطول:</strong> كم كلمة أو كم نقطة</li>
   <li><strong>الأسلوب:</strong> رسمي، غير رسمي، بسيط، تقني</li>
 </ul>
+
+<div class="concept-diagram">
+  <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CToPP2SDwUfirzHh6Rbzt3Wuos/hf_20260630_164005_9e33412c-7c53-4678-b15a-08693347ac53.png" alt="صيغة الأمر الاحترافي" loading="lazy" />
+  <div class="concept-diagram-caption">الصيغة الأربعة لكل أمر AI احترافي — احفظها واستخدمها في كل مرة</div>
+</div>
 
 <h3>رابعاً — تقنيات مُحسّنة</h3>
 <p><strong>تحديد الدور:</strong> "أنت خبير تسويق رقمي مع عشر سنوات من الخبرة في السوق الخليجي..."</p>
@@ -806,6 +816,11 @@ ${learn([
   <li>ترجم الأبحاث العلمية وفسّرها</li>
 </ul>
 
+<div class="concept-diagram">
+  <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CToPP2SDwUfirzHh6Rbzt3Wuos/hf_20260701_154743_0a84288a-f499-4d34-8e5f-788e1e1c15a2.png" alt="مصفوفة مهام AI والإنسان" loading="lazy" />
+  <div class="concept-diagram-caption">ما تُفوّض لـ AI وما تحتفظ به لنفسك — المعادلة الذهبية</div>
+</div>
+
 <div class="info-box">
   <p class="box-title">سرّ المحترفين</p>
   <p>اختر مهمة واحدة متكررة في يومك (مثل كتابة ردود الإيميل). صمّم لها طلباً محسّناً مرة واحدة، ثم استخدمه كقالب يومياً. ستوفر ساعات.</p>
@@ -1170,6 +1185,11 @@ ${learn([
   "إنتاج محتوى متكامل من الصفر",
   "تقديم النتيجة النهائية بشكل احترافي",
 ])}
+
+<div class="concept-diagram">
+  <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CToPP2SDwUfirzHh6Rbzt3Wuos/hf_20260701_154837_712c87c1-e3d2-4bf8-9b9c-27fe33e70d6a.png" alt="العمل مع AI وبدونه" loading="lazy" />
+  <div class="concept-diagram-caption">الفرق الحقيقي بين من يعمل مع AI ومن لا يعمل — الفجوة تتسع كل يوم</div>
+</div>
 
 <h3>اختر مشروعاً واحداً</h3>
 <ul class="bullet-list">

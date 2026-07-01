@@ -608,3 +608,57 @@ html, body {
     grid-template-columns: repeat(2, 1fr) !important;
   }
 }
+
+/* ── Course Cover Image on Dashboard Card ── */
+.course-card-cover {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+  border-radius: 16px 16px 0 0;
+  overflow: hidden;
+}
+.course-cover-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.course-cover-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 30%, var(--bg-secondary) 100%);
+}
+.course-card-body { padding: 20px; }
+
+/* ── Sidebar Thumbnail in Course Viewer ── */
+.sidebar-cover-thumb {
+  width: 100%;
+  aspect-ratio: 16/9;
+  border-radius: 10px;
+  object-fit: cover;
+  margin-bottom: 14px;
+  border: 1px solid var(--border);
+}
+
+/* ── Inline Concept Diagrams inside Chapters ── */
+.concept-diagram {
+  margin: 24px 0;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+}
+.concept-diagram img {
+  width: 100%;
+  display: block;
+}
+.concept-diagram-caption {
+  padding: 10px 16px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-align: center;
+  border-top: 1px solid var(--border);
+  background: var(--bg-secondary);
+  font-family: 'Noto Sans Arabic', sans-serif;
+  direction: rtl;
+}

@@ -3,6 +3,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import arabicLogo from "@/assets/arabic-logo.png.asset.json";
+import { COURSE_CONTENT } from "@/lib/course-content";
 import ShaderBackground from "@/components/ui/shader-background";
 import { ThemeToggle, useTheme } from "@/lib/theme";
 import { useProfile } from "@/contexts/ProfileContext";
@@ -242,18 +243,31 @@ function DashboardPage() {
         </section>
 
         {/* Card 3: Course */}
-        <section style={{ background: "var(--dashboard-course-bg)", border: "1px solid var(--dashboard-course-border)", borderRadius: 16, padding: "24px 28px", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
-          <div>
-            <div style={{ color: "var(--accent-purple-text)", fontSize: 11, letterSpacing: 2, textTransform: "uppercase", fontWeight: 700 }}>✦ كورسك الحالي</div>
-            <div style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: 18, marginTop: 6 }}>{course.name}</div>
-            <div style={{ color: "var(--text-secondary)", fontSize: 13, marginTop: 4 }}>{course.meta}</div>
+        <section style={{ background: "var(--dashboard-course-bg)", border: "1px solid var(--dashboard-course-border)", borderRadius: 16, marginBottom: 16, overflow: "hidden" }}>
+          {COURSE_CONTENT[level]?.coverImage && (
+            <div className="course-card-cover">
+              <img
+                src={COURSE_CONTENT[level].coverImage}
+                alt={course.name}
+                className="course-cover-img"
+                loading="lazy"
+              />
+              <div className="course-cover-overlay" />
+            </div>
+          )}
+          <div className="course-card-body" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap", padding: "24px 28px" }}>
+            <div>
+              <div style={{ color: "var(--accent-purple-text)", fontSize: 11, letterSpacing: 2, textTransform: "uppercase", fontWeight: 700 }}>✦ كورسك الحالي</div>
+              <div style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: 18, marginTop: 6 }}>{course.name}</div>
+              <div style={{ color: "var(--text-secondary)", fontSize: 13, marginTop: 4 }}>{course.meta}</div>
+            </div>
+            <button
+              onClick={() => { window.location.href = "/course/ai"; }}
+              style={{ background: "linear-gradient(135deg, #7B35C0, #40C8C8)", color: "white", fontFamily: font, fontSize: 14, fontWeight: 700, padding: "12px 24px", borderRadius: 50, border: "none", cursor: "pointer", whiteSpace: "nowrap", boxShadow: "0 0 20px rgba(123,53,192,0.3)" }}
+            >
+              {completedChapters === 0 ? "ابدأ الكورس ←" : "تابع من حيث توقفت ←"}
+            </button>
           </div>
-          <button
-            onClick={() => { window.location.href = "/course/ai"; }}
-            style={{ background: "linear-gradient(135deg, #7B35C0, #40C8C8)", color: "white", fontFamily: font, fontSize: 14, fontWeight: 700, padding: "12px 24px", borderRadius: 50, border: "none", cursor: "pointer", whiteSpace: "nowrap", boxShadow: "0 0 20px rgba(123,53,192,0.3)" }}
-          >
-            {completedChapters === 0 ? "ابدأ الكورس ←" : "تابع من حيث توقفت ←"}
-          </button>
         </section>
 
         {/* Offers teaser */}

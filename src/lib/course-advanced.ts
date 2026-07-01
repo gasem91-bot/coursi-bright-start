@@ -311,6 +311,11 @@ ${learn([
 <h3>الفكرة في جملة واحدة</h3>
 <p>قبل أن يجيب النموذج، نُحضر له من مكتبتك أكثر القطع صلةً بالسؤال، ثم نطلب منه الإجابة معتمداً عليها فقط. النتيجة: إجابات مبنية على بياناتك الحقيقية بدون هلوسات.</p>
 
+<div class="concept-diagram">
+  <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CToPP2SDwUfirzHh6Rbzt3Wuos/hf_20260630_164020_e50f6a64-7dbb-476e-a96c-a0493a103c6c.png" alt="هندسة RAG" loading="lazy" />
+  <div class="concept-diagram-caption">كيف يعمل RAG: من السؤال ← البحث ← السياق ← التوليد</div>
+</div>
+
 <div class="info-box gold">
   <p class="box-title">قاعدة عملية</p>
   <p>Embeddings = طريقة لتمثيل النصوص كأرقام يمكن البحث فيها بالمعنى لا بالكلمات. هذا ما يجعل البحث الدلالي ممكناً.</p>
@@ -352,6 +357,11 @@ ${learn([
   "بناء وكيل بسيط متعدد الخطوات",
   "حدود الوكلاء والمخاطر التي يجب ضبطها",
 ])}
+
+<div class="concept-diagram">
+  <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CToPP2SDwUfirzHh6Rbzt3Wuos/hf_20260701_154831_ec5845af-e6b8-47da-9bc0-8da4e6b85278.png" alt="حلقة وكيل AI" loading="lazy" />
+  <div class="concept-diagram-caption">الوكيل الذكي يعمل في حلقة مستمرة: إدراك ← تخطيط ← تنفيذ ← تقييم</div>
+</div>
 
 <h3>بنية أيّ وكيل</h3>
 <ul class="bullet-list">
