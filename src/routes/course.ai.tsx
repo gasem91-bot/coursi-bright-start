@@ -321,6 +321,14 @@ function CourseAIPage() {
               zIndex: 1,
             }}
           >
+            {(course as { coverImage?: string }).coverImage && (
+              <img
+                src={(course as { coverImage?: string }).coverImage}
+                alt={course.name}
+                className="sidebar-cover-thumb"
+                loading="lazy"
+              />
+            )}
             <div style={{ color: "var(--text-primary)", fontWeight: 800, fontSize: 14, marginBottom: 4 }}>{course.name}</div>
             <div style={{ color: "var(--text-secondary)", fontSize: 11, marginBottom: 12 }}>{course.meta}</div>
             <div style={{ height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 4, overflow: "hidden", marginBottom: 6 }}>
