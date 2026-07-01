@@ -343,24 +343,35 @@ function CourseAIPage() {
           {course.chapters.map((ch, i) => {
             const isActive = i === activeChapter;
             const isDone = completedIds.has(chapterId(level, i));
+            const isLocked = i > activeChapter && !isDone && !quizComplete;
             const status: "done" | "current" | "upcoming" = isDone ? "done" : isActive ? "current" : "upcoming";
+            const handleClick = () => {
+              if (i < activeChapter || isDone) { goToChapter(i); return; }
+              if (i === activeChapter) return;
+              if (isLocked) {
+                toast("أكمل أسئلة هذا الفصل أولاً للمتابعة 🔒");
+                return;
+              }
+              goToChapter(i);
+            };
             return (
               <div
                 key={i}
-                onClick={() => goToChapter(i)}
+                onClick={handleClick}
                 style={{
                   padding: "12px 16px",
                   display: "flex",
                   alignItems: "center",
                   gap: 10,
                   borderBottom: `1px solid ${BORDER}`,
-                  cursor: "pointer",
+                  cursor: isLocked ? "not-allowed" : "pointer",
                   background: isActive ? "rgba(123,53,255,0.10)" : "transparent",
                   borderRight: isActive ? `2px solid ${PURPLE}` : "2px solid transparent",
                   transition: "background 0.15s",
+                  opacity: isLocked ? 0.55 : 1,
                 }}
                 onMouseEnter={(e) => {
-                  if (!isActive) (e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.03)";
+                  if (!isActive && !isLocked) (e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.03)";
                 }}
                 onMouseLeave={(e) => {
                   if (!isActive) (e.currentTarget as HTMLDivElement).style.background = "transparent";
@@ -374,9 +385,13 @@ function CourseAIPage() {
                     lineHeight: 1.5,
                     color: isDone ? "var(--text-muted)" : isActive ? "var(--text-primary)" : "#9590A8",
                     fontWeight: isActive ? 700 : 500,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
                   }}
                 >
-                  {ch.title}
+                  {isLocked && <span aria-hidden style={{ fontSize: 11 }}>🔒</span>}
+                  <span>{ch.title}</span>
                 </div>
                 {status === "done" ? (
                   <div
