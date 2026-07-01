@@ -642,8 +642,9 @@ html, body {
 
 /* ── Inline Concept Diagrams inside Chapters ── */
 .concept-diagram {
-  margin: 24px 0;
-  border-radius: 14px;
+  margin: 20px auto;
+  max-width: 480px;
+  border-radius: 12px;
   overflow: hidden;
   border: 1px solid var(--border);
   background: var(--bg-card);
@@ -653,12 +654,16 @@ html, body {
   display: block;
 }
 .concept-diagram-caption {
-  padding: 10px 16px;
-  font-size: 12px;
+  padding: 8px 14px;
+  font-size: 11px;
   color: var(--text-secondary);
   text-align: center;
   border-top: 1px solid var(--border);
   background: var(--bg-secondary);
   font-family: 'Noto Sans Arabic', sans-serif;
   direction: rtl;
+  line-height: 1.5;
+}
+@media (max-width: 768px) {
+  .concept-diagram { max-width: 100%; }
 }
