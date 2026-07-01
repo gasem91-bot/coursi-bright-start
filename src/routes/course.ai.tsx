@@ -6,6 +6,7 @@ const coursiLogo = coursiLogoAsset.url;
 import { COURSE_CONTENT, type QuizQuestion } from "@/lib/course-content";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ThemeToggle } from "@/lib/theme";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/course/ai")({
   component: CourseAIPage,
