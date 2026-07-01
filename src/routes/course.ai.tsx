@@ -151,7 +151,7 @@ function CourseAIPage() {
       } else {
         setQuizComplete(true);
       }
-    }, 1500);
+    }, 3500);
   };
 
   const markComplete = async () => {
