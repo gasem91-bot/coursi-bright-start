@@ -347,6 +347,11 @@ ${learn([
 
 ${automationFlow()}
 
+<div class="concept-diagram">
+  <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CToPP2SDwUfirzHh6Rbzt3Wuos/hf_20260630_164011_030c0b57-6ac3-4c8c-89a6-aba6e15899c9.png" alt="مخطط سير العمل الآلي" loading="lazy" />
+  <div class="concept-diagram-caption">منطق الأتمتة في ثلاث خطوات: المحفز يُطلق الإجراء والإجراء يُنتج النتيجة</div>
+</div>
+
 <h3>ثانياً — Zapier</h3>
 <p>Zapier هو الأبسط للبدء. المفهوم: ربط تطبيقين أو أكثر. عندما يحدث شيء في تطبيق A، يحدث شيء آخر تلقائياً في تطبيق B.</p>
 
