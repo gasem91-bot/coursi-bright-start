@@ -105,7 +105,7 @@ function LoginPage() {
         <img
           src={coursiLogo.url}
           alt="COURSI"
-          style={{ display: "block", margin: "0 auto", width: "180px", height: "auto", background: "transparent" }}
+          style={{ display: "block", margin: "0 auto", width: "130px", height: "auto", background: "transparent" }}
         />
         <p style={{ color: "var(--text-secondary)", fontSize: "13px", textAlign: "center", marginTop: "6px" }}>
           بوابة كورس الذكاء الاصطناعي
