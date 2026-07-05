@@ -667,3 +667,175 @@ html, body {
 @media (max-width: 768px) {
   .concept-diagram { max-width: 100%; }
 }
+
+/* ===== Login Page Enhancements ===== */
+.login-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #7B35C0, #40C8C8);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 15px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Noto Sans Arabic', sans-serif;
+  transition: opacity 0.2s;
+}
+
+.login-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.login-spinner {
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+.login-recovery {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.recovery-link {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: 'Noto Sans Arabic', sans-serif;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s;
+}
+
+.recovery-link:hover { color: #a78bfa; }
+
+.recovery-divider {
+  color: #333;
+  font-size: 12px;
+}
+
+.recovery-panel {
+  margin-top: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  text-align: right;
+  direction: rtl;
+}
+
+.recovery-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.recovery-panel-header button {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.recovery-hint {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 12px;
+}
+
+.recovery-input {
+  width: 100%;
+  background: var(--bg-secondary);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 11px 14px;
+  color: var(--text-primary);
+  font-size: 14px;
+  direction: rtl;
+  font-family: 'Noto Sans Arabic', sans-serif;
+  outline: none;
+  margin-bottom: 10px;
+}
+
+.recovery-input:focus { border-color: #7B35C0; }
+
+.recovery-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #7B35C0, #40C8C8);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Noto Sans Arabic', sans-serif;
+}
+
+.recovery-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.recovery-success {
+  font-size: 13px;
+  color: #4ade80;
+  text-align: center;
+  padding: 10px;
+  background: rgba(74,222,128,0.06);
+  border-radius: 8px;
+  line-height: 1.7;
+}
+
+.admin-chat-btn {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  background: #25D366;
+  color: white;
+  border-radius: 50px;
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Noto Sans Arabic', sans-serif;
+  text-decoration: none;
+  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+  z-index: 200;
+  transition: transform 0.2s, box-shadow 0.2s;
+  white-space: nowrap;
+}
+
+.admin-chat-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 28px rgba(37, 211, 102, 0.5);
+}
+
+@media (max-width: 768px) {
+  .admin-chat-btn span { display: none; }
+  .admin-chat-btn {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    padding: 0;
+    justify-content: center;
+    bottom: 16px;
+    left: 16px;
+  }
+}
