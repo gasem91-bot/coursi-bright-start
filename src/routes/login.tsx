@@ -46,29 +46,16 @@ function LoginPage() {
   const passwordRef = useRef<HTMLInputElement>(null);
 
   const checkAiSubscription = async (emailToCheck: string): Promise<string | null> => {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("id")
-      .eq("email", emailToCheck)
-      .maybeSingle();
-
-    if (!profile) {
-      return "هذا البريد الإلكتروني غير مسجّل في كورسي. تواصل مع الدعم على info@coursi.ai";
-    }
-
-    const { data: subscription } = await supabase
-      .from("subscriptions")
-      .select("id")
-      .eq("user_id", profile.id)
-      .eq("tier", "course_ai")
-      .eq("status", "active")
-      .maybeSingle();
-
-    if (!subscription) {
+    try {
+      const result = await checkAiAccess({ data: { email: emailToCheck } });
+      if (result.ok) return null;
+      if (result.reason === "not_registered") {
+        return "هذا البريد الإلكتروني غير مسجّل في كورسي. تواصل مع الدعم على info@coursi.ai";
+      }
       return "ليس لديك اشتراك نشط في كورس الذكاء الاصطناعي. للاشتراك: coursi.ai/ai";
+    } catch {
+      return "تعذّر التحقق من الاشتراك. حاول مرة أخرى.";
     }
-
-    return null;
   };
 
   const handleLogin = async () => {
