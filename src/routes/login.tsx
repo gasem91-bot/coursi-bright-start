@@ -341,16 +341,22 @@ function LoginPage() {
           </button>
         )}
 
-        <p
+        <a
+          href="https://coursi.ai"
+          target="_blank"
+          rel="noopener noreferrer"
           style={{
+            display: "block",
             color: "var(--text-secondary)",
             fontSize: "12px",
             textAlign: "center",
             marginTop: "20px",
+            textDecoration: "underline",
+            cursor: "pointer",
           }}
         >
           مشترك جديد؟ تحقق من بريدك الإلكتروني للحصول على رابط الدخول الأول.
-        </p>
+        </a>
       </div>
 
       <a
