@@ -59,7 +59,7 @@ function LoginPage() {
       .from("subscriptions")
       .select("id")
       .eq("user_id", profile.id)
-      .eq("tier", "ai")
+      .eq("tier", "course_ai")
       .eq("status", "active")
       .maybeSingle();
 
