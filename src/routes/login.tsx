@@ -44,11 +44,42 @@ function LoginPage() {
 
   const passwordRef = useRef<HTMLInputElement>(null);
 
+  const checkAiSubscription = async (emailToCheck: string): Promise<string | null> => {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("email", emailToCheck)
+      .maybeSingle();
+
+    if (!profile) {
+      return "هذا البريد الإلكتروني غير مسجّل في كورسي. تواصل مع الدعم على info@coursi.ai";
+    }
+
+    const { data: subscription } = await supabase
+      .from("subscriptions")
+      .select("id")
+      .eq("user_id", profile.id)
+      .eq("segment", "ai")
+      .eq("status", "active")
+      .maybeSingle();
+
+    if (!subscription) {
+      return "ليس لديك اشتراك نشط في كورس الذكاء الاصطناعي. للاشتراك: coursi.ai/ai";
+    }
+
+    return null;
+  };
+
   const handleLogin = async () => {
     if (!email || !password) return;
     setLoading(true);
     setError("");
     try {
+      const subError = await checkAiSubscription(email);
+      if (subError) {
+        setError(subError);
+        return;
+      }
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
         setError("البريد الإلكتروني أو كلمة المرور غير صحيحة");
@@ -66,6 +97,13 @@ function LoginPage() {
       return;
     }
     setLoading(true);
+    setError("");
+    const subError = await checkAiSubscription(email);
+    if (subError) {
+      setError(subError);
+      setLoading(false);
+      return;
+    }
     await supabase.auth.signInWithOtp({
       email,
       options: { emailRedirectTo: "https://portal.coursi.ai/dashboard" },
