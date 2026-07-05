@@ -45,17 +45,21 @@ function LoginPage() {
 
   const passwordRef = useRef<HTMLInputElement>(null);
 
+  // Fail-closed check. Returns null only when explicitly { ok: true }.
+  // Any error, network failure, or non-ok result blocks the login.
   const checkAiSubscription = async (emailToCheck: string): Promise<string | null> => {
+    let result: Awaited<ReturnType<typeof checkAiAccess>>;
     try {
-      const result = await checkAiAccess({ data: { email: emailToCheck } });
-      if (result.ok) return null;
-      if (result.reason === "not_registered") {
-        return "هذا البريد الإلكتروني غير مسجّل في كورسي. تواصل مع الدعم على info@coursi.ai";
-      }
-      return "ليس لديك اشتراك نشط في كورس الذكاء الاصطناعي. للاشتراك: coursi.ai/ai";
+      result = await checkAiAccess({ data: { email: emailToCheck } });
     } catch {
       return "تعذّر التحقق من الاشتراك. حاول مرة أخرى.";
     }
+    if (result && result.ok === true) return null;
+    if (result && result.ok === false && result.reason === "no_subscription") {
+      return "ليس لديك اشتراك نشط في كورس الذكاء الاصطناعي. للاشتراك: coursi.ai/ai";
+    }
+    // not_registered or any unexpected shape → block
+    return "غير مسجّل — هذا البريد الإلكتروني غير مسجّل في كورسي. تواصل مع الدعم على info@coursi.ai";
   };
 
   const handleLogin = async () => {
@@ -64,9 +68,9 @@ function LoginPage() {
     setError("");
     try {
       const subError = await checkAiSubscription(email);
-      if (subError) {
+      if (subError !== null) {
         setError(subError);
-        return;
+        return; // HARD BLOCK — do not call signInWithPassword
       }
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
@@ -86,18 +90,20 @@ function LoginPage() {
     }
     setLoading(true);
     setError("");
-    const subError = await checkAiSubscription(email);
-    if (subError) {
-      setError(subError);
+    try {
+      const subError = await checkAiSubscription(email);
+      if (subError !== null) {
+        setError(subError);
+        return; // HARD BLOCK — do not call signInWithOtp
+      }
+      await supabase.auth.signInWithOtp({
+        email,
+        options: { emailRedirectTo: "https://portal.coursi.ai/dashboard" },
+      });
+      setMagicSent(true);
+    } finally {
       setLoading(false);
-      return;
     }
-    await supabase.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: "https://portal.coursi.ai/dashboard" },
-    });
-    setLoading(false);
-    setMagicSent(true);
   };
 
   const handlePasswordReset = async () => {
