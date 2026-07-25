@@ -15,14 +15,15 @@ export const COURSE_CONTENT = {
   },
   intermediate: {
     name: "الذكاء الاصطناعي للمحترفين",
-    meta: "١٢ فصلاً · ٨ أسابيع",
+    meta: "٦ فصول · ٦ أسابيع",
     coverImage: "https://d8j0ntlcm91z4.cloudfront.net/user_3CToPP2SDwUfirzHh6Rbzt3Wuos/hf_20260630_163538_f4d91532-2374-4247-8fb2-8c556cc367ea.png",
     chapters: INTERMEDIATE_CHAPTERS,
   },
   advanced: {
     name: "إتقان الذكاء الاصطناعي — بناء منتجات وأعمال",
-    meta: "١٢ فصلاً · ١٠ أسابيع",
+    meta: "٦ فصول · ٦ أسابيع",
     coverImage: "https://d8j0ntlcm91z4.cloudfront.net/user_3CToPP2SDwUfirzHh6Rbzt3Wuos/hf_20260630_163544_aa9e5673-6027-4988-b6cd-53a161272b55.png",
     chapters: ADVANCED_CHAPTERS,
   },
+
 } as const;
