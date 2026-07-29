@@ -1,4 +1,5 @@
-// Advanced Course — auto-generated from coursi-ai-level2-3-enhanced.html
+// Advanced Course — 12 chapters, content from COURS_Level3_Advanced.md
+// Uses global .coursi-content classes defined in src/routes/course.ai.tsx
 import type { QuizQuestion } from "./course-content-types";
 
 export interface AdvancedChapter {
@@ -8,194 +9,514 @@ export interface AdvancedChapter {
   quiz: QuizQuestion[];
 }
 
+const intro = (t: string) => `<div class="intro-box"><p>${t}</p></div>`;
+
+const learn = (items: string[]) => `
+<div class="learn-box gold">
+  <div class="block-title"><span class="block-ic gold-ic">✦</span> ما ستتعلمه</div>
+  <ul>${items.map((i) => `<li>${i}</li>`).join("")}</ul>
+</div>`;
+
+const section = (title: string, paras: string[]) => `
+<h3>${title}</h3>
+${paras.map((p) => `<p>${p}</p>`).join("")}`;
+
+const exercise = (t: string) => `
+<div class="exercise-box gold">
+  <div class="block-title"><span class="block-ic gold-ic">🎯</span> جرّب بنفسك</div>
+  <p>${t}</p>
+</div>`;
+
+const tools = (
+  arr: { name: string; desc: string; url?: string; level: "easy" | "mid" | "hard"; cost: "free" | "partial" | "paid" }[],
+) => {
+  const levelLbl: Record<string, string> = { easy: "سهل", mid: "متوسط", hard: "متقدم" };
+  const costLbl: Record<string, string> = { free: "مجاني", partial: "مجاني جزئياً", paid: "مدفوع" };
+  return `
+<div class="block-title"><span class="block-ic gold-ic">🛠</span> الأدوات المقترحة</div>
+<div class="adv-tools-grid">
+  ${arr
+    .map(
+      (t) => `
+    <div class="adv-tool-card gold">
+      <div class="adv-tool-head">
+        <div class="adv-tool-name">${t.name}</div>
+        <div class="adv-tool-badges">
+          <span class="badge badge-${t.level}">${levelLbl[t.level]}</span>
+          <span class="badge badge-${t.cost}">${costLbl[t.cost]}</span>
+        </div>
+      </div>
+      <div class="adv-tool-desc">${t.desc}</div>
+      ${t.url ? `<a class="adv-tool-btn gold" href="https://${t.url}" target="_blank" rel="noreferrer">افتح ${t.url} ←</a>` : ""}
+    </div>`,
+    )
+    .join("")}
+</div>`;
+};
+
+const roiCalculator = () => `
+<div class="calc-wrap">
+  <div class="block-title"><span class="block-ic gold-ic">📊</span> حاسبة عائد الاستثمار (ROI)</div>
+  <p class="flow-caption">أدخل أرقامك لتحسب الإيرادات، الأرباح، ونقطة التعادل لمنتجك الذكي.</p>
+  <div class="calc-grid">
+    <label class="calc-field"><span>سعر الاشتراك الشهري ($)</span><input type="number" data-calc="price" value="29" min="0" /></label>
+    <label class="calc-field"><span>عدد العملاء المتوقّع</span><input type="number" data-calc="customers" value="100" min="0" /></label>
+    <label class="calc-field"><span>التكاليف الثابتة الشهرية ($)</span><input type="number" data-calc="cost" value="500" min="0" /></label>
+    <label class="calc-field"><span>تكلفة الذكاء الاصطناعي لكل عميل ($)</span><input type="number" data-calc="aicost" value="3" min="0" /></label>
+  </div>
+  <div class="calc-results">
+    <div class="calc-stat"><div class="calc-lbl">الإيرادات الشهرية</div><div class="calc-val" data-calc-out="revenue">—</div></div>
+    <div class="calc-stat"><div class="calc-lbl">الربح الشهري</div><div class="calc-val" data-calc-out="profit">—</div></div>
+    <div class="calc-stat"><div class="calc-lbl">نقطة التعادل (عملاء)</div><div class="calc-val" data-calc-out="breakeven">—</div></div>
+    <div class="calc-stat"><div class="calc-lbl">الأرباح السنوية</div><div class="calc-val" data-calc-out="annual">—</div></div>
+  </div>
+</div>`;
+
 export const ADVANCED_CHAPTERS: AdvancedChapter[] = [
+  // ============ الفصل الأول ============
   {
     id: 0,
-    title: "هندسة الأوامر المتقدمة",
+    title: "معمارية أنظمة الذكاء الاصطناعي",
     content: `
-<div class="intro-box"><p>تحكّم دقيق في مخرجات الذكاء الاصطناعي عبر تقنيات احترافية</p></div>
-<h3>لماذا تحتاج مستوى متقدم من الأوامر؟</h3>
-<p>في المستوى الأول تعلمت كتابة أمر واضح. الآن الهدف مختلف: تحكّم دقيق في الشكل، الطول، الأسلوب، وحتى طريقة تفكير النموذج قبل أن يجيب.</p>
-<p>هذا الفرق هو ما يميز محترفاً يحصل على نتائج ثابتة وعالية الجودة، عن مستخدم يعيد المحاولة عشرات المرات.</p>
-<h3>تقنيات أساسية</h3>
-<p>التفكير خطوة بخطوة: اطلب من النموذج أن يشرح تفكيره قبل الإجابة النهائية، فتقل الأخطاء المنطقية.</p>
-<p>الأمثلة داخل الأمر (Few-shot): أعطِ مثالاً أو مثالين على الشكل المطلوب قبل طلب النتيجة الفعلية.</p>
-<p>الأدوار: اطلب من النموذج أن «يتصرف كخبير في كذا»، فهذا يغيّر أسلوب ونوعية الإجابة فعلياً.</p>
-<p>التقييد بصيغة محددة: اطلب الناتج كجدول أو قائمة مرقمة أو JSON عندما تحتاج نتيجة قابلة للاستخدام مباشرة في نظام آخر.</p>
-<div class="flow-wrap"><div class="block-title"><span class="block-ic">⚡</span> المخطط التفاعلي</div><p class="flow-caption">تدفق العملية من البداية إلى النتيجة النهائية.</p><div class="flow-diagram"><div class="flow-node" data-flow-node="0"><div class="flow-ic">1</div><div class="flow-title-s">تحديد الدور والسياق</div></div><div class="flow-arrow"><span class="flow-arrow-dot" style="animation-delay:0.0s"></span></div><div class="flow-node" data-flow-node="1"><div class="flow-ic">2</div><div class="flow-title-s">إضافة أمثلة توضيحية</div></div><div class="flow-arrow"><span class="flow-arrow-dot" style="animation-delay:0.3s"></span></div><div class="flow-node" data-flow-node="2"><div class="flow-ic">3</div><div class="flow-title-s">طلب التفكير خطوة بخطوة</div></div><div class="flow-arrow"><span class="flow-arrow-dot" style="animation-delay:0.6s"></span></div><div class="flow-node" data-flow-node="3"><div class="flow-ic">4</div><div class="flow-title-s">تحديد صيغة الناتج النهائي</div></div></div></div>
-<div class="block-title"><span class="block-ic">🛠</span> أدوات مقترحة</div><div class="tools-grid"><div class="tool-card"><div class="tool-name">Claude</div><div class="tool-desc">قوي جداً في اتباع تعليمات معقدة ومتعددة الخطوات بدقة.</div><span class="badge badge-partial">جزئياً مجاني</span></div><div class="tool-card"><div class="tool-name">ChatGPT</div><div class="tool-desc">مرن في التبديل بين الأدوار والأساليب المختلفة بسرعة.</div><span class="badge badge-partial">جزئياً مجاني</span></div><div class="tool-card"><div class="tool-name">PromptPerfect</div><div class="tool-desc">أداة متخصصة في تحسين صياغة أوامرك تلقائياً.</div><span class="badge badge-partial">جزئياً مجاني</span></div></div>
-<div class="exercise-box"><div class="block-title"><span class="block-ic">🎯</span> جرّب بنفسك</div><p>خذ أمراً بسيطاً كنت تستخدمه من قبل، وأعد كتابته بإضافة: دور محدد للنموذج، مثال واحد على الشكل المطلوب، وطلب التفكير خطوة بخطوة. قارن جودة النتيجة بالسابقة.</p></div>
+${intro("في المستوى المبتدئ تعلمت استخدام أداة واحدة. في المتوسط ربطت أدوات معاً. في المتقدم ستبني منظومة متكاملة تعمل تلقائياً.")}
+${learn([
+  "كيف تُصمّم منظومة ذكاء اصطناعي متكاملة من الصفر",
+  "الفرق بين الأدوات المختلفة وكيف تعمل معاً",
+  "مفهوم الوكلاء الذكيين وكيف يُنجزون مهام معقدة تلقائياً",
+  "الاعتبارات العملية عند بناء الأنظمة",
+])}
+${section("من الأداة إلى النظام", [
+  "في المستوى المبتدئ تعلمت استخدام أداة واحدة. في المتوسط ربطت أدوات معاً. في المتقدم ستبني منظومة متكاملة تعمل تلقائياً.",
+  "مثال على منظومة متكاملة لشركة محتوى: طلب العميل يصل بالإيميل ← الذكاء الاصطناعي يحلله تلقائياً ← يكتب الاقتراح ← يُرسله للعميل ← عند الموافقة ينشئ المحتوى ← ينشره تلقائياً ← يُرسل تقرير الأداء أسبوعياً.",
+])}
+${section("مفهوم الوكلاء الذكيين", [
+  "الوكيل الذكي هو نظام ذكاء اصطناعي يستطيع تنفيذ سلسلة من الخطوات تلقائياً لإنجاز مهمة، بدلاً من الإجابة على سؤال واحد فقط.",
+])}
+${tools([
+  { name: "n8n", url: "n8n.io", desc: "يُتيح بناء أتمتة معقدة مع تكامل الذكاء الاصطناعي.", level: "hard", cost: "partial" },
+  { name: "AgentGPT", desc: "وكيل ذكي يُنجز مهام كاملة تلقائياً.", level: "mid", cost: "partial" },
+  { name: "Relevance AI", desc: "متخصص في بناء قوى عمل من الوكلاء الذكيين.", level: "hard", cost: "partial" },
+])}
+${exercise("ارسم على ورقة منظومة متكاملة لعملك: ما الحدث المُحفّز؟ ما الخطوات التلقائية؟ ما النتيجة النهائية؟ حدّد أي خطوة يمكن للذكاء الاصطناعي تنفيذها بدلاً منك.")}
 `,
     quiz: [
-    {
-      question: "ما فائدة تقنية «التفكير خطوة بخطوة»؟",
-      options: ["تسريع الإجابة فقط","تقليل الأخطاء المنطقية في الإجابة النهائية","تقليل طول الإجابة","لا فائدة فعلية"],
-      correct: 1,
-      feedback: "عندما يشرح النموذج تفكيره أولاً، يقل احتمال الوصول لنتيجة نهائية خاطئة.",
-    },
-    {
-      question: "متى يُفضّل تحديد صيغة الناتج مثل JSON؟",
-      options: ["عندما تريد نصاً أدبياً حراً","عندما ستستخدم الناتج مباشرة داخل نظام أو تطبيق آخر","لا داعي لذلك أبداً","فقط في الأسئلة الرياضية"],
-      correct: 1,
-      feedback: "تحديد صيغة دقيقة مثل JSON يجعل الناتج قابلاً للقراءة والمعالجة مباشرة من أي برنامج.",
-    }
+      { question: "ما الفرق الجوهري بين استخدام أداة والوكيل الذكي؟", options: ["لا فرق", "الوكيل ينفذ سلسلة خطوات تلقائياً لتحقيق هدف", "الوكيل أرخص", "الوكيل يعمل بدون إنترنت"], correct: 1, feedback: "الوكيل الذكي يخطط وينفذ عدة خطوات متتالية بدون تدخل بشري في كل خطوة." },
+      { question: "أي من الأدوات التالية متخصص في بناء قوى عمل من الوكلاء؟", options: ["n8n", "AgentGPT", "Relevance AI", "Photoshop"], correct: 2, feedback: "Relevance AI متخصص في بناء فرق كاملة من الوكلاء الذكيين." },
+      { question: "ما الشرط الأساسي لبناء منظومة متكاملة ناجحة؟", options: ["استخدام أغلى أداة", "ربط الأدوات معاً حول عملية عمل واضحة", "شراء خادم خاص", "تعلم البرمجة أولاً"], correct: 1, feedback: "المنظومة الناجحة تربط الأدوات حول تدفّق عمل واضح ومحدد." },
+      { question: "ما مثال عملي على منظومة متكاملة؟", options: ["كتابة تغريدة واحدة", "استلام طلب ← تحليل ← اقتراح ← إرسال ← تقرير أسبوعي تلقائي", "فتح ChatGPT مرة", "طباعة مستند"], correct: 1, feedback: "المنظومة المتكاملة تربط عدة خطوات في تدفّق تلقائي واحد." },
+      { question: "أي أداة تُتيح بناء أتمتة معقدة مع تكامل الذكاء الاصطناعي؟", options: ["n8n", "Word", "Excel", "Chrome"], correct: 0, feedback: "n8n منصة أتمتة قوية تتكامل مع مئات الأدوات ونماذج الذكاء الاصطناعي." },
     ],
   },
+
+  // ============ الفصل الثاني ============
   {
     id: 1,
-    title: "بناء التطبيقات بدون كود: Lovable و Bolt",
+    title: "بناء منتج ذكاء اصطناعي من الصفر",
     content: `
-<div class="intro-box"><p>حوّل فكرتك إلى تطبيق فعلي يعمل، بدون كتابة سطر برمجة واحد</p></div>
-<h3>كيف تغيرت البرمجة اليوم؟</h3>
-<p>أدوات مثل Lovable و Bolt تسمح لك بوصف التطبيق الذي تريده بجملة عربية أو إنجليزية واضحة، فتقوم ببناء الواجهة والوظائف الأساسية له تلقائياً.</p>
-<p>هذا لا يعني أنك لا تحتاج للتفكير الهندسي، لكنه يعني أن الفكرة أصبحت أهم من إتقان لغة برمجة معينة.</p>
-<h3>من الفكرة إلى تطبيق يعمل</h3>
-<p>اكتب وصفاً دقيقاً لما يفعله التطبيق، ولمن هو موجّه.</p>
-<p>ابنِ الصفحة الأولى فقط أولاً، وتأكد من عملها قبل إضافة ميزات أخرى.</p>
-<p>اربط قاعدة بيانات (مثل Supabase) عندما تحتاج لحفظ بيانات المستخدمين.</p>
-<p>اختبر التطبيق بنفسك كأنك مستخدم حقيقي قبل مشاركته مع أي شخص آخر.</p>
-<div class="flow-wrap"><div class="block-title"><span class="block-ic">⚡</span> المخطط التفاعلي</div><p class="flow-caption">تدفق العملية من البداية إلى النتيجة النهائية.</p><div class="flow-diagram"><div class="flow-node" data-flow-node="0"><div class="flow-ic">1</div><div class="flow-title-s">وصف الفكرة بوضوح</div></div><div class="flow-arrow"><span class="flow-arrow-dot" style="animation-delay:0.0s"></span></div><div class="flow-node" data-flow-node="1"><div class="flow-ic">2</div><div class="flow-title-s">بناء أول صفحة تعمل</div></div><div class="flow-arrow"><span class="flow-arrow-dot" style="animation-delay:0.3s"></span></div><div class="flow-node" data-flow-node="2"><div class="flow-ic">3</div><div class="flow-title-s">ربط قاعدة البيانات</div></div><div class="flow-arrow"><span class="flow-arrow-dot" style="animation-delay:0.6s"></span></div><div class="flow-node" data-flow-node="3"><div class="flow-ic">4</div><div class="flow-title-s">اختبار ونشر تدريجي</div></div></div></div>
-<div class="block-title"><span class="block-ic">🛠</span> أدوات مقترحة</div><div class="tools-grid"><div class="tool-card"><div class="tool-name">Lovable</div><div class="tool-desc">لبناء تطبيقات ويب كاملة بوصف نصي، مع واجهات جاهزة الاستخدام.</div><span class="badge badge-partial">جزئياً مجاني</span></div><div class="tool-card"><div class="tool-name">Bolt.new</div><div class="tool-desc">بيئة بناء سريعة تنشئ كوداً حقيقياً يمكنك تعديله لاحقاً.</div><span class="badge badge-partial">جزئياً مجاني</span></div><div class="tool-card"><div class="tool-name">Supabase</div><div class="tool-desc">قاعدة بيانات وخدمة خلفية جاهزة تربطها بسهولة بتطبيقك.</div><span class="badge badge-partial">جزئياً مجاني</span></div><div class="tool-card"><div class="tool-name">Replit</div><div class="tool-desc">بيئة تطوير وتشغيل فورية للمشاريع الصغيرة والتجريبية.</div><span class="badge badge-partial">جزئياً مجاني</span></div></div>
-<div class="exercise-box"><div class="block-title"><span class="block-ic">🎯</span> جرّب بنفسك</div><p>اكتب وصفاً من ٣-٤ جمل لتطبيق بسيط يحل مشكلة تواجهها فعلاً (مثال: تطبيق لتتبع مصاريفك اليومية)، بصيغة تصلح لإعطائها لأداة مثل Lovable.</p></div>
+${intro("قبل بناء أي منتج، تحقق من وجود طلب حقيقي عليه. في هذا الفصل ستتعلم منهجية التحقق السريع ثم البناء الفعلي.")}
+${learn([
+  "كيف تتحقق من فكرة المنتج قبل البناء",
+  "بناء النموذج الأولي السريع",
+  "التكرار والتحسين بناءً على التغذية الراجعة",
+  "إطلاق المنتج والحصول على أول مستخدمين",
+])}
+${section("منهجية التحقق السريع", [
+  "قبل بناء أي منتج، تحقق من وجود طلب حقيقي عليه.",
+  "الخطوة الأولى — تحديد المشكلة: ما المشكلة التي يحلها منتجك؟ من يعاني منها؟ كم يدفع الناس حالياً لحلها؟",
+  "الخطوة الثانية — نموذج أولي في يوم واحد: استخدم Lovable لبناء صفحة هبوط تعرض فكرتك فقط، مع زر «سجّل اهتمامك». ابدأ بجمع المهتمين قبل بناء المنتج الفعلي.",
+  "الخطوة الثالثة — التحقق من الطلب: إذا سجّل مئة شخص خلال أسبوع، هذه إشارة إيجابية للمتابعة.",
+])}
+${section("بناء المنتج الحقيقي", [
+  "بعد التحقق من الطلب:",
+  "استخدم Lovable أو v0 لبناء الواجهة الأمامية.",
+  "استخدم Supabase مجاناً لقاعدة البيانات والتحقق من الهوية.",
+  "اربط بـClaude API أو OpenAI API للذكاء الاصطناعي.",
+  "استخدم Stripe لقبول المدفوعات.",
+])}
+${tools([
+  { name: "Lovable", url: "lovable.dev", desc: "لبناء صفحة الهبوط والمنتج الكامل بوصف نصي.", level: "easy", cost: "partial" },
+  { name: "Supabase", url: "supabase.com", desc: "قاعدة بيانات وتحقق من الهوية جاهزة ومجانية للبداية.", level: "mid", cost: "partial" },
+  { name: "Stripe", url: "stripe.com", desc: "قبول المدفوعات والاشتراكات بسهولة.", level: "mid", cost: "partial" },
+])}
+${exercise("اكتب صفحة هبوط من فقرة واحدة تصف منتجك، مع زر «سجّل اهتمامك». شاركها مع عشرين شخصاً من جمهورك المستهدف، وقِس عدد التسجيلات خلال ٤٨ ساعة.")}
 `,
     quiz: [
-    {
-      question: "ما الذي يُفضّل بناؤه أولاً عند إنشاء تطبيق جديد؟",
-      options: ["كل الميزات دفعة واحدة","الصفحة الأولى فقط، والتأكد من عملها","قاعدة البيانات فقط","التصميم النهائي المثالي"],
-      correct: 1,
-      feedback: "البدء بصفحة واحدة تعمل بشكل صحيح يقلل الأخطاء ويسهّل إضافة الميزات تدريجياً.",
-    },
-    {
-      question: "متى تحتاج لربط قاعدة بيانات مثل Supabase؟",
-      options: ["عندما تريد فقط عرض نص ثابت","عندما تحتاج لحفظ بيانات المستخدمين والتفاعل معها لاحقاً","دائماً بدون استثناء","لا حاجة لها أبداً في التطبيقات الحديثة"],
-      correct: 1,
-      feedback: "قاعدة البيانات ضرورية عندما يحتاج تطبيقك لتذكّر بيانات المستخدمين بين الزيارات المختلفة.",
-    }
+      { question: "ما أول خطوة قبل بناء أي منتج؟", options: ["كتابة الكود", "تحديد المشكلة والتحقق من الطلب", "شراء نطاق", "تعيين مطوّر"], correct: 1, feedback: "التحقق من وجود مشكلة حقيقية وطلب فعلي يمنعك من إهدار الوقت." },
+      { question: "ما هدف صفحة الهبوط في المرحلة الأولى؟", options: ["بيع المنتج فوراً", "جمع المهتمين قبل بناء المنتج", "استعراض المهارات", "لا فائدة منها"], correct: 1, feedback: "صفحة الهبوط تُتيح لك قياس الطلب قبل صرف الوقت والمال على البناء." },
+      { question: "أي إشارة تعتبر إيجابية للمتابعة؟", options: ["زيارة واحدة", "١٠٠ تسجيل خلال أسبوع", "لا أحد يهتم", "شخص واحد قال ذلك جيّد"], correct: 1, feedback: "تسجيلات كثيرة خلال وقت قصير مؤشر واضح على وجود طلب." },
+      { question: "أي أداة مناسبة لقاعدة البيانات مجاناً في البداية؟", options: ["Supabase", "Word", "Photoshop", "Notepad"], correct: 0, feedback: "Supabase يوفر قاعدة بيانات وتحقق من الهوية مجاناً في الخطة الأولى." },
+      { question: "ما استخدام Stripe في المنتج؟", options: ["تصميم الشعار", "قبول المدفوعات والاشتراكات", "استضافة الموقع", "كتابة النصوص"], correct: 1, feedback: "Stripe هو المعيار الفعلي لقبول المدفوعات في تطبيقات الويب." },
     ],
   },
+
+  // ============ الفصل الثالث ============
   {
     id: 2,
-    title: "الوكلاء الذكيون المستقلون",
+    title: "الاستدعاء الخارجي للنماذج عبر الواجهة البرمجية",
     content: `
-<div class="intro-box"><p>أنظمة تنفذ سلسلة مهام كاملة من تلقاء نفسها دون تدخل بشري في كل خطوة</p></div>
-<h3>ما الفرق بين شات بوت ووكيل ذكي؟</h3>
-<p>الشات بوت يرد على سؤال واحد في كل مرة. الوكيل الذكي (AI Agent) يستطيع تنفيذ سلسلة خطوات متعددة بنفسه: يبحث، يقارن، يتخذ قراراً، وينفذ إجراءً، دون أن تطلب منه كل خطوة على حدة.</p>
-<h3>أين يُستخدم عملياً</h3>
-<p>وكيل يراقب المخزون ويرسل طلب توريد تلقائياً عند انخفاضه عن حد معين.</p>
-<p>وكيل يبحث عن أسعار المنافسين يومياً ويرسل لك تقريراً مختصراً.</p>
-<p>وكيل يتابع رسائل العملاء غير المجابة ويرسل تذكيراً للفريق المسؤول.</p>
-<div class="flow-wrap"><div class="block-title"><span class="block-ic">⚡</span> المخطط التفاعلي</div><p class="flow-caption">تدفق العملية من البداية إلى النتيجة النهائية.</p><div class="flow-diagram"><div class="flow-node" data-flow-node="0"><div class="flow-ic">1</div><div class="flow-title-s">استلام هدف عام</div></div><div class="flow-arrow"><span class="flow-arrow-dot" style="animation-delay:0.0s"></span></div><div class="flow-node" data-flow-node="1"><div class="flow-ic">2</div><div class="flow-title-s">تخطيط خطوات التنفيذ</div></div><div class="flow-arrow"><span class="flow-arrow-dot" style="animation-delay:0.3s"></span></div><div class="flow-node" data-flow-node="2"><div class="flow-ic">3</div><div class="flow-title-s">تنفيذ كل خطوة تلقائياً</div></div><div class="flow-arrow"><span class="flow-arrow-dot" style="animation-delay:0.6s"></span></div><div class="flow-node" data-flow-node="3"><div class="flow-ic">4</div><div class="flow-title-s">تقرير أو إجراء نهائي</div></div></div></div>
-<div class="block-title"><span class="block-ic">🛠</span> أدوات مقترحة</div><div class="tools-grid"><div class="tool-card"><div class="tool-name">n8n + Claude/GPT API</div><div class="tool-desc">لبناء وكيل مخصص يربط عدة خطوات وقرارات تلقائية.</div><span class="badge badge-partial">جزئياً مجاني</span></div><div class="tool-card"><div class="tool-name">Zapier Agents</div><div class="tool-desc">وكلاء جاهزون داخل Zapier لمهام محددة ومتكررة.</div><span class="badge badge-paid">مدفوع</span></div><div class="tool-card"><div class="tool-name">Relevance AI</div><div class="tool-desc">منصة متخصصة في بناء وكلاء ذكيين متعددي الخطوات بدون كود.</div><span class="badge badge-partial">جزئياً مجاني</span></div></div>
-<div class="exercise-box"><div class="block-title"><span class="block-ic">🎯</span> جرّب بنفسك</div><p>اختر مهمة متكررة في عملك تتطلب أكثر من خطوة (مثال: مراجعة الرسائل الجديدة ثم تصنيفها ثم الرد الأولي)، واكتب الخطوات الثلاث أو الأربع التي يجب أن ينفذها وكيل ذكي لأدائها بدلاً منك.</p></div>
+${intro("الواجهة البرمجية (API) هي الطريقة التي يتحدث فيها برنامج مع برنامج آخر. تستخدمها لإضافة قدرات الذكاء الاصطناعي لأي تطبيق تبنيه.")}
+${learn([
+  "ما هي الواجهة البرمجية ولماذا تهمك",
+  "كيف تستدعي نموذج ذكاء اصطناعي من أي تطبيق",
+  "التكاليف وكيف تُدار",
+  "أمثلة عملية على التكاملات",
+])}
+${section("ما هي الواجهة البرمجية؟", [
+  "الواجهة البرمجية هي الطريقة التي يتحدث فيها برنامج مع برنامج آخر. تستخدمها لإضافة قدرات الذكاء الاصطناعي لأي تطبيق تبنيه.",
+])}
+${section("كيف تعمل في الواقع", [
+  "بدلاً من استخدام موقع ChatGPT يدوياً، تُرسل طلبك مباشرة لنموذج OpenAI من داخل تطبيقك، وتعود النتيجة تلقائياً لتطبيقك.",
+])}
+${section("الأسعار النموذجية", [
+  "OpenAI GPT-4o: حوالي عشرة سنتات لكل ألف كلمة.",
+  "Anthropic Claude: حوالي ثمانية سنتات لكل ألف كلمة.",
+  "Google Gemini: أسعار تنافسية مع خطة مجانية.",
+])}
+${section("ربط النماذج مع Lovable", [
+  "في Lovable يمكنك إضافة مفتاح الواجهة البرمجية وقول: «أضف قدرة ذكاء اصطناعي لتطبيقي بحيث يستطيع المستخدم الكتابة وتحصل على رد ذكي فوري».",
+])}
+${tools([
+  { name: "OpenAI API", url: "platform.openai.com", desc: "نماذج GPT الأشهر عالمياً للنصوص والصور والصوت.", level: "hard", cost: "paid" },
+  { name: "Anthropic Claude", url: "anthropic.com", desc: "نموذج قوي بأسعار تنافسية ودقة عالية في التعليمات.", level: "hard", cost: "paid" },
+  { name: "Google Gemini", url: "ai.google.dev", desc: "أسعار تنافسية مع خطة مجانية سخية للتجربة.", level: "mid", cost: "partial" },
+])}
+${exercise("افتح Lovable، أضف مفتاح OpenAI، واطلب: «أضف قدرة ذكاء اصطناعي لتطبيقي بحيث يستطيع المستخدم الكتابة وتحصل على رد ذكي فوري». اختبر التطبيق مع ٥ أسئلة حقيقية.")}
 `,
     quiz: [
-    {
-      question: "ما الفرق الجوهري بين الشات بوت والوكيل الذكي؟",
-      options: ["لا يوجد فرق حقيقي","الوكيل ينفذ سلسلة خطوات وقرارات دون تدخل في كل خطوة","الشات بوت أسرع دائماً","الوكيل يعمل فقط على الهاتف"],
-      correct: 1,
-      feedback: "الوكيل الذكي يخطط وينفذ عدة خطوات متتالية باتخاذ قرارات بينها، بينما الشات بوت يرد على سؤال واحد فقط.",
-    },
-    {
-      question: "أي مثال يوضح استخداماً عملياً لوكيل ذكي؟",
-      options: ["كتابة قصيدة واحدة عند الطلب","مراقبة المخزون وإرسال طلب توريد تلقائياً عند انخفاضه","ترجمة كلمة واحدة","تغيير لون خلفية موقع"],
-      correct: 1,
-      feedback: "هذا مثال حقيقي على وكيل يراقب حالة مستمرة (المخزون) ويتخذ إجراءً تلقائياً عند تحقق شرط معين.",
-    }
+      { question: "ما هي الواجهة البرمجية (API)؟", options: ["نوع من الأجهزة", "الطريقة التي يتحدث بها برنامج مع برنامج آخر", "شبكة اجتماعية", "لغة برمجة"], correct: 1, feedback: "الـAPI هي بروتوكول التواصل بين البرامج المختلفة." },
+      { question: "لماذا نستخدم API بدلاً من الموقع اليدوي؟", options: ["أرخص فقط", "لدمج قدرات الذكاء الاصطناعي داخل تطبيقك مباشرة", "لا فرق", "أسرع للقراءة"], correct: 1, feedback: "الـAPI تسمح لتطبيقك باستدعاء النموذج تلقائياً بدون تدخل يدوي." },
+      { question: "أي نموذج يُقدّم خطة مجانية سخية؟", options: ["GPT-4o", "Claude", "Gemini", "لا يوجد"], correct: 2, feedback: "Google Gemini يقدم خطة مجانية مناسبة للتجربة والمشاريع الصغيرة." },
+      { question: "كم يكلف تقريباً استدعاء GPT-4o لكل ألف كلمة؟", options: ["مجاناً", "حوالي ١٠ سنتات", "١٠٠ دولار", "دولار واحد"], correct: 1, feedback: "GPT-4o يكلف حوالي عشرة سنتات لكل ألف كلمة." },
+      { question: "كيف تربط نموذج AI في Lovable؟", options: ["مستحيل", "بإضافة مفتاح API وطلب الميزة بالعربية", "بشراء خادم", "بتحميل النموذج على جهازك"], correct: 1, feedback: "في Lovable يكفي إضافة مفتاح الـAPI وطلب الميزة نصياً." },
     ],
   },
+
+  // ============ الفصل الرابع ============
   {
     id: 3,
-    title: "بناء منتجات مدعومة بالذكاء الاصطناعي",
+    title: "RAG — إضافة ذاكرة خارجية للنماذج",
     content: `
-<div class="intro-box"><p>من فكرة إلى منتج حقيقي يستخدمه أشخاص آخرون</p></div>
-<h3>الفرق بين أداة شخصية ومنتج</h3>
-<p>أداة شخصية تخدمك أنت فقط. المنتج يخدم آخرين، وله مستخدمون، ونظام دفع، وتحسين مستمر بناءً على ملاحظاتهم.</p>
-<p>أغلب المنتجات الناجحة المبنية على الذكاء الاصطناعي اليوم لا تخترع نموذجاً جديداً، بل تحل مشكلة محددة جداً لفئة محددة جداً من الناس.</p>
-<h3>خطوات إطلاق منتج بسيط</h3>
-<p>حدد مشكلة واحدة محددة جداً تحلها (وليس «كل شيء لكل الناس»).</p>
-<p>ابنِ نسخة أولى بسيطة (MVP) بأدوات بدون كود.</p>
-<p>اعرضها على ١٠-٢٠ شخصاً حقيقياً من جمهورك المستهدف قبل أي تسويق واسع.</p>
-<p>استمع لملاحظاتهم وحسّن المنتج بناءً عليها قبل التوسع.</p>
-<div class="flow-wrap"><div class="block-title"><span class="block-ic">⚡</span> المخطط التفاعلي</div><p class="flow-caption">تدفق العملية من البداية إلى النتيجة النهائية.</p><div class="flow-diagram"><div class="flow-node" data-flow-node="0"><div class="flow-ic">1</div><div class="flow-title-s">مشكلة محددة وواضحة</div></div><div class="flow-arrow"><span class="flow-arrow-dot" style="animation-delay:0.0s"></span></div><div class="flow-node" data-flow-node="1"><div class="flow-ic">2</div><div class="flow-title-s">نسخة أولى بسيطة (MVP)</div></div><div class="flow-arrow"><span class="flow-arrow-dot" style="animation-delay:0.3s"></span></div><div class="flow-node" data-flow-node="2"><div class="flow-ic">3</div><div class="flow-title-s">اختبار مع مستخدمين حقيقيين</div></div><div class="flow-arrow"><span class="flow-arrow-dot" style="animation-delay:0.6s"></span></div><div class="flow-node" data-flow-node="3"><div class="flow-ic">4</div><div class="flow-title-s">تحسين مستمر وتوسع</div></div></div></div>
-<div class="block-title"><span class="block-ic">🛠</span> أدوات مقترحة</div><div class="tools-grid"><div class="tool-card"><div class="tool-name">Lovable / Bolt</div><div class="tool-desc">لبناء النسخة الأولى من المنتج بسرعة.</div><span class="badge badge-partial">جزئياً مجاني</span></div><div class="tool-card"><div class="tool-name">Stripe</div><div class="tool-desc">لإضافة نظام دفع واشتراكات لمنتجك بسهولة.</div><span class="badge badge-partial">جزئياً مجاني</span></div><div class="tool-card"><div class="tool-name">Product Hunt</div><div class="tool-desc">منصة عالمية لعرض منتجك الجديد أمام أول جمهور مهتم بالتقنية.</div><span class="badge badge-free">مجاني</span></div></div>
-<div class="exercise-box"><div class="block-title"><span class="block-ic">🎯</span> جرّب بنفسك</div><p>اكتب جملة واحدة تصف مشكلة محددة جداً يواجهها نوع معين من الناس، ويمكن للذكاء الاصطناعي حلها. مثال: «أصحاب المطاعم الصغيرة يقضون وقتاً طويلاً في الرد على استفسارات الحجز المتكررة».</p></div>
+${intro("RAG تعني «استرجاع المعلومات ثم التوليد». تُعطي الذكاء الاصطناعي وثائق خاصة بك فيُجيب بناءً عليها تحديداً.")}
+${learn([
+  "ما هو نظام RAG ولماذا هو مهم جداً",
+  "كيف تُدرّب الذكاء الاصطناعي على بيانات خاصة بك",
+  "بناء نظام سؤال وجواب ذكي من وثائقك",
+  "تطبيقات واقعية في الأعمال",
+])}
+${section("ما هو RAG؟", [
+  "RAG تعني استرجاع المعلومات ثم التوليد. باختصار، تُعطي الذكاء الاصطناعي وثائق خاصة بك (كتالوجك، سياساتك، بيانات شركتك)، فيُجيب على الأسئلة بناءً عليها تحديداً.",
+])}
+${section("لماذا هو مهم؟", [
+  "بدونه: يُجيب الذكاء الاصطناعي من معرفته العامة فقط.",
+  "معه: يُجيب بناءً على بيانات شركتك بالضبط.",
+])}
+${section("مثال عملي", [
+  "شركة عندها ألف صفحة من سياسات الموارد البشرية. بدلاً من أن يبحث الموظف يدوياً، يسأل روبوت المحادثة الذي يعرف هذه السياسات بالكامل.",
+])}
+${tools([
+  { name: "Perplexity Pages", url: "perplexity.ai", desc: "يمكنك بناء قاعدة معرفة ذكية قابلة للسؤال المباشر.", level: "easy", cost: "partial" },
+  { name: "Notion AI", url: "notion.so", desc: "يستطيع الإجابة بناءً على قاعدة بياناتك في Notion.", level: "easy", cost: "paid" },
+  { name: "CustomGPT", url: "customgpt.ai", desc: "ادفع وثائقك وستحصل على روبوت مُدرَّب عليها بالكامل.", level: "mid", cost: "paid" },
+])}
+${exercise("اجمع ٥-١٠ وثائق تخص شركتك (سياسات، أسعار، أسئلة شائعة)، ارفعها على CustomGPT أو Notion AI، واختبر ١٠ أسئلة يطرحها موظفوك أو عملاؤك عادةً.")}
 `,
     quiz: [
-    {
-      question: "ما الخطأ الشائع عند إطلاق منتج جديد؟",
-      options: ["البدء بمشكلة محددة جداً","محاولة حل «كل شيء لكل الناس» من البداية","اختبار المنتج مع مستخدمين حقيقيين","بناء نسخة أولى بسيطة"],
-      correct: 1,
-      feedback: "المنتجات الناجحة غالباً تبدأ بحل مشكلة ضيقة ومحددة جداً، ثم تتوسع تدريجياً.",
-    },
-    {
-      question: "لماذا تُعرض النسخة الأولى على ١٠-٢٠ شخصاً قبل التوسع؟",
-      options: ["لتحقيق أرباح فورية كبيرة","للحصول على ملاحظات حقيقية تحسّن المنتج قبل الاستثمار في التوسع","لأن القانون يفرض ذلك","لا داعي لهذه الخطوة"],
-      correct: 1,
-      feedback: "الملاحظات المبكرة من مستخدمين حقيقيين توفر عليك بناء ميزات لا يحتاجها أحد فعلاً.",
-    }
+      { question: "ماذا يعني RAG باختصار؟", options: ["نظام تشغيل", "استرجاع المعلومات ثم التوليد", "شركة برمجيات", "لغة برمجة"], correct: 1, feedback: "RAG = Retrieval Augmented Generation، أي استرجاع ثم توليد." },
+      { question: "ما الفرق بين نموذج عادي ونموذج مع RAG؟", options: ["لا فرق", "الأول يجيب من معرفته العامة، الثاني يجيب من بياناتك تحديداً", "الثاني أبطأ فقط", "الأول أكثر دقة"], correct: 1, feedback: "RAG يمنح النموذج قاعدة معرفة خاصة بك ليجيب منها." },
+      { question: "أي حالة استخدام تناسب RAG؟", options: ["كتابة قصيدة", "روبوت يعرف كل سياسات شركتك ويجيب عليها", "توليد صورة عشوائية", "ترجمة كلمة"], correct: 1, feedback: "RAG مثالي عندما تريد إجابات محكومة ببيانات شركتك تحديداً." },
+      { question: "أي أداة تسمح ببناء روبوت مُدرَّب على وثائقك بدون برمجة؟", options: ["CustomGPT", "Word", "Excel", "Chrome"], correct: 0, feedback: "CustomGPT مُصمم خصيصاً لهذه الحالة." },
+      { question: "ما الفائدة الأساسية من RAG للشركات؟", options: ["توفير كهرباء", "تحويل وثائق الشركة إلى مساعد ذكي يجيب على الموظفين والعملاء", "تصميم شعارات", "طباعة أسرع"], correct: 1, feedback: "RAG يحوّل المعرفة المؤسسية الجامدة إلى مساعد ذكي حي." },
     ],
   },
+
+  // ============ الفصل الخامس ============
   {
     id: 4,
-    title: "أخلاقيات الذكاء الاصطناعي والاستخدام المسؤول",
+    title: "وكلاء الذكاء الاصطناعي الذاتيون",
     content: `
-<div class="intro-box"><p>كيف تستخدم هذه الأدوات بثقة ودون الإضرار بك أو بعملائك</p></div>
-<h3>لماذا هذا الفصل مهم لأي محترف</h3>
-<p>كلما استخدمت الذكاء الاصطناعي في عملك، زادت مسؤوليتك تجاه من تخدمهم. الأخطاء الشائعة هنا ليست تقنية بل تتعلق بالثقة والشفافية والدقة.</p>
-<h3>مبادئ عملية يجب اتباعها</h3>
-<p>أخبر عملاءك عندما يتفاعلون مع نظام آلي وليس إنساناً، خصوصاً في خدمة العملاء.</p>
-<p>لا تعتمد على إجابة الذكاء الاصطناعي وحدها في القرارات المالية أو الطبية أو القانونية دون تحقق بشري.</p>
-<p>احترم خصوصية بيانات عملائك، ولا ترفعها لأي أداة لا تثق بسياسة خصوصيتها.</p>
-<p>راجع أي محتوى ينشره الذكاء الاصطناعي باسمك قبل النشر، فالمسؤولية القانونية والأخلاقية تبقى عليك أنت.</p>
-<div class="flow-wrap"><div class="block-title"><span class="block-ic">⚡</span> المخطط التفاعلي</div><p class="flow-caption">تدفق العملية من البداية إلى النتيجة النهائية.</p><div class="flow-diagram"><div class="flow-node" data-flow-node="0"><div class="flow-ic">1</div><div class="flow-title-s">استخدام الأداة</div></div><div class="flow-arrow"><span class="flow-arrow-dot" style="animation-delay:0.0s"></span></div><div class="flow-node" data-flow-node="1"><div class="flow-ic">2</div><div class="flow-title-s">تحقق بشري من الدقة</div></div><div class="flow-arrow"><span class="flow-arrow-dot" style="animation-delay:0.3s"></span></div><div class="flow-node" data-flow-node="2"><div class="flow-ic">3</div><div class="flow-title-s">شفافية مع المستخدم النهائي</div></div><div class="flow-arrow"><span class="flow-arrow-dot" style="animation-delay:0.6s"></span></div><div class="flow-node" data-flow-node="3"><div class="flow-ic">4</div><div class="flow-title-s">مسؤولية كاملة عن الناتج</div></div></div></div>
-<div class="block-title"><span class="block-ic">🛠</span> أدوات مقترحة</div><div class="tools-grid"><div class="tool-card"><div class="tool-name">لا توجد أداة محددة</div><div class="tool-desc">هذا الفصل مبادئ عمل وليس أداة تقنية — طبّقها مع كل أداة تستخدمها.</div><span class="badge badge-free">مجاني</span></div></div>
-<div class="exercise-box"><div class="block-title"><span class="block-ic">🎯</span> جرّب بنفسك</div><p>راجع آخر محتوى أو رد استخدمت فيه الذكاء الاصطناعي في عملك، واسأل نفسك: هل كان شفافاً مع من استقبله؟ وهل تحققت من دقته قبل إرساله؟</p></div>
+${intro("بدلاً من أن تطلب من الذكاء الاصطناعي شيئاً واحداً، تُعطيه هدفاً ويُقرر وحده الخطوات اللازمة لتحقيقه.")}
+${learn([
+  "ما هي الوكلاء الذاتيون وكيف تعمل",
+  "بناء وكيل يُنجز مهام معقدة تلقائياً",
+  "الإشراف على الوكلاء والتحكم في قراراتهم",
+  "مستقبل العمل مع الوكلاء الذكيين",
+])}
+${section("ما هو الوكيل الذاتي؟", [
+  "بدلاً من أن تطلب من الذكاء الاصطناعي شيئاً واحداً وتنتظر الإجابة، تُعطيه هدفاً ويُقرر وحده الخطوات اللازمة لتحقيقه.",
+  "مثال: هدف: «ابحث عن أفضل خمسة موردين لمنتجنا، تواصل معهم بالإيميل، واجمع عروضهم في جدول مقارنة». الوكيل: يُنجز هذا كله وحده خطوة بخطوة.",
+])}
+${section("أدوات بناء الوكلاء", [
+  "n8n على n8n.io: أداة أتمتة قوية تتكامل مع أكثر من خمسمئة تطبيق. يمكن بناء وكلاء متكاملين بواجهة مرئية.",
+  "Relevance AI على relevanceai.com: متخصص في بناء فرق من الوكلاء الذكيين. يُتيح إنشاء وكلاء لمهام تسويق ومبيعات وبحث وإدارة.",
+])}
+${tools([
+  { name: "n8n", url: "n8n.io", desc: "أتمتة قوية تتكامل مع أكثر من ٥٠٠ تطبيق وواجهة مرئية لبناء الوكلاء.", level: "hard", cost: "partial" },
+  { name: "Relevance AI", url: "relevanceai.com", desc: "منصة متخصصة في بناء فرق كاملة من الوكلاء الذكيين للتسويق والمبيعات.", level: "hard", cost: "partial" },
+  { name: "AgentGPT", url: "agentgpt.reworkd.ai", desc: "وكيل يُنجز مهام كاملة تلقائياً بمجرد إعطائه هدفاً.", level: "mid", cost: "partial" },
+])}
+${exercise("اختر هدفاً واحداً معقداً في عملك (مثل: «ابحث عن ٥ موردين وقارن أسعارهم») واكتب الخطوات الفرعية التي يجب أن ينفذها وكيل ذكي لتحقيقه.")}
 `,
     quiz: [
-    {
-      question: "من يتحمل المسؤولية القانونية عن محتوى ينشره الذكاء الاصطناعي باسم صاحب العمل؟",
-      options: ["الأداة نفسها","الشركة المطورة للأداة فقط","صاحب العمل الذي استخدمها ونشرها","لا أحد يتحمل المسؤولية"],
-      correct: 2,
-      feedback: "مهما كانت الأداة متقدمة، المسؤولية القانونية والأخلاقية عن أي محتوى منشور تبقى على من نشره واستخدمه.",
-    },
-    {
-      question: "ما المبدأ الصحيح عند استخدام الشات بوت في خدمة العملاء؟",
-      options: ["إخفاء أنه نظام آلي عن العميل","إخبار العميل بوضوح أنه يتفاعل مع نظام آلي","تجاهل الموضوع تماماً","الادعاء بأنه إنسان دائماً"],
-      correct: 1,
-      feedback: "الشفافية مع المستخدم حول طبيعة النظام الذي يتفاعل معه أساس الثقة والاستخدام المسؤول.",
-    }
+      { question: "ما الفرق بين طلب عادي ووكيل ذاتي؟", options: ["لا فرق", "الوكيل يُقرر الخطوات وينفذها بنفسه لتحقيق هدف", "الوكيل أبطأ", "الوكيل يعمل بدون إنترنت"], correct: 1, feedback: "تُعطي الوكيل هدفاً فيقرر خطواته بنفسه." },
+      { question: "أي أداة تتكامل مع أكثر من ٥٠٠ تطبيق؟", options: ["n8n", "Word", "Excel", "Notepad"], correct: 0, feedback: "n8n منصة أتمتة تتكامل مع مئات الأدوات." },
+      { question: "أي منصة متخصصة في فرق الوكلاء للمبيعات والتسويق؟", options: ["Photoshop", "Relevance AI", "Chrome", "Zoom"], correct: 1, feedback: "Relevance AI متخصص في بناء قوى عمل من الوكلاء." },
+      { question: "ما مثال على مهمة مناسبة لوكيل ذاتي؟", options: ["كتابة حرف واحد", "البحث عن موردين والتواصل معهم وجمع عروضهم", "رفع صوت الحاسوب", "إعادة تشغيل الجهاز"], correct: 1, feedback: "المهام متعددة الخطوات هي المجال المثالي للوكلاء." },
+      { question: "لماذا يبقى الإشراف البشري ضرورياً؟", options: ["لا داعي له", "لأن قرارات الوكيل قد تحتاج مراجعة قبل تنفيذها", "لتبطئة العملية", "لتوفير الكهرباء"], correct: 1, feedback: "الإشراف البشري ضمانة لجودة القرارات الحرجة." },
     ],
   },
+
+  // ============ الفصل السادس — ROI Calculator ============
   {
     id: 5,
-    title: "مشروع التخرج: إطلاق مشروعك الأول",
+    title: "استراتيجية المنتج الأول من الذكاء الاصطناعي",
     content: `
-<div class="intro-box"><p>طبّق كل ما تعلمته في مشروع واحد متكامل من الفكرة إلى الإطلاق</p></div>
-<h3>ماذا يشمل هذا المشروع؟</h3>
-<p>هذا الفصل الأخير ليس درساً جديداً، بل تطبيقاً عملياً لكل ما مررت به في المستويات الثلاثة: اختيار مشكلة حقيقية، بناء حل بسيط بأدوات بدون كود، إضافة أتمتة أو شات بوت يدعمه، واختباره مع أشخاص حقيقيين.</p>
-<h3>خطوات المشروع النهائي</h3>
-<p>اختر مشكلة واحدة محددة تعرفها جيداً من محيطك أو عملك.</p>
-<p>ابنِ حلاً بسيطاً باستخدام أداة بدون كود (تطبيق، شات بوت، أو أتمتة).</p>
-<p>أضف طبقة ذكاء اصطناعي واحدة تحسّن التجربة (تحليل، رد تلقائي، أو توصية).</p>
-<p>اعرضه على ٥ أشخاص على الأقل واجمع ملاحظاتهم كتابياً.</p>
-<p>وثّق ما تعلمته وما ستحسّنه في نسخة تالية.</p>
-<div class="flow-wrap"><div class="block-title"><span class="block-ic">⚡</span> المخطط التفاعلي</div><p class="flow-caption">تدفق العملية من البداية إلى النتيجة النهائية.</p><div class="flow-diagram"><div class="flow-node" data-flow-node="0"><div class="flow-ic">1</div><div class="flow-title-s">اختيار المشكلة</div></div><div class="flow-arrow"><span class="flow-arrow-dot" style="animation-delay:0.0s"></span></div><div class="flow-node" data-flow-node="1"><div class="flow-ic">2</div><div class="flow-title-s">بناء الحل الأولي</div></div><div class="flow-arrow"><span class="flow-arrow-dot" style="animation-delay:0.3s"></span></div><div class="flow-node" data-flow-node="2"><div class="flow-ic">3</div><div class="flow-title-s">إضافة طبقة ذكاء اصطناعي</div></div><div class="flow-arrow"><span class="flow-arrow-dot" style="animation-delay:0.6s"></span></div><div class="flow-node" data-flow-node="3"><div class="flow-ic">4</div><div class="flow-title-s">اختبار وتوثيق النتائج</div></div></div></div>
-<div class="block-title"><span class="block-ic">🛠</span> أدوات مقترحة</div><div class="tools-grid"><div class="tool-card"><div class="tool-name">كل أدوات المستويات الثلاثة</div><div class="tool-desc">هذا المشروع يجمع الأدوات التي تعلمتها سابقاً في تطبيق واحد.</div><span class="badge badge-free">مجاني</span></div></div>
-<div class="exercise-box"><div class="block-title"><span class="block-ic">🎯</span> مشروعك النهائي</div><p>اكتب خطة من فقرة واحدة تحدد فيها: المشكلة التي تحلها، الأداة أو الأدوات التي ستستخدمها، وكيف ستعرف أن مشروعك نجح. هذه الخطة هي بداية مشروعك الحقيقي بعد الكورس.</p></div>
+${intro("كيف تجد فكرة منتج ذكاء اصطناعي مربحة، وتحدد سوقك، وتبني ميزات تنافسية حقيقية.")}
+${learn([
+  "كيف تجد فكرة منتج ذكاء اصطناعي مربحة",
+  "تحديد السوق المستهدف والتسعير",
+  "بناء مزايا تنافسية حقيقية",
+  "من أين تبدأ وكيف تنمو",
+])}
+${section("فئات المنتجات الذكية الأكثر ربحاً", [
+  "المساعدون المتخصصون بصناعة محددة: مساعد ذكاء اصطناعي لمحامين يعرف القانون الخليجي، مساعد لأطباء يتابع البروتوكولات الطبية، مساعد لمعلمين يُساعد في إنشاء المناهج.",
+  "أدوات أتمتة المهام المتكررة: أتمتة إدارة العقارات، أتمتة تقارير المبيعات، أتمتة خدمة العملاء.",
+  "منصات المحتوى المتخصصة: منصة محتوى عربي متخصصة بقطاع معين، منشئ إعلانات آلي لمجال محدد.",
+])}
+${section("تحديد السعر المناسب", [
+  "السعر يعتمد على القيمة التي يُوفّرها للعميل، وليس تكلفة بنائه. إذا وفّر منتجك للعميل عشر ساعات عمل أسبوعياً بقيمة مئة دولار، سعره المناسب بين خمسة وعشرين وخمسين دولاراً شهرياً.",
+])}
+${roiCalculator()}
+${exercise("املأ الحاسبة أعلاه بأرقام منتجك المتوقّع. جرّب سيناريوهين: تسعير منخفض بحجم كبير، وتسعير مرتفع بحجم صغير. أيهما يُعطيك ربحاً سنوياً أفضل ونقطة تعادل أسرع؟")}
 `,
     quiz: [
-    {
-      question: "ما الهدف الأساسي من مشروع التخرج؟",
-      options: ["حفظ معلومات جديدة فقط","تطبيق عملي شامل لكل ما تعلمته في مشروع حقيقي واحد","اجتياز اختبار نظري","لا هدف محدد"],
-      correct: 1,
-      feedback: "هذا الفصل مصمم ليكون تطبيقاً عملياً متكاملاً يجمع مهارات كل المستويات السابقة.",
-    },
-    {
-      question: "لماذا يجب جمع ملاحظات من أشخاص حقيقيين قبل اعتبار المشروع مكتملاً؟",
-      options: ["لأن القانون يفرض ذلك","للتأكد أن الحل يحل مشكلة فعلية وليس افتراضاً شخصياً فقط","لا داعي لذلك أبداً","فقط لزيادة عدد المستخدمين"],
-      correct: 1,
-      feedback: "ملاحظات المستخدمين الحقيقيين هي الطريقة الوحيدة لمعرفة إن كان الحل يحل المشكلة فعلاً أم لا.",
-    }
+      { question: "على أي أساس يُحدَّد سعر منتج الذكاء الاصطناعي؟", options: ["تكلفة بنائه فقط", "القيمة التي يوفّرها للعميل", "تسعير المنافس فقط", "بشكل عشوائي"], correct: 1, feedback: "السعر يعكس القيمة المُقدَّمة للعميل، لا تكلفة البناء." },
+      { question: "أي فئة منتجات تعتبر من الأكثر ربحاً؟", options: ["منتجات عامة لكل الناس", "مساعدون متخصصون بصناعة محددة", "ألعاب مجانية", "مواقع ثابتة"], correct: 1, feedback: "التخصص في صناعة معينة يرفع القيمة والسعر." },
+      { question: "ما نقطة التعادل؟", options: ["عدد العملاء الذين تُغطي إيراداتهم تكاليفك الثابتة", "أول عميل", "آخر عميل", "لا معنى لها"], correct: 0, feedback: "نقطة التعادل هي عدد العملاء اللازمين لتغطية تكاليفك." },
+      { question: "إذا وفّر منتجك ١٠ ساعات أسبوعياً بقيمة ١٠٠$/ساعة، أي سعر شهري مناسب؟", options: ["دولار واحد", "بين ٢٥ و٥٠ دولاراً", "١٠٠٠ دولار", "مجاناً"], correct: 1, feedback: "سعر معقول يعكس جزءاً من القيمة الشهرية الكبيرة." },
+      { question: "أي فئة منتج تناسب أتمتة تقارير المبيعات؟", options: ["منصات محتوى", "أدوات أتمتة المهام المتكررة", "ألعاب", "شبكات اجتماعية"], correct: 1, feedback: "الأتمتة تحلّ محل المهام المتكررة يومياً." },
     ],
-  }
+  },
+
+  // ============ الفصل السابع ============
+  {
+    id: 6,
+    title: "التسعير والنمو لمنتجات الذكاء الاصطناعي",
+    content: `
+${intro("نماذج التسعير الشائعة، واستراتيجيات النمو التي أثبتت نجاحها في منتجات AI.")}
+${learn([
+  "نماذج التسعير الشائعة ومتى تستخدم كلاً منها",
+  "كيف تُسعّر للأفراد والشركات الصغيرة والكبيرة",
+  "استراتيجيات النمو الأساسية",
+  "بناء قنوات تسويق مستدامة",
+])}
+${section("نماذج التسعير الشائعة", [
+  "الاشتراك الشهري — مستخدمو الأفراد: من تسعة إلى تسعة وعشرين دولاراً شهرياً.",
+  "الاشتراك الشهري — الشركات الصغيرة: من تسعة وعشرين إلى تسعة وتسعين دولاراً شهرياً.",
+  "الاشتراك الشهري — الشركات الكبيرة: تسعير مخصص يتجاوز مئتي دولار شهرياً.",
+  "الدفع حسب الاستخدام: مناسب عندما يتفاوت الاستخدام بين المستخدمين، تدفع فقط مقابل ما تستخدمه.",
+])}
+${section("استراتيجيات النمو", [
+  "الإصدار المجاني مع قيود: أتح النسخة المجانية لجذب المستخدمين، وحدود الاستخدام تدفعهم للترقية للمدفوع.",
+  "التسويق بالمحتوى: أنشئ محتوى مجانياً قيّماً يُظهر قدرات منتجك، والمحتوى يجذب المستخدمين تلقائياً.",
+  "الشراكات الاستراتيجية: تعاون مع شركات تخدم نفس جمهورك، قدّم لمستخدميهم خصماً خاصاً.",
+])}
+${tools([
+  { name: "Stripe Billing", url: "stripe.com/billing", desc: "إدارة الاشتراكات والدفع حسب الاستخدام بسهولة.", level: "mid", cost: "partial" },
+  { name: "Paddle", url: "paddle.com", desc: "بديل لـStripe يتولى الضرائب والفوترة العالمية.", level: "mid", cost: "paid" },
+  { name: "Beehiiv", url: "beehiiv.com", desc: "نشرة بريدية للتسويق بالمحتوى وبناء جمهور مستدام.", level: "easy", cost: "partial" },
+])}
+${exercise("اختر نموذج التسعير الأنسب لمنتجك: اشتراك ثابت أم دفع حسب الاستخدام؟ ثم اكتب ٣ أفكار محتوى مجاني تجذب جمهورك المستهدف.")}
+`,
+    quiz: [
+      { question: "ما نطاق تسعير الاشتراك للأفراد عادةً؟", options: ["$1-2", "$9-29", "$500-1000", "مجاناً فقط"], correct: 1, feedback: "الأفراد يدفعون بين ٩ و٢٩ دولاراً شهرياً في الغالب." },
+      { question: "متى يناسب نموذج «الدفع حسب الاستخدام»؟", options: ["عندما يكون الاستخدام ثابتاً", "عندما يتفاوت الاستخدام بين المستخدمين", "لا يستخدم أبداً", "للألعاب فقط"], correct: 1, feedback: "الدفع حسب الاستخدام عادل عندما يختلف الاستهلاك." },
+      { question: "ما فائدة الإصدار المجاني مع قيود؟", options: ["خسارة مال", "جذب مستخدمين ودفعهم للترقية عند بلوغ الحدود", "لا فائدة", "زيادة التكاليف فقط"], correct: 1, feedback: "الإصدار المجاني قناة اكتشاف ثم تحويل قوية." },
+      { question: "ما مثال على شراكة استراتيجية؟", options: ["تجاهل المنافسين", "تقديم خصم لعملاء شركة تخدم نفس جمهورك", "رفع الأسعار فقط", "إغلاق الحساب"], correct: 1, feedback: "الشراكات تفتح قناة توزيع جاهزة إلى جمهور مناسب." },
+      { question: "ما دور التسويق بالمحتوى؟", options: ["إزعاج المستخدمين", "جذب المستخدمين تلقائياً عبر محتوى قيّم", "زيادة تكلفة الإعلان", "لا شيء"], correct: 1, feedback: "المحتوى القيّم يجذب جمهوراً مؤهّلاً بشكل مستدام." },
+    ],
+  },
+
+  // ============ الفصل الثامن ============
+  {
+    id: 7,
+    title: "إدارة فريق يستخدم الذكاء الاصطناعي",
+    content: `
+${intro("تحويل فريقك إلى فريق مُعزَّز بالذكاء الاصطناعي عبر ثلاث خطوات عملية.")}
+${learn([
+  "كيف تحدد المهام المناسبة للأتمتة",
+  "بناء أدلة استخدام موحّدة للفريق",
+  "قياس تأثير الذكاء الاصطناعي على الإنتاجية",
+  "الحفاظ على جودة الناتج مع التوسّع",
+])}
+${section("تحويل فريقك إلى فريق مُعزَّز بالذكاء الاصطناعي", [
+  "الخطوة الأولى — تحديد المهام المناسبة للأتمتة: المهام المتكررة التي تستهلك وقتاً كبيراً، المهام التي تحتاج لجمع بيانات أو بحث، المهام الإبداعية التي تحتاج كثيراً من الأفكار.",
+  "الخطوة الثانية — بناء أدلة استخدام الذكاء الاصطناعي: لكل وظيفة في فريقك، وضّح كيف يستخدم الذكاء الاصطناعي بشكل أمثل. قوالب موحّدة للطلبات النصية لضمان جودة ثابتة.",
+  "الخطوة الثالثة — قياس التأثير: قِس الوقت الموفَّر قبل وبعد تبني الذكاء الاصطناعي. قِس جودة الناتج مقارنة بالسابق.",
+])}
+${tools([
+  { name: "Notion", url: "notion.so", desc: "لبناء ومشاركة أدلة استخدام AI الموحّدة للفريق.", level: "easy", cost: "partial" },
+  { name: "Slack + AI", url: "slack.com", desc: "دمج قوالب الطلبات داخل قنوات الفريق للاستخدام اليومي.", level: "easy", cost: "partial" },
+  { name: "Loom", url: "loom.com", desc: "تسجيل شروحات فيديو قصيرة لأفضل الممارسات في استخدام AI.", level: "easy", cost: "partial" },
+])}
+${exercise("اختر مهمة متكررة في فريقك، اكتب لها قالب طلب موحّداً، وقِس الوقت اللازم لإنجازها قبل وبعد استخدام القالب مع الذكاء الاصطناعي.")}
+`,
+    quiz: [
+      { question: "ما أول خطوة لتحويل فريقك إلى فريق معزّز بـAI؟", options: ["شراء أغلى الأدوات", "تحديد المهام المتكررة المناسبة للأتمتة", "طرد الموظفين", "تجاهل الفريق"], correct: 1, feedback: "تبدأ بتحديد المهام التي ستستفيد فعلاً من الأتمتة." },
+      { question: "ما فائدة القوالب الموحّدة للطلبات النصية؟", options: ["لا فائدة", "ضمان جودة ثابتة عبر الفريق", "زيادة الأخطاء", "إبطاء العمل"], correct: 1, feedback: "القوالب الموحّدة تُنتج جودة ثابتة ومستقلة عن مهارة الفرد." },
+      { question: "كيف تقيس نجاح تبني AI؟", options: ["بالإحساس", "بقياس الوقت الموفَّر وجودة الناتج قبل وبعد", "بعدد الأدوات المشتراة", "بعدد الاجتماعات"], correct: 1, feedback: "القياس المقارن قبل/بعد هو المعيار الموضوعي." },
+      { question: "أي نوع مهام يناسب الأتمتة أكثر؟", options: ["قرارات قانونية حرجة", "مهام متكررة أو تحتاج جمع بيانات", "توقيع العقود النهائية", "قرارات التوظيف الاستراتيجية"], correct: 1, feedback: "المهام المتكررة والبحث هي الأنسب للأتمتة." },
+      { question: "ما دور دليل الاستخدام في الفريق؟", options: ["زخرفة", "توضيح كيف يستخدم كل دور الذكاء الاصطناعي بشكل أمثل", "زيادة الأوراق", "لا دور له"], correct: 1, feedback: "الدليل ينقل أفضل الممارسات ويوحّد الجودة." },
+    ],
+  },
+
+  // ============ الفصل التاسع ============
+  {
+    id: 8,
+    title: "دراسات حالة — شركات نجحت بالذكاء الاصطناعي",
+    content: `
+${intro("ثلاث دراسات حالة حقيقية تُظهر كيف حوّلت شركات صغيرة عملها بالكامل باستخدام أدوات الذكاء الاصطناعي.")}
+${learn([
+  "أمثلة واقعية من قطاع المحتوى والصحة والتجارة",
+  "الأدوات المستخدمة فعلياً في كل حالة",
+  "الأرقام الفعلية لخفض التكاليف والوقت",
+  "استخلاص الدروس لتطبيقها في عملك",
+])}
+${section("حالة أولى — شركة محتوى تُنتج بالذكاء الاصطناعي", [
+  "فريق من ثلاثة أشخاص يُنتج محتوى مئة عميل شهرياً.",
+  "باستخدام: ChatGPT لكتابة المحتوى، Midjourney للصور، Buffer للجدولة.",
+  "النتيجة: خفض وقت الإنتاج من أربعين ساعة لستة عشر ساعة للعميل الواحد.",
+])}
+${section("حالة ثانية — عيادة طبية تُؤتمت الإدارة", [
+  "روبوت محادثة يتلقى الحجوزات ويُرسل التذكيرات.",
+  "الذكاء الاصطناعي يُلخّص سجلات المرضى.",
+  "النتيجة: تقليل المكالمات الإدارية بنسبة سبعين بالمئة.",
+])}
+${section("حالة ثالثة — متجر إلكتروني يُوصّف بالذكاء الاصطناعي", [
+  "استخدام الذكاء الاصطناعي لكتابة أوصاف آلاف المنتجات.",
+  "أتمتة الردود على أسئلة العملاء الشائعة.",
+  "النتيجة: توفير مئة ساعة شهرياً وتحسين معدل التحويل.",
+])}
+${exercise("اختر إحدى الحالات الثلاث الأقرب لعملك، وحدّد: ما الأدوات التي ستستخدمها؟ ما المقياس الذي ستراقبه لتعرف أن التطبيق نجح؟")}
+`,
+    quiz: [
+      { question: "كم عميلاً يُخدم فريق شركة المحتوى في المثال؟", options: ["١٠", "٥٠", "١٠٠", "١٠٠٠"], correct: 2, feedback: "فريق من ٣ أشخاص يخدم ١٠٠ عميل شهرياً." },
+      { question: "ما نسبة تقليل المكالمات الإدارية في العيادة؟", options: ["١٠٪", "٣٠٪", "٧٠٪", "١٠٠٪"], correct: 2, feedback: "روبوت الحجوزات قلّل المكالمات بنسبة ٧٠٪." },
+      { question: "أي أداة استخدمتها شركة المحتوى للصور؟", options: ["ChatGPT", "Midjourney", "Excel", "Slack"], correct: 1, feedback: "Midjourney لتوليد صور احترافية بسرعة." },
+      { question: "ما نتيجة أتمتة أوصاف المنتجات في المتجر؟", options: ["زيادة التكاليف", "توفير ١٠٠ ساعة شهرياً وتحسين التحويل", "خسارة العملاء", "لا نتيجة"], correct: 1, feedback: "الأتمتة وفّرت وقتاً كبيراً ورفعت معدل التحويل." },
+      { question: "ما الدرس المشترك من الحالات الثلاث؟", options: ["الذكاء الاصطناعي لا يجدي", "دمج AI في العمليات المتكررة يوفّر وقتاً كبيراً ويرفع الأداء", "استبدال كل الموظفين فوراً", "الاعتماد على أداة واحدة فقط"], correct: 1, feedback: "الدرس الأساسي: دمج AI في العمليات المتكررة يُحدث فرقاً كبيراً." },
+    ],
+  },
+
+  // ============ الفصل العاشر ============
+  {
+    id: 9,
+    title: "الأمان والخصوصية في أنظمة الذكاء الاصطناعي",
+    content: `
+${intro("حماية بيانات عملائك ووضع سياسة واضحة لاستخدام الذكاء الاصطناعي داخل شركتك.")}
+${learn([
+  "قواعد التعامل الآمن مع بيانات العملاء",
+  "استخدام النسخ المؤسسية من الأدوات",
+  "بناء حوكمة واضحة لاستخدام AI",
+  "الاحتفاظ بمراجعة بشرية للقرارات الحرجة",
+])}
+${section("أمان بيانات العملاء", [
+  "لا ترفع بيانات العملاء الشخصية على أدوات ذكاء اصطناعي عامة دون إذنهم.",
+  "استخدم النسخ المؤسسية من الأدوات التي توفّر ضمانات حماية البيانات.",
+])}
+${section("حوكمة الذكاء الاصطناعي في شركتك", [
+  "ضع سياسة واضحة لما يُسمح للموظفين برفعه على أدوات الذكاء الاصطناعي.",
+  "اختبر كل نتيجة قبل إرسالها للعملاء.",
+  "احتفظ بمراجعة بشرية للقرارات الهامة.",
+])}
+${tools([
+  { name: "ChatGPT Enterprise", url: "openai.com/enterprise", desc: "نسخة مؤسسية بضمانات حماية البيانات وعدم التدريب عليها.", level: "mid", cost: "paid" },
+  { name: "Claude for Enterprise", url: "anthropic.com", desc: "نسخة مؤسسية من Claude بضمانات خصوصية وامتثال.", level: "mid", cost: "paid" },
+  { name: "Microsoft Copilot", url: "microsoft.com/copilot", desc: "تكامل AI داخل بيئة Microsoft بضمانات مؤسسية.", level: "easy", cost: "paid" },
+])}
+${exercise("اكتب سياسة استخدام AI من صفحة واحدة لفريقك: ما يُسمح رفعه، ما يُمنع، ومن يراجع النتائج قبل إرسالها للعملاء.")}
+`,
+    quiz: [
+      { question: "ما القاعدة الأساسية لبيانات العملاء الشخصية؟", options: ["ارفعها على أي أداة", "لا ترفعها على أدوات عامة بدون إذن", "احذفها فوراً", "شاركها علناً"], correct: 1, feedback: "خصوصية العميل تسبق أي اعتبار آخر." },
+      { question: "ما مزايا النسخ المؤسسية من الأدوات؟", options: ["أرخص فقط", "ضمانات حماية بيانات وعدم استخدامها للتدريب", "أبطأ", "أقل ميزات"], correct: 1, feedback: "النسخ المؤسسية تُقدّم ضمانات قانونية وتقنية للحماية." },
+      { question: "لماذا نحتفظ بمراجعة بشرية للقرارات الحرجة؟", options: ["لإبطاء العمل", "لأن AI قد يخطئ في القرارات الحساسة", "لتوظيف مزيد من الناس", "لا داعي لها"], correct: 1, feedback: "المراجعة البشرية شبكة أمان لا غنى عنها في القرارات الهامة." },
+      { question: "ما الذي يجب أن تتضمنه سياسة الحوكمة؟", options: ["ما يُسمح رفعه وما يُمنع ومن يراجع", "لا شيء محدد", "شعار الشركة فقط", "أسماء الموظفين"], correct: 0, feedback: "سياسة واضحة تحدد الحدود والمسؤوليات." },
+      { question: "متى يجب اختبار نتيجة AI قبل إرسالها؟", options: ["أبداً", "دائماً قبل إرسالها للعملاء", "فقط يوم الجمعة", "لا داعي"], correct: 1, feedback: "لا تُرسل ناتج AI للعميل دون تحقّق بشري." },
+    ],
+  },
+
+  // ============ الفصل الحادي عشر ============
+  {
+    id: 10,
+    title: "مستقبل الذكاء الاصطناعي وكيف تبقى في المقدمة",
+    content: `
+${intro("التوجهات القادمة في الذكاء الاصطناعي، وكيف تبني عادة مستمرة تُبقيك دائماً في المقدمة.")}
+${learn([
+  "أهم التوجهات القادمة في السنوات الخمس المقبلة",
+  "كيف تتابع تطورات المجال بكفاءة",
+  "بناء حضور شخصي في مجالك",
+  "الاستفادة من التقنيات الجديدة بسرعة",
+])}
+${section("التوجهات القادمة", [
+  "وكلاء ذاتيون أكثر استقلالية وقدرة.",
+  "نماذج متعددة الوسائط تجمع النص والصوت والصورة والفيديو.",
+  "تكامل أعمق مع العالم المادي عبر الروبوتات.",
+  "تخفيض مستمر في التكاليف وتوسّع الوصول.",
+])}
+${section("كيف تبقى في المقدمة", [
+  "تابع مجتمعات الذكاء الاصطناعي: عربية وعالمية.",
+  "جرّب الأدوات الجديدة بمجرد إطلاقها.",
+  "ابنِ ابتكاراتك فوق التقنيات الجديدة بسرعة.",
+  "شارك ما تتعلمه وابنِ حضوراً في مجالك.",
+])}
+${tools([
+  { name: "Product Hunt", url: "producthunt.com", desc: "اكتشاف أحدث منتجات AI فور إطلاقها.", level: "easy", cost: "free" },
+  { name: "X / Twitter AI Lists", url: "x.com", desc: "متابعة أهم الباحثين وبناة المنتجات في المجال.", level: "easy", cost: "free" },
+  { name: "Hugging Face", url: "huggingface.co", desc: "متابعة أحدث النماذج مفتوحة المصدر وتجربتها مباشرة.", level: "mid", cost: "partial" },
+])}
+${exercise("اكتب خطة تعلم ذاتي أسبوعية: ساعة واحدة يومياً لمتابعة إصدارات جديدة، ونشر منشور واحد أسبوعياً تُشارك فيه ما تعلمته.")}
+`,
+    quiz: [
+      { question: "ما أحد التوجهات القادمة الأبرز؟", options: ["اختفاء AI", "وكلاء أكثر استقلالية ونماذج متعددة الوسائط", "الرجوع للورق", "إلغاء الإنترنت"], correct: 1, feedback: "الوكلاء والنماذج متعددة الوسائط هما الاتجاه السائد." },
+      { question: "كيف تبقى في المقدمة عملياً؟", options: ["تجاهل الجديد", "متابعة مستمرة وتجربة سريعة ومشاركة ما تتعلمه", "الانتظار سنوات", "الاعتماد على أداة واحدة فقط"], correct: 1, feedback: "المتابعة والتجربة والمشاركة معادلة البقاء في المقدمة." },
+      { question: "ما فائدة بناء حضور شخصي في مجالك؟", options: ["لا فائدة", "فتح فرص شراكات وعملاء وتعلّم متبادل", "زيادة التكاليف", "إضاعة الوقت"], correct: 1, feedback: "الحضور الشخصي محرّك قوي للفرص والتعلّم." },
+      { question: "أين تكتشف أحدث منتجات AI فور إطلاقها؟", options: ["Product Hunt", "Word", "Notepad", "Excel"], correct: 0, feedback: "Product Hunt هو الوجهة الأولى لاكتشاف المنتجات الجديدة." },
+      { question: "ما التوجه المتعلق بالتكاليف مستقبلاً؟", options: ["ارتفاع مستمر", "تخفيض مستمر وتوسّع الوصول", "ثبات دائم", "اختفاء الأدوات"], correct: 1, feedback: "التكاليف تنخفض والوصول يتوسّع باستمرار." },
+    ],
+  },
+
+  // ============ الفصل الثاني عشر — مشروع التخرج ============
+  {
+    id: 11,
+    title: "مشروع التخرج — منتج ذكاء اصطناعي حقيقي",
+    content: `
+${intro("خطوة أخيرة قبل التخرّج: بناء منتج ذكاء اصطناعي كامل جاهز للإطلاق يجمع كل ما تعلمته.")}
+${learn([
+  "تجميع كل مهارات المستويات الثلاثة في منتج واحد",
+  "التحقق من الفكرة قبل الاستثمار الكامل",
+  "بناء نموذج أولي على Lovable وربطه بـAI ومدفوعات",
+  "الحصول على أول ١٠ مستخدمين حقيقيين",
+])}
+${section("المشروع النهائي", [
+  "بناء منتج ذكاء اصطناعي كامل جاهز للإطلاق يتضمن:",
+  "أولاً: الفكرة وتحقق من السوق.",
+  "ثانياً: النموذج الأولي على Lovable.",
+  "ثالثاً: ربط الذكاء الاصطناعي عبر الواجهة البرمجية.",
+  "رابعاً: نظام المدفوعات عبر Stripe.",
+  "خامساً: أول عشرة مستخدمين حقيقيين.",
+])}
+${tools([
+  { name: "Lovable", url: "lovable.dev", desc: "بناء المنتج الكامل بوصف نصي، مع واجهات وقاعدة بيانات.", level: "easy", cost: "partial" },
+  { name: "OpenAI / Claude API", desc: "ربط قدرات الذكاء الاصطناعي داخل منتجك.", level: "hard", cost: "paid" },
+  { name: "Stripe", url: "stripe.com", desc: "قبول المدفوعات والاشتراكات من أول يوم إطلاق.", level: "mid", cost: "partial" },
+])}
+${exercise("ابدأ اليوم: اكتب فكرتك في جملة واحدة، ابنِ صفحة هبوط على Lovable خلال ساعة، وشاركها مع ٢٠ شخصاً. اجمع أول ١٠ تسجيلات، ثم ابنِ النسخة الأولى الفعلية.")}
+`,
+    quiz: [
+      { question: "ما أول عنصر في مشروع التخرج؟", options: ["نظام المدفوعات", "الفكرة والتحقق من السوق", "التسويق", "التصميم النهائي"], correct: 1, feedback: "الفكرة والتحقق يسبقان أي بناء تقني." },
+      { question: "أي أداة تُستخدم لبناء النموذج الأولي؟", options: ["Lovable", "Photoshop", "Word", "Excel"], correct: 0, feedback: "Lovable مناسبة لبناء النموذج الأولي بسرعة." },
+      { question: "ما دور Stripe في المشروع؟", options: ["توليد النصوص", "قبول المدفوعات والاشتراكات", "استضافة الملفات", "إرسال البريد"], correct: 1, feedback: "Stripe يتولى نظام المدفوعات." },
+      { question: "كم عدد المستخدمين المستهدف عند الإطلاق الأول؟", options: ["٠", "١٠ مستخدمين حقيقيين", "مليون", "١٠٠٠٠"], correct: 1, feedback: "١٠ مستخدمين حقيقيين نقطة انطلاق كافية للتعلّم والتحسين." },
+      { question: "ما الغاية النهائية من مشروع التخرج؟", options: ["نظرياً فقط", "منتج AI حقيقي جاهز للإطلاق يجمع كل ما تعلّمته", "شهادة فقط", "لا شيء"], correct: 1, feedback: "الهدف منتج حقيقي مُطلَق في السوق يجمع مهاراتك كاملة." },
+    ],
+  },
 ];
