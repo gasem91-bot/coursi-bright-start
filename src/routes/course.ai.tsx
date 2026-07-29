@@ -166,7 +166,7 @@ function CourseAIPage() {
         { onConflict: "user_id,chapter_id" },
       );
     if (!alreadyComplete) {
-      // Award 10 XP for first-time completion
+      // Award 10 XP + chapter badge for first-time completion
       const { data: p } = await supabase
         .from("profiles")
         .select("xp_points")
@@ -174,6 +174,7 @@ function CourseAIPage() {
         .maybeSingle();
       const current = (p as { xp_points?: number } | null)?.xp_points ?? 0;
       await supabase.from("profiles").update({ xp_points: current + 10 }).eq("id", userId);
+      toast.success(`🏅 وسام جديد: أتممت الفصل ${toAr(activeChapter + 1)} — +١٠ نقاط خبرة`);
     }
     await fetchProgress(userId);
   };
