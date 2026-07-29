@@ -1,4 +1,5 @@
-// Intermediate Course — auto-generated from coursi-ai-level2-3-enhanced.html
+// Intermediate Course — 12 chapters, content from COURS_Level2_Intermediate.md
+// Uses global .coursi-content classes defined in src/routes/course.ai.tsx
 import type { QuizQuestion } from "./course-content-types";
 
 export interface IntermediateChapter {
@@ -8,195 +9,742 @@ export interface IntermediateChapter {
   quiz: QuizQuestion[];
 }
 
+const intro = (t: string) => `<div class="intro-box"><p>${t}</p></div>`;
+
+const learn = (items: string[]) => `
+<div class="learn-box">
+  <div class="block-title"><span class="block-ic">✦</span> ما ستتعلمه</div>
+  <ul>${items.map((i) => `<li>${i}</li>`).join("")}</ul>
+</div>`;
+
+const checklist = (title: string, steps: string[]) => `
+<div class="try-box">
+  <div class="block-title"><span class="block-ic">🎯</span> ${title}</div>
+  <ul class="try-list">
+    ${steps.map((s) => `<li class="try-item"><span class="try-check"></span><span class="try-text">${s}</span></li>`).join("")}
+  </ul>
+</div>`;
+
+const tools = (
+  arr: { name: string; desc: string; url: string; level: "easy" | "mid" | "hard"; cost: "free" | "partial" | "paid" }[],
+) => {
+  const levelLbl: Record<string, string> = { easy: "سهل", mid: "متوسط", hard: "متقدم" };
+  const costLbl: Record<string, string> = { free: "مجاني", partial: "مجاني جزئياً", paid: "مدفوع" };
+  return `
+<div class="adv-tools-grid">
+  ${arr
+    .map(
+      (t) => `
+    <div class="adv-tool-card">
+      <div class="adv-tool-head">
+        <div class="adv-tool-name">${t.name}</div>
+        <div class="adv-tool-badges">
+          <span class="badge badge-${t.level}">${levelLbl[t.level]}</span>
+          <span class="badge badge-${t.cost}">${costLbl[t.cost]}</span>
+        </div>
+      </div>
+      <div class="adv-tool-desc">${t.desc}</div>
+      <a class="adv-tool-btn" href="https://${t.url}" target="_blank" rel="noreferrer">افتح ${t.url} ←</a>
+    </div>`,
+    )
+    .join("")}
+</div>`;
+};
+
+const flowDiagram = (nodes: string[]) => `
+<div class="flow-wrap">
+  <div class="block-title"><span class="block-ic">⚡</span> مخطط الأتمتة التفاعلي</div>
+  <p class="flow-caption">مرّر الفأرة على أي خطوة لعرضها — الأسهم متحركة بشكل مستمر.</p>
+  <div class="flow-diagram">
+    ${nodes
+      .map(
+        (n, i) => `
+      <div class="flow-node" data-flow-node="${i}">
+        <div class="flow-ic">${i + 1}</div>
+        <div class="flow-title-s">${n}</div>
+      </div>
+      ${i < nodes.length - 1 ? `<div class="flow-arrow"><span class="flow-arrow-dot" style="animation-delay:${i * 0.25}s"></span></div>` : ""}`,
+      )
+      .join("")}
+  </div>
+</div>`;
+
 export const INTERMEDIATE_CHAPTERS: IntermediateChapter[] = [
+  // ============ الفصل الأول ============
   {
     id: 0,
-    title: "الأتمتة الذكية: Zapier و Make",
+    title: "فهم النماذج اللغوية الكبيرة بعمق",
     content: `
-<div class="intro-box"><p>اربط تطبيقاتك ببعضها ودع الذكاء الاصطناعي يعمل نيابة عنك</p></div>
-<h3>لماذا الأتمتة؟</h3>
-<p>تخيل أن رسالة بريد إلكتروني جديدة تصل، فيتم تلخيصها تلقائياً، وإرسال ملخصها إلى فريقك على تطبيق تيليجرام، دون أن تلمس شيئاً. هذا بالضبط ما تفعله أدوات الأتمتة.</p>
-<p>الفكرة الأساسية: أنت تحدد «عندما يحدث كذا، افعل كذا»، والأداة تنفذ ذلك تلقائياً في كل مرة، على مدار الساعة.</p>
-<h3>كيف تبني أول أتمتة</h3>
-<p>كل أتمتة تتكون من ثلاثة أجزاء بسيطة:</p>
-<p>المُشغّل (Trigger): الحدث الذي يبدأ العملية، مثل وصول رسالة جديدة.</p>
-<p>الشرط (Filter): تصفية اختيارية، مثل تنفيذ الأتمتة فقط إذا كانت الرسالة من عميل معين.</p>
-<p>الإجراء (Action): ما يحدث بعد ذلك، مثل إرسال إشعار أو حفظ البيانات في جدول.</p>
-<div class="flow-wrap"><div class="block-title"><span class="block-ic">⚡</span> المخطط التفاعلي</div><p class="flow-caption">تدفق العملية من البداية إلى النتيجة النهائية.</p><div class="flow-diagram"><div class="flow-node" data-flow-node="0"><div class="flow-ic">1</div><div class="flow-title-s">حدث جديد (بريد، نموذج، طلب)</div></div><div class="flow-arrow"><span class="flow-arrow-dot" style="animation-delay:0.0s"></span></div><div class="flow-node" data-flow-node="1"><div class="flow-ic">2</div><div class="flow-title-s">تحليل بالذكاء الاصطناعي</div></div><div class="flow-arrow"><span class="flow-arrow-dot" style="animation-delay:0.3s"></span></div><div class="flow-node" data-flow-node="2"><div class="flow-ic">3</div><div class="flow-title-s">تنفيذ إجراء تلقائي</div></div><div class="flow-arrow"><span class="flow-arrow-dot" style="animation-delay:0.6s"></span></div><div class="flow-node" data-flow-node="3"><div class="flow-ic">4</div><div class="flow-title-s">إشعار أو حفظ النتيجة</div></div></div></div>
-<div class="block-title"><span class="block-ic">🛠</span> أدوات مقترحة</div><div class="tools-grid"><div class="tool-card"><div class="tool-name">Zapier</div><div class="tool-desc">يربط أكثر من ٦٠٠٠ تطبيق ببعضها بخطوات بسيطة بدون كود.</div><span class="badge badge-partial">جزئياً مجاني</span></div><div class="tool-card"><div class="tool-name">Make</div><div class="tool-desc">مشابه لـ Zapier لكنه يمنحك تحكماً بصرياً أعمق في مسار العملية.</div><span class="badge badge-partial">جزئياً مجاني</span></div><div class="tool-card"><div class="tool-name">n8n</div><div class="tool-desc">أداة أتمتة مفتوحة المصدر لمن يريد تحكماً كاملاً وتكلفة أقل مع النمو.</div><span class="badge badge-free">مجاني</span></div><div class="tool-card"><div class="tool-name">IFTTT</div><div class="tool-desc">مناسبة للأتمتة البسيطة اليومية بين التطبيقات الشخصية.</div><span class="badge badge-partial">جزئياً مجاني</span></div></div>
-<div class="exercise-box"><div class="block-title"><span class="block-ic">🎯</span> جرّب بنفسك</div><p>افتح Zapier، واختر مُشغّلاً بسيطاً مثل «رسالة بريد جديدة تحتوي على كلمة معينة»، واجعل الإجراء هو «إرسال رسالة إلى تيليجرام». لا حاجة لتفعيلها فعلياً، فقط تدرّب على بناء الخطوات.</p></div>
+${intro("قبل أن تُتقن الأدوات، يجب أن تفهم كيف تُفكّر النماذج. في هذا الفصل ستفهم مفهوم نافذة السياق، الفروق بين النماذج، وكيف تختار النموذج المناسب لكل مهمة.")}
+${learn([
+  "كيف تعمل النماذج اللغوية من الداخل بطريقة أعمق",
+  "الفرق بين النماذج المختلفة وكيف تختار الصحيح لكل مهمة",
+  "مفهوم «نافذة السياق» وأهميتها العملية",
+  "فهم حدود النماذج وكيف تتجاوزها",
+])}
+
+<h3>أولاً — نافذة السياق</h3>
+<p>كل نموذج ذكاء اصطناعي يستطيع قراءة عدد محدود من الكلمات في وقت واحد. هذا يُسمى «نافذة السياق». كلما كانت نافذة السياق أكبر، استطاع النموذج تحليل مستندات أطول.</p>
+<ul class="bullet-list">
+  <li><strong>Claude Sonnet:</strong> نافذة سياق كبيرة جداً — مناسب لتحليل كتب كاملة</li>
+  <li><strong>ChatGPT GPT-4o:</strong> نافذة سياق جيدة — مناسب لمعظم المهام</li>
+</ul>
+
+<h3>ثانياً — أنواع النماذج وتخصصاتها</h3>
+<ul class="bullet-list">
+  <li><strong>نماذج النصوص:</strong> ChatGPT وClaude وGemini — للكتابة والتحليل والمحادثة</li>
+  <li><strong>نماذج الصور:</strong> DALL-E وMidjourney وAdobe Firefly — لتوليد الصور</li>
+  <li><strong>نماذج الكود:</strong> GitHub Copilot وCursor — للمساعدة في البرمجة</li>
+  <li><strong>نماذج الصوت:</strong> ElevenLabs وWhisper — للصوت والنسخ</li>
+  <li><strong>نماذج متعددة الوسائط:</strong> Gemini Ultra وGPT-4o — تجمع النص والصوت والصورة</li>
+</ul>
+
+<h3>ثالثاً — كيف تختار النموذج المناسب</h3>
+<ul class="bullet-list">
+  <li>مهمة كتابة وتحليل طويلة: <strong>Claude</strong></li>
+  <li>بحث محتاج لمعلومات حديثة: <strong>Gemini</strong> أو <strong>Perplexity</strong></li>
+  <li>توليد كود: <strong>GitHub Copilot</strong> أو <strong>Cursor</strong></li>
+  <li>إنشاء صور فنية: <strong>Midjourney</strong></li>
+  <li>إنشاء صور واقعية: <strong>DALL-E 3</strong></li>
+</ul>
+
+${tools([
+  { name: "Claude", desc: "نافذة سياق ضخمة، ممتاز للمستندات الطويلة والتحليل العميق.", url: "claude.ai", level: "easy", cost: "partial" },
+  { name: "ChatGPT GPT-4o", desc: "متعدد الوسائط، نصوص وصور وصوت في نموذج واحد.", url: "chatgpt.com", level: "easy", cost: "partial" },
+  { name: "Gemini", desc: "بحث حي في الإنترنت من داخل النموذج.", url: "gemini.google.com", level: "easy", cost: "partial" },
+  { name: "Perplexity", desc: "محرك بحث ذكي بمصادر موثقة.", url: "perplexity.ai", level: "easy", cost: "partial" },
+])}
+
+${checklist("قائمة التطبيق العملي", [
+  "افتح Claude وارفع مستنداً طويلاً (٢٠+ صفحة) واطلب تلخيصه في عشر نقاط",
+  "افتح ChatGPT واطلب نفس التلخيص — قارن دقة كل منهما",
+  "افتح Perplexity واسأله سؤالاً يحتاج معلومات من ٢٠٢٦",
+  "اكتب في دفترك: لكل مهمة يومية عندك، أي نموذج تختار ولماذا",
+])}
 `,
     quiz: [
-    {
-      question: "ما هو «المُشغّل» في أي أتمتة؟",
-      options: ["الإجراء النهائي","الحدث الذي يبدأ العملية","اسم التطبيق","كلفة الاشتراك"],
-      correct: 1,
-      feedback: "المُشغّل هو الحدث الذي يبدأ سلسلة الأتمتة، مثل وصول بريد جديد أو تعبئة نموذج.",
-    },
-    {
-      question: "أي أداة مفتوحة المصدر ومناسبة لمن يريد تحكماً كاملاً؟",
-      options: ["Zapier","IFTTT","n8n","Notion"],
-      correct: 2,
-      feedback: "n8n مفتوحة المصدر ويمكن استضافتها ذاتياً، ما يمنح تحكماً أكبر وتكلفة أقل مع الاستخدام الكبير.",
-    }
+      { question: "ما المقصود بـ«نافذة السياق» في النماذج اللغوية؟", options: ["سرعة الرد", "عدد الكلمات التي يستطيع النموذج قراءتها في وقت واحد", "لون الواجهة", "تكلفة الاشتراك"], correct: 1, feedback: "بالضبط! نافذة السياق تحدد كم من النص يمكن للنموذج معالجته دفعة واحدة." },
+      { question: "أي نموذج تختار لتحليل كتاب كامل بمستنداته الطويلة؟", options: ["DALL-E", "Claude Sonnet", "Midjourney", "ElevenLabs"], correct: 1, feedback: "أحسنت! Claude Sonnet نافذة سياقه ضخمة تكفي كتباً كاملة." },
+      { question: "أي أداة الأنسب للبحث عن معلومات حديثة مع مصادر؟", options: ["GitHub Copilot", "Perplexity", "Midjourney", "Whisper"], correct: 1, feedback: "صحيح! Perplexity يبحث في الإنترنت الحي ويعطيك المصادر." },
+      { question: "أي نموذج مناسب لتوليد الكود البرمجي؟", options: ["GitHub Copilot", "DALL-E 3", "Suno", "Ideogram"], correct: 0, feedback: "ممتاز! Copilot متخصص في مساعدة المبرمجين داخل بيئة العمل." },
+      { question: "ما المقصود بـ«نموذج متعدد الوسائط»؟", options: ["نموذج مجاني", "نموذج يفهم النص والصوت والصورة معاً", "نموذج مفتوح المصدر", "نموذج للأطفال"], correct: 1, feedback: "بالضبط! متعدد الوسائط يجمع بين أكثر من نوع من المدخلات." },
     ],
   },
+
+  // ============ الفصل الثاني ============
   {
     id: 1,
-    title: "بناء روبوتات الدردشة بدون برمجة",
+    title: "هندسة الطلب المتقدمة",
     content: `
-<div class="intro-box"><p>صمّم مساعداً ذكياً يرد على عملائك أو زوار موقعك على مدار الساعة</p></div>
-<h3>ما الذي يجعل الشات بوت مفيداً؟</h3>
-<p>الشات بوت الجيد ليس مجرد رد آلي جامد، بل نظام يفهم سؤال المستخدم، ويرجع إلى مصدر معلومات محدد (مثل الأسئلة الشائعة لديك)، ويرد بأسلوب طبيعي.</p>
-<p>أهم فرق بين شات بوت بدائي وآخر احترافي هو مصدر المعرفة الذي يعتمد عليه — كلما كان أدق وأحدث، كانت الإجابات أفضل.</p>
-<h3>خطوات البناء</h3>
-<p>حدّد الهدف: هل هو خدمة عملاء، أم مساعد مبيعات، أم مساعد داخلي للموظفين؟</p>
-<p>اجمع مصدر المعرفة: ملف أسئلة شائعة، أو صفحات موقعك، أو مستندات الشركة.</p>
-<p>اربط المصدر بالأداة، واختبر الإجابات على أسئلة حقيقية قبل النشر.</p>
-<p>أضف زر تحويل إلى إنسان في حال لم يستطع الروبوت الإجابة.</p>
-<div class="flow-wrap"><div class="block-title"><span class="block-ic">⚡</span> المخطط التفاعلي</div><p class="flow-caption">تدفق العملية من البداية إلى النتيجة النهائية.</p><div class="flow-diagram"><div class="flow-node" data-flow-node="0"><div class="flow-ic">1</div><div class="flow-title-s">سؤال المستخدم</div></div><div class="flow-arrow"><span class="flow-arrow-dot" style="animation-delay:0.0s"></span></div><div class="flow-node" data-flow-node="1"><div class="flow-ic">2</div><div class="flow-title-s">البحث في مصدر المعرفة</div></div><div class="flow-arrow"><span class="flow-arrow-dot" style="animation-delay:0.3s"></span></div><div class="flow-node" data-flow-node="2"><div class="flow-ic">3</div><div class="flow-title-s">صياغة إجابة طبيعية</div></div><div class="flow-arrow"><span class="flow-arrow-dot" style="animation-delay:0.6s"></span></div><div class="flow-node" data-flow-node="3"><div class="flow-ic">4</div><div class="flow-title-s">تحويل لموظف عند الحاجة</div></div></div></div>
-<div class="block-title"><span class="block-ic">🛠</span> أدوات مقترحة</div><div class="tools-grid"><div class="tool-card"><div class="tool-name">Voiceflow</div><div class="tool-desc">لبناء شات بوت متعدد الخطوات بواجهة سحب وإفلات.</div><span class="badge badge-partial">جزئياً مجاني</span></div><div class="tool-card"><div class="tool-name">Chatbase</div><div class="tool-desc">يحوّل مستنداتك مباشرة إلى شات بوت مدرّب على محتواك خلال دقائق.</div><span class="badge badge-partial">جزئياً مجاني</span></div><div class="tool-card"><div class="tool-name">Intercom</div><div class="tool-desc">حل متكامل لخدمة العملاء يجمع بين الشات بوت والدردشة المباشرة.</div><span class="badge badge-paid">مدفوع</span></div><div class="tool-card"><div class="tool-name">Tidio</div><div class="tool-desc">خيار بسيط وسريع لأصحاب المتاجر الإلكترونية الصغيرة.</div><span class="badge badge-partial">جزئياً مجاني</span></div></div>
-<div class="exercise-box"><div class="block-title"><span class="block-ic">🎯</span> جرّب بنفسك</div><p>اكتب قائمة من ٥ أسئلة شائعة يسألها عملاؤك فعلاً، وحاول تخيل كيف يجب أن يرد عليها شات بوت جيد بأسلوب ودود ومختصر.</p></div>
+${intro("الطلب الاحترافي هو مهارة قائمة بذاتها. في هذا الفصل ستتعلم تقنيات هندسة الطلب المتقدمة التي يستخدمها المحترفون للحصول على نتائج استثنائية باستمرار.")}
+${learn([
+  "تقنيات متقدمة لكتابة الطلبات",
+  "الطلبات المتسلسلة وكيف تبني محادثة بنّاءة",
+  "استخدام الأمثلة لتحسين النتائج",
+  "بناء قوالب طلبات لمهامك المتكررة",
+])}
+
+<h3>أولاً — الطلب بالأمثلة</h3>
+<p>بدلاً من شرح ما تريد فقط، أعطِ مثالاً على النتيجة المطلوبة.</p>
+<div class="info-box">
+  <p class="box-title">قبل المثال</p>
+  <p>«اكتب وصف منتج لعطر»</p>
+</div>
+<div class="info-box">
+  <p class="box-title">بعد المثال</p>
+  <p>«اكتب وصف منتج لعطر. هذا مثال على الأسلوب الذي أريده: [مثالك المرفق]. الآن اكتب بنفس الأسلوب لعطرنا الجديد الذي يحمل روائح العود والورد والمسك.»</p>
+</div>
+
+<h3>ثانياً — سلسلة التفكير</h3>
+<p>لمهام معقدة، اطلب من النموذج أن يُفكّر خطوة بخطوة.</p>
+<div class="info-box">
+  <p class="box-title">مثال</p>
+  <p>«فكّر في هذه المشكلة خطوة بخطوة قبل أن تعطيني الإجابة النهائية.»</p>
+</div>
+
+<h3>ثالثاً — بناء قوالب للمهام المتكررة</h3>
+<p>حوّل طلباتك المتكررة إلى قوالب جاهزة.</p>
+<div class="info-box">
+  <p class="box-title">قالب توليد محتوى وسائل التواصل</p>
+  <p>«أنت مدير محتوى خبير في السوق [X]. اكتب [عدد] منشور لـ[المنصة] عن [الموضوع]، الجمهور المستهدف [الوصف]، الأسلوب [الوصف]، تضمين [عناصر محددة].»</p>
+</div>
+
+${tools([
+  { name: "ChatGPT (Custom GPTs)", desc: "احفظ قوالبك كـ GPT مخصص جاهز للاستخدام.", url: "chatgpt.com", level: "mid", cost: "partial" },
+  { name: "Claude Projects", desc: "حفظ سياق ومراجع دائمة في مشروع واحد.", url: "claude.ai", level: "mid", cost: "partial" },
+  { name: "PromptPerfect", desc: "أداة لتحسين طلباتك تلقائياً.", url: "promptperfect.jina.ai", level: "easy", cost: "partial" },
+])}
+
+${checklist("قائمة التطبيق العملي", [
+  "خذ آخر طلب كتبته لـChatGPT وأعد كتابته بإضافة مثال",
+  "جرّب تقنية «فكّر خطوة بخطوة» على مشكلة معقدة",
+  "حدّد ٣ مهام تكررها أسبوعياً — اكتب قالب طلب لكل واحدة",
+  "احفظ القوالب في Custom GPT أو مشروع Claude",
+])}
 `,
     quiz: [
-    {
-      question: "ما أهم عنصر يحدد جودة إجابات الشات بوت؟",
-      options: ["لون الواجهة","مصدر المعرفة الذي يعتمد عليه","سرعة الإنترنت","اسم الشركة"],
-      correct: 1,
-      feedback: "جودة مصدر المعرفة (الأسئلة الشائعة، المستندات) هي ما يحدد دقة إجابات الروبوت.",
-    },
-    {
-      question: "لماذا يجب إضافة زر «التحويل إلى إنسان»؟",
-      options: ["لتزيين الواجهة فقط","لأن الروبوت لا يفهم أي شيء أبداً","لمعالجة الحالات التي يعجز فيها الروبوت عن الإجابة","لزيادة تكلفة الأداة"],
-      correct: 2,
-      feedback: "مهما كان الروبوت ذكياً، هناك حالات استثنائية يجب أن تصل فيها للموظف البشري مباشرة.",
-    }
+      { question: "لماذا نُضيف مثالاً داخل الطلب؟", options: ["لتطويل الطلب", "ليفهم النموذج الأسلوب المطلوب بدقة", "لتبطئته", "لا فائدة"], correct: 1, feedback: "بالضبط! المثال يوجه النموذج للأسلوب والصيغة المطلوبة بشكل مباشر." },
+      { question: "ما المقصود بـ«سلسلة التفكير»؟", options: ["طلب إجابة سريعة", "طلب أن يفكّر النموذج خطوة بخطوة قبل الإجابة", "كتابة أسئلة كثيرة", "استخدام رموز تعبيرية"], correct: 1, feedback: "أحسنت! تُحسّن دقة الإجابة في المسائل المعقدة." },
+      { question: "ما فائدة بناء «قالب طلب»؟", options: ["يجعل الطلب أطول", "يوفّر الوقت ويضمن اتساق النتائج للمهام المتكررة", "يزيد التكلفة", "يبطئ النموذج"], correct: 1, feedback: "ممتاز! القوالب هي سرّ إنتاجية المحترفين." },
+      { question: "ما أفضل مكان لحفظ قوالبك في ChatGPT؟", options: ["ملاحظة ورقية", "Custom GPT مخصص", "بريد إلكتروني", "ملف Word"], correct: 1, feedback: "صحيح! Custom GPT يحفظ التعليمات والقوالب جاهزة للاستخدام الفوري." },
+      { question: "أي طلب أكثر احترافية؟", options: ["«اكتب لي شيء»", "«اكتب وصف عطر»", "«أنت كاتب محترف، اكتب وصف عطر بنفس أسلوب هذا المثال [...]، بجمهور المرأة الخليجية»", "«عطر جديد»"], correct: 2, feedback: "بالضبط! الطلب المحدد بالدور والمثال والجمهور يعطي نتيجة استثنائية." },
     ],
   },
+
+  // ============ الفصل الثالث — Automation with animated flow ============
   {
     id: 2,
-    title: "تحليل البيانات باستخدام الذكاء الاصطناعي",
+    title: "أتمتة المهام اليومية بالذكاء الاصطناعي",
     content: `
-<div class="intro-box"><p>حوّل الأرقام والجداول إلى قرارات واضحة خلال دقائق</p></div>
-<h3>لماذا تحتاج لهذه المهارة؟</h3>
-<p>أغلب أصحاب الأعمال يملكون بيانات (مبيعات، زوار الموقع، تعليقات العملاء) لكنهم لا يستغلونها لأن تحليلها يبدو معقداً. الذكاء الاصطناعي اليوم يستطيع قراءة ملف إكسل وإخراج تحليل واضح خلال ثوانٍ.</p>
-<h3>كيف تستخدمه عملياً</h3>
-<p>ارفع ملف البيانات (إكسل أو CSV) إلى الأداة.</p>
-<p>اطلب أسئلة محددة: «ما هو أكثر منتج مبيعاً هذا الشهر؟» بدلاً من «حلل البيانات» بشكل عام.</p>
-<p>اطلب رسماً بيانياً يوضح الاتجاه بدلاً من جدول أرقام فقط.</p>
-<p>تحقق دائماً من الأرقام المهمة يدوياً قبل اتخاذ قرار كبير بناءً عليها.</p>
-<div class="flow-wrap"><div class="block-title"><span class="block-ic">⚡</span> المخطط التفاعلي</div><p class="flow-caption">تدفق العملية من البداية إلى النتيجة النهائية.</p><div class="flow-diagram"><div class="flow-node" data-flow-node="0"><div class="flow-ic">1</div><div class="flow-title-s">رفع ملف البيانات</div></div><div class="flow-arrow"><span class="flow-arrow-dot" style="animation-delay:0.0s"></span></div><div class="flow-node" data-flow-node="1"><div class="flow-ic">2</div><div class="flow-title-s">سؤال محدد وواضح</div></div><div class="flow-arrow"><span class="flow-arrow-dot" style="animation-delay:0.3s"></span></div><div class="flow-node" data-flow-node="2"><div class="flow-ic">3</div><div class="flow-title-s">تحليل واستخراج الأنماط</div></div><div class="flow-arrow"><span class="flow-arrow-dot" style="animation-delay:0.6s"></span></div><div class="flow-node" data-flow-node="3"><div class="flow-ic">4</div><div class="flow-title-s">رسم بياني وتوصية</div></div></div></div>
-<div class="block-title"><span class="block-ic">🛠</span> أدوات مقترحة</div><div class="tools-grid"><div class="tool-card"><div class="tool-name">ChatGPT (وضع تحليل البيانات)</div><div class="tool-desc">يقرأ ملفات إكسل و CSV مباشرة وينشئ رسوماً بيانية وتحليلات.</div><span class="badge badge-partial">جزئياً مجاني</span></div><div class="tool-card"><div class="tool-name">Julius AI</div><div class="tool-desc">أداة متخصصة في تحليل البيانات والإجابة عليها بلغة طبيعية.</div><span class="badge badge-partial">جزئياً مجاني</span></div><div class="tool-card"><div class="tool-name">Google Sheets + Gemini</div><div class="tool-desc">تحليل مباشر داخل جداول جوجل دون الحاجة لأداة خارجية.</div><span class="badge badge-free">مجاني</span></div></div>
-<div class="exercise-box"><div class="block-title"><span class="block-ic">🎯</span> جرّب بنفسك</div><p>إن كان لديك أي ملف بيانات بسيط (حتى قائمة مصاريف شهرية)، ارفعه لأي أداة ذكاء اصطناعي واسألها: ما هو أعلى بند إنفاق هذا الشهر؟ ولاحظ سرعة ودقة الإجابة.</p></div>
+${intro("الأتمتة تعني توفير ساعات من وقتك أسبوعياً. عندما تحدث كل المهام المتكررة تلقائياً، تتحرر لتركز على ما يهم فعلاً.")}
+${learn([
+  "مفهوم الأتمتة وكيف توفّر الوقت",
+  "أدوات الأتمتة الرئيسية: Zapier وMake",
+  "كيف تبني أول سير عمل آلي بدون برمجة",
+  "أمثلة أتمتة عملية جاهزة للتطبيق",
+])}
+
+<h3>ما هي الأتمتة؟</h3>
+<p>الأتمتة تعني جعل المهام المتكررة تحدث تلقائياً دون تدخل منك. مثلاً: عندما يُرسل أحد رسالة على إنستغرام، يُرسل الرد تلقائياً. أو عندما تُضاف بيانات في جدول بيانات، تُرسل بريداً إلكترونياً تلقائياً.</p>
+
+${flowDiagram([
+  "حدث مُشغِّل (بريد جديد، نموذج، رسالة)",
+  "شرط تصفية (اختياري)",
+  "معالجة بالذكاء الاصطناعي",
+  "إجراء تلقائي في تطبيق آخر",
+])}
+
+<h3>Zapier — الأتمتة بدون كود</h3>
+<p>الموقع: <strong>zapier.com</strong>. المفهوم: ربط تطبيقين أو أكثر معاً. عندما يحدث شيء في تطبيق A، يحدث شيء آخر تلقائياً في تطبيق B.</p>
+<div class="info-box">
+  <p class="box-title">مثال عملي</p>
+  <p>عندما يُرسل أحد إيميلاً يحتوي على «طلب» ← يُضاف تلقائياً في جدول بيانات ← يُرسل رد شكر تلقائي.</p>
+</div>
+
+<h3>كيف تبدأ مع Zapier</h3>
+<ol class="bullet-list">
+  <li>سجّل على zapier.com مجاناً</li>
+  <li>انقر على «Create Zap»</li>
+  <li>اختر التطبيق الأول (المُحفِّز)</li>
+  <li>اختر الإجراء الذي يحدث تلقائياً</li>
+  <li>اختبر الأتمتة وفعّلها</li>
+</ol>
+
+<h3>Make — أتمتة أكثر تعقيداً وقدرة</h3>
+<p>الموقع: <strong>make.com</strong>. مناسب لأتمتة أكثر تعقيداً مع خطوات متعددة ومنطق أكثر تفصيلاً.</p>
+
+<h3>أمثلة أتمتة جاهزة للتطبيق</h3>
+<ul class="bullet-list">
+  <li><strong>التسويق:</strong> نشر محتوى على منصات متعددة في وقت واحد</li>
+  <li><strong>خدمة العملاء:</strong> رد تلقائي فوري على الاستفسارات الشائعة</li>
+  <li><strong>المبيعات:</strong> إضافة العملاء الجدد تلقائياً لقائمة الإيميل</li>
+  <li><strong>الإدارة:</strong> إنشاء تقارير أسبوعية تلقائياً من البيانات</li>
+</ul>
+
+${tools([
+  { name: "Zapier", desc: "يربط أكثر من ٦٠٠٠ تطبيق بدون كود.", url: "zapier.com", level: "easy", cost: "partial" },
+  { name: "Make", desc: "أتمتة مرئية أعمق ومنطق شرطي متقدم.", url: "make.com", level: "mid", cost: "partial" },
+  { name: "n8n", desc: "مفتوح المصدر، تحكم كامل بتكلفة أقل مع النمو.", url: "n8n.io", level: "hard", cost: "free" },
+  { name: "IFTTT", desc: "أتمتة بسيطة يومية للتطبيقات الشخصية.", url: "ifttt.com", level: "easy", cost: "partial" },
+])}
+
+${checklist("قائمة التطبيق العملي", [
+  "أنشئ حساباً مجانياً على Zapier",
+  "اختر مُحفِّزاً بسيطاً: «رسالة بريد جديدة تحتوي على كلمة معينة»",
+  "اضبط الإجراء: «إضافة سطر في Google Sheet»",
+  "اختبر Zap واحد ثم فعّله",
+  "اكتب ٣ مهام متكررة يومياً يمكنك أتمتتها الأسبوع القادم",
+])}
 `,
     quiz: [
-    {
-      question: "ما هي أفضل طريقة لطرح سؤال على أداة تحليل البيانات؟",
-      options: ["سؤال عام مثل «حلل البيانات»","سؤال محدد مثل «ما أكثر منتج مبيعاً هذا الشهر؟»","عدم طرح أي سؤال","إرسال الملف بدون أي نص"],
-      correct: 1,
-      feedback: "الأسئلة المحددة تعطي نتائج أدق وأكثر فائدة من الطلبات العامة.",
-    },
-    {
-      question: "ماذا يجب أن تفعل قبل اتخاذ قرار كبير بناءً على تحليل الذكاء الاصطناعي؟",
-      options: ["تنفيذ القرار فوراً","تجاهل النتيجة","التحقق من الأرقام المهمة يدوياً","حذف الملف"],
-      correct: 2,
-      feedback: "الذكاء الاصطناعي قد يخطئ أحياناً، لذلك التحقق اليدوي من الأرقام الحساسة خطوة أساسية.",
-    }
+      { question: "ما تعريف الأتمتة؟", options: ["كتابة الكود بالذكاء الاصطناعي", "جعل المهام المتكررة تحدث تلقائياً دون تدخل", "شراء برامج جديدة", "تعطيل الإشعارات"], correct: 1, feedback: "بالضبط! الأتمتة تحرر وقتك من المهام المتكررة." },
+      { question: "ما «المُشغِّل» في أي أتمتة؟", options: ["النتيجة النهائية", "الحدث الذي يبدأ سلسلة العملية", "سعر الاشتراك", "اسم الأداة"], correct: 1, feedback: "صحيح! المُشغِّل هو الشرارة التي تُبدأ الأتمتة كلها." },
+      { question: "أي أداة الأنسب لأتمتة معقدة بمنطق متعدد الخطوات؟", options: ["IFTTT", "Make", "Google Docs", "Netflix"], correct: 1, feedback: "أحسنت! Make يقدّم منطقاً شرطياً وتحكماً بصرياً أعمق." },
+      { question: "ما ميزة n8n مقارنة بـZapier؟", options: ["أسهل واجهة", "مفتوح المصدر ويمكن استضافته ذاتياً بتكلفة أقل", "أكثر شهرة", "مجاني تماماً بدون قيود"], correct: 1, feedback: "بالضبط! المرونة والتكلفة أهم مزاياه للحجم الكبير." },
+      { question: "أي مثال أتمتة عملي للمبيعات؟", options: ["كتابة عقد يدوياً", "إضافة العملاء الجدد تلقائياً لقائمة الإيميل", "الاتصال بكل عميل شخصياً", "طباعة التقارير"], correct: 1, feedback: "ممتاز! أتمتة إضافة العملاء تضمن عدم فقدان أي فرصة." },
     ],
   },
+
+  // ============ الفصل الرابع ============
   {
     id: 3,
-    title: "التسويق الرقمي بالذكاء الاصطناعي",
+    title: "بناء روبوت محادثة لعملك",
     content: `
-<div class="intro-box"><p>خطط حملاتك، واكتب إعلاناتك، وحلل نتائجك بمساعدة الذكاء الاصطناعي</p></div>
-<h3>أين يساعدك الذكاء الاصطناعي في التسويق؟</h3>
-<p>كتابة نصوص إعلانية بعدة أساليب لاختيار الأفضل.</p>
-<p>توليد أفكار محتوى لأسبوع كامل خلال دقائق.</p>
-<p>تحليل أداء الحملات واقتراح تحسينات.</p>
-<p>إنشاء صور وفيديوهات إعلانية بدون مصور أو مصمم.</p>
-<h3>صياغة أمر إعلاني فعّال</h3>
-<p>أعطِ الأداة: الجمهور المستهدف، الميزة الأساسية للمنتج، ولهجة الحملة (رسمية أو ودودة).</p>
-<p>اطلب ٣ نسخ مختلفة من نفس الإعلان لاختبارها ومقارنة أدائها.</p>
-<div class="flow-wrap"><div class="block-title"><span class="block-ic">⚡</span> المخطط التفاعلي</div><p class="flow-caption">تدفق العملية من البداية إلى النتيجة النهائية.</p><div class="flow-diagram"><div class="flow-node" data-flow-node="0"><div class="flow-ic">1</div><div class="flow-title-s">تحديد الجمهور والهدف</div></div><div class="flow-arrow"><span class="flow-arrow-dot" style="animation-delay:0.0s"></span></div><div class="flow-node" data-flow-node="1"><div class="flow-ic">2</div><div class="flow-title-s">توليد نصوص وصور متعددة</div></div><div class="flow-arrow"><span class="flow-arrow-dot" style="animation-delay:0.3s"></span></div><div class="flow-node" data-flow-node="2"><div class="flow-ic">3</div><div class="flow-title-s">اختيار الأنسب واختباره</div></div><div class="flow-arrow"><span class="flow-arrow-dot" style="animation-delay:0.6s"></span></div><div class="flow-node" data-flow-node="3"><div class="flow-ic">4</div><div class="flow-title-s">تحليل النتائج وتحسينها</div></div></div></div>
-<div class="block-title"><span class="block-ic">🛠</span> أدوات مقترحة</div><div class="tools-grid"><div class="tool-card"><div class="tool-name">ChatGPT</div><div class="tool-desc">لكتابة نصوص إعلانية وخطط محتوى بسرعة.</div><span class="badge badge-partial">جزئياً مجاني</span></div><div class="tool-card"><div class="tool-name">Canva Magic Studio</div><div class="tool-desc">لتصميم صور وفيديوهات إعلانية جاهزة للنشر.</div><span class="badge badge-partial">جزئياً مجاني</span></div><div class="tool-card"><div class="tool-name">AdCreative.ai</div><div class="tool-desc">متخصصة في توليد تصاميم إعلانية مُختبرة لتحسين نسبة النقر.</div><span class="badge badge-paid">مدفوع</span></div><div class="tool-card"><div class="tool-name">Meta Advantage+</div><div class="tool-desc">ميزة داخل إعلانات ميتا تستخدم الذكاء الاصطناعي لتحسين استهداف الحملة تلقائياً.</div><span class="badge badge-free">مجاني</span></div></div>
-<div class="exercise-box"><div class="block-title"><span class="block-ic">🎯</span> جرّب بنفسك</div><p>اختر منتجاً أو خدمة تعرفها جيداً، واطلب من أي أداة ذكاء اصطناعي كتابة ٣ نسخ مختلفة من إعلان قصير له، بلهجات مختلفة (رسمية، ودودة، مباشرة).</p></div>
+${intro("روبوت محادثة يعمل ٢٤ ساعة نيابةً عنك، يرد على عملائك بلحظتها، ويُضاعف مبيعاتك بدون توظيف. اليوم بناؤه ممكن في ساعات.")}
+${learn([
+  "ما هو روبوت المحادثة وكيف يعمل",
+  "بناء روبوت بدون برمجة",
+  "تدريب الروبوت على بيانات عملك",
+  "ربط الروبوت بموقعك أو واتساب",
+])}
+
+<h3>ما هو روبوت المحادثة؟</h3>
+<p>روبوت المحادثة هو نظام آلي يرد على العملاء ويُجيب على أسئلتهم على مدار الساعة دون الحاجة لموظف بشري. اليوم بات بناؤه ممكناً في ساعات وليس أشهراً.</p>
+
+<h3>أدوات بناء روبوتات المحادثة</h3>
+<p><strong>Voiceflow</strong> على voiceflow.com — يُتيح بناء روبوت محادثة بواجهة مرئية سهلة بدون برمجة. يدعم الاتصال بـChatGPT وClaude لردود ذكية. يمكن ربطه بالموقع الإلكتروني وواتساب وإنستغرام.</p>
+<p><strong>Botpress</strong> على botpress.com — قوي ومرن أكثر، مناسب لعمليات أكبر.</p>
+
+<h3>كيف تبني روبوتك الأول</h3>
+<ol class="bullet-list">
+  <li>على Voiceflow أنشئ مشروعاً جديداً</li>
+  <li>حدّد ما تريد الروبوت أن يُجيب عنه</li>
+  <li>أضف المعرفة الخاصة بعملك (الأسعار، الخدمات، سياسات الإرجاع)</li>
+  <li>اربط بنموذج الذكاء الاصطناعي للردود الذكية</li>
+  <li>اختبر الروبوت وعدّله</li>
+  <li>انشره على موقعك أو واتساب</li>
+</ol>
+
+${tools([
+  { name: "Voiceflow", desc: "بناء مرئي متعدد الخطوات بواجهة سحب وإفلات.", url: "voiceflow.com", level: "mid", cost: "partial" },
+  { name: "Botpress", desc: "قوي ومرن لعمليات أكبر ومتقدمة.", url: "botpress.com", level: "hard", cost: "partial" },
+  { name: "Chatbase", desc: "يحوّل مستنداتك مباشرة إلى روبوت مدرَّب.", url: "chatbase.co", level: "easy", cost: "partial" },
+  { name: "Tidio", desc: "خيار بسيط سريع لأصحاب المتاجر الصغيرة.", url: "tidio.com", level: "easy", cost: "partial" },
+])}
+
+${checklist("قائمة التطبيق العملي", [
+  "اكتب قائمة بـ١٠ أسئلة شائعة يسألها عملاؤك فعلاً",
+  "سجّل على Voiceflow أو Chatbase",
+  "ارفع ملف الأسئلة الشائعة كمصدر معرفة",
+  "اختبر ٥ سيناريوهات محادثة",
+  "أضف زر «تحويل لموظف بشري» عندما يفشل الروبوت",
+  "احصل على كود التضمين واربطه بموقعك أو واتساب",
+])}
 `,
     quiz: [
-    {
-      question: "لماذا يُفضّل طلب عدة نسخ من نفس الإعلان؟",
-      options: ["لإضاعة الوقت","لاختبار أيها يحقق أداء أفضل","لأن الأداة تطلب ذلك","لا فائدة من ذلك"],
-      correct: 1,
-      feedback: "اختبار عدة نسخ (A/B Testing) يساعدك على معرفة أي أسلوب يحقق نتائج أفضل فعلياً.",
-    },
-    {
-      question: "ما هي الميزة الأساسية لأداة مثل AdCreative.ai؟",
-      options: ["كتابة الأكواد البرمجية","توليد تصاميم إعلانية مُختبرة لتحسين النقر","إدارة المخزون","حجز الفنادق"],
-      correct: 1,
-      feedback: "AdCreative.ai متخصصة في توليد تصاميم إعلانية مبنية على بيانات لتحسين معدل التفاعل.",
-    }
+      { question: "ما الفائدة الأساسية من روبوت المحادثة؟", options: ["يستبدل الموقع", "الرد على العملاء ٢٤ ساعة دون موظف", "يُصمم الشعار", "يُنشئ الفواتير"], correct: 1, feedback: "أحسنت! الحضور الدائم بلا كلفة موظف هو الميزة الأهم." },
+      { question: "أي أداة الأنسب للمبتدئ الذي يريد بناء روبوت بواجهة سحب وإفلات؟", options: ["Botpress", "Voiceflow", "Excel", "PowerPoint"], correct: 1, feedback: "صحيح! Voiceflow واجهته مرئية وسهلة للمبتدئين." },
+      { question: "ما أهم شيء يجب فعله قبل نشر الروبوت؟", options: ["نشره فوراً بدون اختبار", "اختبار عدة سيناريوهات وإضافة زر تحويل لموظف", "تغيير لون الأزرار", "شراء نطاق جديد"], correct: 1, feedback: "بالضبط! الاختبار وزر التحويل يحميان تجربة العميل." },
+      { question: "ماذا نقصد بـ«تدريب الروبوت على بيانات عملك»؟", options: ["تعليمه اللغة العربية", "إعطاؤه معرفة بالأسعار والخدمات وسياسات الشركة", "شراء خادم", "تحديث ChatGPT"], correct: 1, feedback: "ممتاز! المعرفة الخاصة تجعل الردود دقيقة ومناسبة لعملك." },
+      { question: "أين يمكن نشر روبوت Voiceflow؟", options: ["على الموقع فقط", "على الموقع وواتساب وإنستغرام", "على البريد الإلكتروني فقط", "لا يمكن نشره"], correct: 1, feedback: "صحيح! التعدد في القنوات يضاعف الوصول." },
     ],
   },
+
+  // ============ الفصل الخامس ============
   {
     id: 4,
-    title: "إنتاج المحتوى بالجملة",
+    title: "تحليل البيانات بالذكاء الاصطناعي",
     content: `
-<div class="intro-box"><p>أنشئ عشرات المنشورات والمقالات بجودة ثابتة دون أن تكتب كل كلمة بنفسك</p></div>
-<h3>فكرة الإنتاج بالجملة</h3>
-<p>بدلاً من كتابة منشور واحد كل مرة، يمكنك إعداد «قالب أساسي» يحدد أسلوبك ونبرتك، ثم استخدامه لإنتاج عشرات القطع من المحتوى بنفس الجودة، وتخصيص كل واحدة بسرعة.</p>
-<p>المفتاح هنا هو الاتساق: نفس الأسلوب، نفس الهيكل، محتوى مختلف.</p>
-<h3>خطوات عملية</h3>
-<p>حدد ١٠-٢٠ فكرة رئيسية لمحتوى الشهر.</p>
-<p>أنشئ قالب أمر واحد قوي يحدد الأسلوب والطول والجمهور.</p>
-<p>استخدم نفس القالب مع كل فكرة لإنتاج المسودات دفعة واحدة.</p>
-<p>راجع وعدّل يدوياً قبل النشر — لا تنشر أي شيء دون مراجعة بشرية.</p>
-<div class="flow-wrap"><div class="block-title"><span class="block-ic">⚡</span> المخطط التفاعلي</div><p class="flow-caption">تدفق العملية من البداية إلى النتيجة النهائية.</p><div class="flow-diagram"><div class="flow-node" data-flow-node="0"><div class="flow-ic">1</div><div class="flow-title-s">١٠-٢٠ فكرة محتوى</div></div><div class="flow-arrow"><span class="flow-arrow-dot" style="animation-delay:0.0s"></span></div><div class="flow-node" data-flow-node="1"><div class="flow-ic">2</div><div class="flow-title-s">قالب أمر ثابت</div></div><div class="flow-arrow"><span class="flow-arrow-dot" style="animation-delay:0.3s"></span></div><div class="flow-node" data-flow-node="2"><div class="flow-ic">3</div><div class="flow-title-s">إنتاج دفعة مسودات</div></div><div class="flow-arrow"><span class="flow-arrow-dot" style="animation-delay:0.6s"></span></div><div class="flow-node" data-flow-node="3"><div class="flow-ic">4</div><div class="flow-title-s">مراجعة بشرية ونشر</div></div></div></div>
-<div class="block-title"><span class="block-ic">🛠</span> أدوات مقترحة</div><div class="tools-grid"><div class="tool-card"><div class="tool-name">ChatGPT / Claude</div><div class="tool-desc">لإنتاج مسودات متعددة بنفس الأسلوب باستخدام قالب أمر واحد.</div><span class="badge badge-partial">جزئياً مجاني</span></div><div class="tool-card"><div class="tool-name">Notion AI</div><div class="tool-desc">لتنظيم وإنتاج المحتوى داخل مساحة عمل واحدة.</div><span class="badge badge-paid">مدفوع</span></div><div class="tool-card"><div class="tool-name">Buffer / Later</div><div class="tool-desc">لجدولة نشر كل المحتوى المُنتَج على مدار الشهر دفعة واحدة.</div><span class="badge badge-partial">جزئياً مجاني</span></div></div>
-<div class="exercise-box"><div class="block-title"><span class="block-ic">🎯</span> جرّب بنفسك</div><p>اكتب قالب أمر واحد يصف أسلوبك (اللهجة، الطول، الجمهور)، ثم استخدمه مع ٣ أفكار مختلفة، ولاحظ مدى التشابه في الأسلوب رغم اختلاف المواضيع.</p></div>
+${intro("لست بحاجة لتعلّم Excel المتقدم أو Python لتحليل بياناتك. الذكاء الاصطناعي يقرأ ملفاتك ويكشف الأنماط ويرسم الرسوم البيانية نيابةً عنك في ثوانٍ.")}
+${learn([
+  "تحليل جداول البيانات بدون معرفة بـExcel",
+  "استخراج الأنماط والرؤى من البيانات",
+  "إنشاء تقارير ولوحات بيانات تلقائياً",
+  "أدوات تحليل البيانات الأسهل والأسرع",
+])}
+
+<h3>تحليل البيانات مع ChatGPT</h3>
+<p>ارفع ملف Excel أو CSV على ChatGPT وقل له:</p>
+<ul class="bullet-list">
+  <li>«حلّل هذه البيانات وأخبرني بأهم الأنماط والاستنتاجات»</li>
+  <li>«أيّ المنتجات الأكثر مبيعاً في الأشهر الثلاثة الماضية؟»</li>
+  <li>«ما أيام الأسبوع التي تكون فيها المبيعات أعلى؟»</li>
+</ul>
+<p><strong>النتيجة:</strong> تحليل كامل في ثوانٍ مع رسوم بيانية.</p>
+
+<h3>أدوات تحليل البيانات المتخصصة</h3>
+<p><strong>Julius AI</strong> على julius.ai: متخصص في تحليل جداول البيانات، يُنشئ رسوماً بيانية تلقائياً، يُجيب عن أسئلتك بلغة طبيعية.</p>
+<p><strong>Tableau Public</strong> (مجاني): لإنشاء لوحات بيانات تفاعلية، جميل بصرياً وسهل المشاركة.</p>
+
+${tools([
+  { name: "ChatGPT Advanced Data Analysis", desc: "ارفع Excel/CSV واسأل بلغة طبيعية.", url: "chatgpt.com", level: "easy", cost: "partial" },
+  { name: "Julius AI", desc: "متخصص في جداول البيانات ورسوم بيانية تلقائية.", url: "julius.ai", level: "easy", cost: "partial" },
+  { name: "Tableau Public", desc: "لوحات بيانات تفاعلية جميلة قابلة للمشاركة.", url: "public.tableau.com", level: "mid", cost: "free" },
+  { name: "Rows", desc: "جداول بيانات ذكية مع AI مدمج.", url: "rows.com", level: "easy", cost: "partial" },
+])}
+
+${checklist("قائمة التطبيق العملي", [
+  "اجمع ملف بيانات حقيقي من عملك (Excel أو CSV)",
+  "ارفعه على ChatGPT واطلب «أهم ٥ استنتاجات»",
+  "اطلب رسماً بيانياً يوضّح الأنماط الزمنية",
+  "جرّب نفس الملف على Julius AI وقارن الرسوم",
+  "أنشئ لوحة تحكم صغيرة على Tableau Public",
+])}
 `,
     quiz: [
-    {
-      question: "ما هو المفتاح الأساسي في إنتاج المحتوى بالجملة؟",
-      options: ["السرعة فقط","الاتساق في الأسلوب مع اختلاف المحتوى","عدد الكلمات","استخدام لغة إنجليزية فقط"],
-      correct: 1,
-      feedback: "الهدف هو الحفاظ على نفس الأسلوب والهيكل بينما يختلف المحتوى نفسه من قطعة لأخرى.",
-    },
-    {
-      question: "ما الخطوة التي لا يجب تخطيها أبداً قبل النشر؟",
-      options: ["الجدولة","المراجعة البشرية","الترجمة","التصميم"],
-      correct: 1,
-      feedback: "مهما كانت جودة الذكاء الاصطناعي، المراجعة البشرية قبل النشر ضرورية لتفادي الأخطاء.",
-    }
+      { question: "هل تحتاج معرفة بـExcel المتقدم لتحليل بياناتك بـChatGPT؟", options: ["نعم، ضروري", "لا، تكفي اللغة الطبيعية", "يجب معرفة Python", "يجب معرفة SQL"], correct: 1, feedback: "أحسنت! ChatGPT يقرأ الملف ويحلل بأسئلة عادية بالعربية." },
+      { question: "ما أفضل أداة متخصصة في تحليل جداول البيانات وإنشاء رسوم بيانية تلقائية؟", options: ["Midjourney", "Julius AI", "Runway", "Suno"], correct: 1, feedback: "صحيح! Julius AI مصمَّم خصيصاً لتحليل الجداول." },
+      { question: "ما فائدة Tableau Public؟", options: ["كتابة المقالات", "إنشاء لوحات بيانات تفاعلية جميلة وقابلة للمشاركة", "تصميم الشعارات", "الترجمة الفورية"], correct: 1, feedback: "بالضبط! Tableau Public مجاني ومثالي للوحات التحكم." },
+      { question: "ما نوع الملفات التي يمكن رفعها على ChatGPT للتحليل؟", options: ["فيديو فقط", "Excel وCSV وPDF", "صور فقط", "MP3 فقط"], correct: 1, feedback: "ممتاز! ChatGPT يدعم عدة صيغ للبيانات." },
+      { question: "أي سؤال مناسب لطرحه على ChatGPT بعد رفع بيانات المبيعات؟", options: ["ما لون الملف؟", "ما أفضل يوم مبيعات في آخر ٣ أشهر؟", "كم عدد صفحات الملف؟", "ما اسم الملف؟"], correct: 1, feedback: "أحسنت! السؤال التحليلي هو الاستخدام الأمثل." },
     ],
   },
+
+  // ============ الفصل السادس ============
   {
     id: 5,
-    title: "العمل الحر بالذكاء الاصطناعي",
+    title: "إنتاج المحتوى بالذكاء الاصطناعي على نطاق واسع",
     content: `
-<div class="intro-box"><p>حوّل مهاراتك الجديدة إلى مصدر دخل حقيقي كمستقل</p></div>
-<h3>ما الخدمات التي يمكنك تقديمها الآن؟</h3>
-<p>بعد إتقان ما سبق، أصبح لديك مهارات مطلوبة فعلياً في السوق: كتابة محتوى بالذكاء الاصطناعي، بناء أتمتة بسيطة للشركات الصغيرة، إعداد شات بوت لموقع عميل، أو تحليل بيانات بسيطة لمتجر إلكتروني.</p>
-<h3>كيف تبدأ فعلياً</h3>
-<p>حدد خدمة واحدة تبدأ بها بدلاً من عرض كل شيء دفعة واحدة.</p>
-<p>أنشئ ٢-٣ نماذج أعمال (Portfolio) حتى لو كانت تدريبية في البداية.</p>
-<p>سجّل حساباً في منصة عمل حر وابدأ بعروض أسعار واضحة ومحددة.</p>
-<p>اطلب تقييمات من أول عملائك — فهي أهم أداة تسويق لك لاحقاً.</p>
-<div class="flow-wrap"><div class="block-title"><span class="block-ic">⚡</span> المخطط التفاعلي</div><p class="flow-caption">تدفق العملية من البداية إلى النتيجة النهائية.</p><div class="flow-diagram"><div class="flow-node" data-flow-node="0"><div class="flow-ic">1</div><div class="flow-title-s">اختيار خدمة واحدة</div></div><div class="flow-arrow"><span class="flow-arrow-dot" style="animation-delay:0.0s"></span></div><div class="flow-node" data-flow-node="1"><div class="flow-ic">2</div><div class="flow-title-s">بناء نماذج أعمال</div></div><div class="flow-arrow"><span class="flow-arrow-dot" style="animation-delay:0.3s"></span></div><div class="flow-node" data-flow-node="2"><div class="flow-ic">3</div><div class="flow-title-s">عرض أسعار واضح</div></div><div class="flow-arrow"><span class="flow-arrow-dot" style="animation-delay:0.6s"></span></div><div class="flow-node" data-flow-node="3"><div class="flow-ic">4</div><div class="flow-title-s">عملاء وتقييمات</div></div></div></div>
-<div class="block-title"><span class="block-ic">🛠</span> أدوات مقترحة</div><div class="tools-grid"><div class="tool-card"><div class="tool-name">Upwork / Fiverr</div><div class="tool-desc">منصات عالمية لعرض خدماتك المرتبطة بالذكاء الاصطناعي وإيجاد عملاء.</div><span class="badge badge-partial">جزئياً مجاني</span></div><div class="tool-card"><div class="tool-name">مستقل (Mostaql)</div><div class="tool-desc">منصة عربية للعمل الحر مناسبة للسوق الخليجي والعربي.</div><span class="badge badge-partial">جزئياً مجاني</span></div><div class="tool-card"><div class="tool-name">Notion</div><div class="tool-desc">لتنظيم عروضك وعملائك ومتابعة مشاريعك كمستقل.</div><span class="badge badge-partial">جزئياً مجاني</span></div></div>
-<div class="exercise-box"><div class="block-title"><span class="block-ic">🎯</span> جرّب بنفسك</div><p>اكتب وصفاً لخدمة واحدة فقط يمكنك تقديمها الآن (مثال: «إعداد شات بوت بسيط لصفحة إنستغرام تجارية») في ٣-٤ جمل واضحة، كأنها عرض حقيقي لعميل.</p></div>
+${intro("بدلاً من كتابة منشور كل يوم، أنتج شهراً كاملاً من المحتوى في يوم واحد — بأسلوب ثابت، وصور مصممة، وجدولة تلقائية على كل المنصات.")}
+${learn([
+  "بناء نظام محتوى متكامل",
+  "إنشاء شهر من المحتوى في يوم واحد",
+  "الحفاظ على الأسلوب الثابت عبر كل المحتوى",
+  "توزيع المحتوى على منصات متعددة تلقائياً",
+])}
+
+<h3>بناء نظام المحتوى المتكامل</h3>
+
+<h3>الخطوة الأولى — تحديد هوية المحتوى</h3>
+<p>اطلب من ChatGPT أن يُحدّد لك: الصوت الثابت لعلامتك التجارية، الموضوعات الرئيسية التي تتحدث عنها دائماً، الأسلوب الكتابي الذي يناسب جمهورك.</p>
+
+<h3>الخطوة الثانية — خطة المحتوى الشهرية</h3>
+<div class="info-box">
+  <p class="box-title">قالب الطلب</p>
+  <p>«أنشئ خطة محتوى لثلاثين يوماً لعلامة [X] في مجال [Y] تستهدف [الجمهور]. ثلاثة منشورات أسبوعياً لإنستغرام وتيك توك وتويتر، مع أفكار للمحتوى وأوقات النشر المقترحة.»</p>
+</div>
+
+<h3>الخطوة الثالثة — إنتاج المحتوى بالجملة</h3>
+<p>بعد الموافقة على الخطة، اطلب كتابة كل المحتوى دفعة واحدة.</p>
+
+<h3>الخطوة الرابعة — إنشاء الصور</h3>
+<p>لكل منشور أنشئ صورة مناسبة باستخدام <strong>DALL-E 3</strong> أو <strong>Midjourney</strong>.</p>
+
+<h3>الخطوة الخامسة — الجدولة التلقائية</h3>
+<p>استخدم <strong>Buffer</strong> على buffer.com أو <strong>Metricool</strong> على metricool.com لجدولة النشر التلقائي على كل المنصات.</p>
+
+${tools([
+  { name: "ChatGPT", desc: "بناء خطط ومحتوى وقوالب أسلوب ثابت.", url: "chatgpt.com", level: "easy", cost: "partial" },
+  { name: "DALL-E 3", desc: "توليد صور موحدة الأسلوب لكل منشور.", url: "chatgpt.com", level: "easy", cost: "partial" },
+  { name: "Buffer", desc: "جدولة تلقائية على كل المنصات من مكان واحد.", url: "buffer.com", level: "easy", cost: "partial" },
+  { name: "Metricool", desc: "جدولة + تحليلات تفاعل شاملة.", url: "metricool.com", level: "easy", cost: "partial" },
+])}
+
+${checklist("قائمة التطبيق العملي", [
+  "اكتب مع ChatGPT «هوية الصوت» لعلامتك التجارية في فقرة",
+  "اطلب خطة ٣٠ يوماً بثلاثة منشورات أسبوعياً",
+  "أنتج نصوص كل المنشورات دفعة واحدة",
+  "أنشئ صورة لكل منشور على DALL-E 3 بأسلوب موحّد",
+  "ارفعها إلى Buffer وحدّد توقيت النشر لكل منشور",
+])}
 `,
     quiz: [
-    {
-      question: "لماذا يُنصح بالبدء بخدمة واحدة فقط؟",
-      options: ["لأنها الطريقة الوحيدة القانونية","لتقديم قيمة واضحة ومركزة بدلاً من التشتت","لأنها أرخص","لا يوجد سبب محدد"],
-      correct: 1,
-      feedback: "التركيز على خدمة واحدة يجعل عرضك أوضح للعميل ويسهّل عليك إتقانها بسرعة.",
-    },
-    {
-      question: "ما أهم أداة تسويق لمستقل جديد؟",
-      options: ["الإعلانات المدفوعة الكبيرة","تقييمات العملاء الأوائل","عدد المتابعين","اسم النطاق"],
-      correct: 1,
-      feedback: "التقييمات الحقيقية من أول عملائك تبني الثقة وتجذب عملاء جدد أسرع من أي إعلان.",
-    }
+      { question: "ما أول خطوة في بناء نظام محتوى متكامل؟", options: ["شراء كاميرا", "تحديد هوية المحتوى وصوت العلامة التجارية", "تصميم الشعار", "توظيف مصور"], correct: 1, feedback: "أحسنت! الهوية أساس كل ما يليها." },
+      { question: "لماذا نُنتج المحتوى بالجملة؟", options: ["ليكون أطول", "لتوفير الوقت وضمان اتساق الأسلوب", "لتكلفة أكبر", "لا فائدة"], correct: 1, feedback: "بالضبط! الإنتاج بالجملة يوفر ساعات ويحافظ على الأسلوب." },
+      { question: "أي أداة تستخدم للجدولة التلقائية على كل منصات التواصل؟", options: ["Suno", "Buffer", "Photoshop", "Excel"], correct: 1, feedback: "صحيح! Buffer وMetricool من أهم أدوات الجدولة." },
+      { question: "ما دور DALL-E 3 في نظام المحتوى؟", options: ["كتابة النصوص", "توليد صور بأسلوب موحّد لكل منشور", "الجدولة", "الترجمة"], correct: 1, feedback: "ممتاز! الصور الموحدة تُقوّي الهوية البصرية." },
+      { question: "كم منشور في الأسبوع يقترح نظام المحتوى في المثال؟", options: ["واحد", "ثلاثة", "عشرة", "خمسون"], correct: 1, feedback: "أحسنت! ٣ منشورات أسبوعياً هي وتيرة متوازنة." },
     ],
-  }
+  },
+
+  // ============ الفصل السابع ============
+  {
+    id: 6,
+    title: "الذكاء الاصطناعي في التسويق والمبيعات",
+    content: `
+${intro("من أول تواصل مع العميل حتى إغلاق الصفقة والمتابعة بعدها — الذكاء الاصطناعي يعزز كل مرحلة في دورة المبيعات.")}
+${learn([
+  "استخدام الذكاء الاصطناعي في دورة المبيعات الكاملة",
+  "توليد العملاء المحتملين والبحث عنهم",
+  "بناء رسائل تواصل شخصية بالجملة",
+  "إنشاء العروض التقديمية وتحليل المنافسين",
+])}
+
+<h3>توليد العملاء المحتملين</h3>
+<p>ادرس جمهورك المستهدف بعمق باستخدام <strong>Perplexity</strong>. اكتب رسائل تواصل شخصية لكل عميل محتمل بمساعدة <strong>ChatGPT</strong>.</p>
+
+<h3>المتابعة مع العملاء</h3>
+<p>بناء تسلسل رسائل متابعة تلقائية تحافظ على التواصل دون أن يقع أي عميل من الرادار.</p>
+
+<h3>إنشاء العروض التقديمية</h3>
+<p>استخدم <strong>Gamma</strong> على gamma.app لبناء عروض احترافية من نص مكتوب في دقائق.</p>
+
+<h3>تحليل المنافسين</h3>
+<p>استخدم <strong>Perplexity</strong> لتحليل المنافسين ومعرفة نقاط قوتهم وضعفهم.</p>
+
+${tools([
+  { name: "Perplexity", desc: "بحث عميق بمصادر لدراسة السوق والمنافسين.", url: "perplexity.ai", level: "easy", cost: "partial" },
+  { name: "ChatGPT", desc: "كتابة رسائل تواصل شخصية بالجملة.", url: "chatgpt.com", level: "easy", cost: "partial" },
+  { name: "Gamma", desc: "عروض تقديمية احترافية من نص مكتوب.", url: "gamma.app", level: "easy", cost: "partial" },
+  { name: "Apollo.io", desc: "قواعد بيانات عملاء محتملين + أتمتة تواصل.", url: "apollo.io", level: "mid", cost: "partial" },
+  { name: "Clay", desc: "بحث وتخصيب بيانات عملاء آلياً.", url: "clay.com", level: "hard", cost: "paid" },
+])}
+
+${checklist("قائمة التطبيق العملي", [
+  "اطلب من Perplexity تقريراً عن ٥ منافسين رئيسيين لك",
+  "اكتب في ChatGPT قالب رسالة تواصل شخصية أول",
+  "ولّد ١٠ نسخ مخصصة لعشرة عملاء محتملين",
+  "أنشئ عرض مبيعات على Gamma من نص طلبك",
+  "صمّم تسلسل ٣ رسائل متابعة تلقائية",
+])}
+`,
+    quiz: [
+      { question: "أي أداة الأنسب لدراسة المنافسين بعمق؟", options: ["Suno", "Perplexity", "Runway", "Canva"], correct: 1, feedback: "صحيح! Perplexity يبحث ويلخّص بمصادر." },
+      { question: "ما دور Gamma في المبيعات؟", options: ["تصميم شعارات", "بناء عروض تقديمية احترافية من نص", "تسجيل صوت", "بناء موقع"], correct: 1, feedback: "أحسنت! Gamma يوفر ساعات في بناء العروض." },
+      { question: "ما فائدة رسائل التواصل الشخصية؟", options: ["أنها أرخص", "معدل ردّ أعلى بكثير من الرسائل العامة", "أنها أقصر", "لا فائدة"], correct: 1, feedback: "بالضبط! التخصيص يرفع معدلات الاستجابة." },
+      { question: "لماذا نبني تسلسل متابعة تلقائية؟", options: ["لإزعاج العميل", "لعدم فقدان أي عميل محتمل والحفاظ على التواصل", "لتوفير الكهرباء", "لا سبب"], correct: 1, feedback: "ممتاز! ٨٠٪ من الصفقات تُغلق في المتابعة الرابعة أو بعدها." },
+      { question: "أي أداة تجمع بين قاعدة بيانات العملاء والأتمتة؟", options: ["Photoshop", "Apollo.io", "Word", "Zoom"], correct: 1, feedback: "أحسنت! Apollo يجمع البحث والتواصل في مكان واحد." },
+    ],
+  },
+
+  // ============ الفصل الثامن ============
+  {
+    id: 7,
+    title: "بناء تطبيق ويب متكامل بدون برمجة",
+    content: `
+${intro("الفرق بين الموقع والتطبيق أن التطبيق يحفظ بيانات، يسجّل المستخدمين، ويؤدي عمليات حقيقية. اليوم يمكنك بناؤه بالكامل بجملة واحدة على Lovable.")}
+${learn([
+  "الفرق بين الموقع الإلكتروني والتطبيق",
+  "بناء تطبيق كامل من الفكرة حتى النشر",
+  "إضافة قاعدة بيانات وتسجيل دخول للمستخدمين",
+  "ربط التطبيق بالمدفوعات والأدوات الخارجية",
+])}
+
+<h3>البناء المتكامل مع Lovable</h3>
+<p>Lovable لا يبني مواقع فقط، بل يبني تطبيقات كاملة بقاعدة بيانات ومستخدمين وإشعارات.</p>
+
+<h3>مثال عملي — بناء تطبيق حجز مواعيد</h3>
+<div class="info-box">
+  <p class="box-title">الخطوة الأولى — الطلب</p>
+  <p>«ابنِ لي تطبيقاً لحجز مواعيد لعيادة طب أسنان. يشمل: تسجيل دخول للمرضى، عرض الأوقات المتاحة، حجز الموعد وتأكيده عبر الإيميل، لوحة تحكم للدكتور لإدارة الحجوزات.»</p>
+</div>
+<ol class="bullet-list">
+  <li>Lovable يبني التطبيق كاملاً</li>
+  <li>اختبر كل وظيفة واطلب من Lovable إصلاح أي خطأ</li>
+  <li>انشر التطبيق على الإنترنت بنقرة واحدة</li>
+</ol>
+
+<h3>إضافة المدفوعات</h3>
+<p>بعد بناء التطبيق، أضف <strong>Stripe</strong> لقبول المدفوعات. قل لـLovable: «أضف نظام دفع إلكتروني عبر Stripe ليدفع المرضى عند الحجز.»</p>
+
+${tools([
+  { name: "Lovable", desc: "تطبيقات كاملة بقاعدة بيانات ومستخدمين بالنص.", url: "lovable.dev", level: "easy", cost: "partial" },
+  { name: "Stripe", desc: "قبول المدفوعات الإلكترونية عالمياً.", url: "stripe.com", level: "mid", cost: "partial" },
+  { name: "Supabase", desc: "قاعدة بيانات وتسجيل دخول جاهز.", url: "supabase.com", level: "mid", cost: "partial" },
+  { name: "Resend", desc: "إرسال بريد إلكتروني تلقائي (تأكيدات، فواتير).", url: "resend.com", level: "easy", cost: "partial" },
+])}
+
+${checklist("قائمة التطبيق العملي", [
+  "اختر فكرة تطبيق واحدة (حجز، توصيل، إدارة مهام)",
+  "اكتب طلب بناء واضح كما في المثال",
+  "ابنِ التطبيق على Lovable",
+  "اختبر تسجيل الدخول والحجز خطوة بخطوة",
+  "أضف Stripe لقبول المدفوعات",
+  "انشر التطبيق واحصل على رابط تجريبي",
+])}
+`,
+    quiz: [
+      { question: "ما الفرق بين الموقع والتطبيق؟", options: ["اللون", "التطبيق يحفظ بيانات ومستخدمين ويؤدي عمليات فعلية", "الحجم", "السعر"], correct: 1, feedback: "صحيح! التطبيق تفاعلي وذو حالة، بينما الموقع غالباً تعريفي." },
+      { question: "أي أداة تبني تطبيقاً كاملاً بقاعدة بيانات من نص؟", options: ["Photoshop", "Lovable", "Excel", "Zoom"], correct: 1, feedback: "أحسنت! Lovable ينتج تطبيقات إنتاجية حقيقية." },
+      { question: "أي خدمة تُضاف عادةً لقبول المدفوعات؟", options: ["Stripe", "Netflix", "YouTube", "Spotify"], correct: 0, feedback: "بالضبط! Stripe الحل الأشهر عالمياً." },
+      { question: "ماذا تفعل إذا وجدت خطأ في التطبيق؟", options: ["تحذفه", "تصف الخطأ لـLovable وتطلب إصلاحه", "تشتري خادماً جديداً", "تنسى الأمر"], correct: 1, feedback: "ممتاز! الحوار مع Lovable يصلح الأخطاء بلحظتها." },
+      { question: "ما فائدة إضافة تسجيل دخول للمستخدمين؟", options: ["لتعقيد التطبيق", "لحفظ بيانات كل مستخدم وحماية معلوماته", "لا فائدة", "لزيادة السعر"], correct: 1, feedback: "أحسنت! الحسابات الفردية أساس أي تطبيق حقيقي." },
+    ],
+  },
+
+  // ============ الفصل التاسع ============
+  {
+    id: 8,
+    title: "الذكاء الاصطناعي والبحث والتحليل العميق",
+    content: `
+${intro("عندما تحتاج لتحليل عقد قانوني، أو قراءة كتاب بحثي، أو بناء قاعدة معرفية من مستنداتك الخاصة — الذكاء الاصطناعي يختصر أياماً في دقائق.")}
+${learn([
+  "كيف تُجري أبحاثاً متعمقة باستخدام الذكاء الاصطناعي",
+  "تحليل المستندات الطويلة والكتب",
+  "استخراج المعلومات من مصادر متعددة",
+  "بناء قاعدة معرفية شخصية",
+])}
+
+<h3>تحليل المستندات الطويلة مع Claude</h3>
+<p>Claude يتميز بقدرته على قراءة مستندات طويلة جداً. ارفع أي وثيقة PDF واسأله:</p>
+<ul class="bullet-list">
+  <li>«لخّص هذا التقرير في عشر نقاط رئيسية»</li>
+  <li>«ما أبرز المخاطر المذكورة في هذا العقد؟»</li>
+  <li>«قارن بين هذين العرضين وحدّد أيهما أفضل ولماذا»</li>
+</ul>
+
+<h3>بناء قاعدة معرفية شخصية مع NotebookLM</h3>
+<p>أداة <strong>NotebookLM</strong> من جوجل مجانية على notebooklm.google.com. ارفع مستنداتك الخاصة، كتباً أو ملاحظاتك أو أبحاثاً. ثم اسأل أسئلة وستُجيب بناءً على مستنداتك فقط.</p>
+
+${tools([
+  { name: "Claude", desc: "تحليل مستندات ضخمة (كتب، عقود، تقارير).", url: "claude.ai", level: "easy", cost: "partial" },
+  { name: "NotebookLM", desc: "قاعدة معرفة شخصية تجيب من مستنداتك فقط.", url: "notebooklm.google.com", level: "easy", cost: "free" },
+  { name: "Perplexity", desc: "بحث عميق حي بمصادر موثقة.", url: "perplexity.ai", level: "easy", cost: "partial" },
+  { name: "Elicit", desc: "بحث علمي أكاديمي واستخراج نتائج الأبحاث.", url: "elicit.com", level: "mid", cost: "partial" },
+])}
+
+${checklist("قائمة التطبيق العملي", [
+  "اختر مستنداً طويلاً حقيقياً (عقد، تقرير، كتاب)",
+  "ارفعه على Claude واطلب تلخيصاً في ١٠ نقاط",
+  "اسأل عن المخاطر أو الفرص المذكورة",
+  "افتح NotebookLM وارفع ٥ مستندات لك",
+  "اسأل NotebookLM سؤالاً لن يستطيع نموذج عام الإجابة عنه دون مستنداتك",
+])}
+`,
+    quiz: [
+      { question: "أي نموذج تختار لتحليل عقد قانوني من ١٠٠ صفحة؟", options: ["DALL-E", "Claude", "Suno", "Runway"], correct: 1, feedback: "أحسنت! Claude يقرأ مستندات كبيرة بدقة." },
+      { question: "ما ميزة NotebookLM؟", options: ["يبني تطبيقات", "يجيب بناءً على مستنداتك أنت فقط", "يُنشئ صور", "يُنتج موسيقى"], correct: 1, feedback: "بالضبط! هذا يجعله قاعدة معرفة شخصية موثوقة." },
+      { question: "أي أداة الأنسب للبحث العلمي الأكاديمي؟", options: ["Elicit", "TikTok", "Instagram", "Photoshop"], correct: 0, feedback: "صحيح! Elicit مخصص لاستكشاف الأبحاث." },
+      { question: "أفضل سؤال لطرحه على Claude بعد رفع تقرير؟", options: ["كم صفحة؟", "لخّص التقرير في ١٠ نقاط رئيسية", "ما لون الغلاف؟", "من كتب التقرير؟"], correct: 1, feedback: "ممتاز! الأسئلة التحليلية هي جوهر الاستخدام." },
+      { question: "لماذا نبني قاعدة معرفة شخصية؟", options: ["لكسب المال", "لأن الإجابات ستأتي من مصادرك الموثوقة فقط بدل الإنترنت العام", "لتوفير الكهرباء", "لا سبب"], correct: 1, feedback: "أحسنت! الدقة والملاءمة أهم من الحجم." },
+    ],
+  },
+
+  // ============ الفصل العاشر ============
+  {
+    id: 9,
+    title: "الذكاء الاصطناعي في التصميم الاحترافي",
+    content: `
+${intro("لم يعد التصميم الاحترافي حكراً على المصممين. Canva وAdobe وFigma الآن مزوّدة بذكاء اصطناعي يبني لك تصاميم كاملة من وصف قصير.")}
+${learn([
+  "استخدام Canva AI في التصميم السريع",
+  "استخدام Adobe Express للتصاميم متعددة الصفحات",
+  "استخدام Figma للتصميم الاحترافي",
+  "بناء نظام تصميم متسق",
+])}
+
+<h3>Canva AI — من المبتدئ للاحترافي</h3>
+<ul class="bullet-list">
+  <li><strong>Magic Design:</strong> ارفع صورة واكتب وصفاً وستُنشئ Canva قالباً كاملاً</li>
+  <li><strong>Magic Write:</strong> اكتب النص تلقائياً داخل التصميم</li>
+  <li><strong>Background Remover:</strong> احذف خلفية أي صورة في ثانية</li>
+</ul>
+
+<h3>Adobe Express مع الذكاء الاصطناعي</h3>
+<p>مشابه لـCanva ولكن بقوة أدوات Adobe. يدعم إنشاء تصاميم احترافية متعددة الصفحات.</p>
+
+<h3>Figma مع الذكاء الاصطناعي</h3>
+<p>لمن يريد تصميماً أكثر احترافية. يحتوي على ميزات ذكاء اصطناعي لتوليد الواجهات.</p>
+
+${tools([
+  { name: "Canva AI", desc: "Magic Design وMagic Write وBackground Remover.", url: "canva.com", level: "easy", cost: "partial" },
+  { name: "Adobe Express", desc: "قوة Adobe مع سهولة الذكاء الاصطناعي.", url: "adobe.com/express", level: "easy", cost: "partial" },
+  { name: "Figma AI", desc: "تصميم واجهات احترافية مع مساعد ذكي.", url: "figma.com", level: "mid", cost: "partial" },
+  { name: "Recraft", desc: "توليد أيقونات وشعارات ورسوم بنمط ثابت.", url: "recraft.ai", level: "easy", cost: "partial" },
+])}
+
+${checklist("قائمة التطبيق العملي", [
+  "افتح Canva واستخدم Magic Design على وصف منشور واحد",
+  "احذف خلفية صورة بـBackground Remover",
+  "أنشئ منشوراً متعدد الصفحات على Adobe Express",
+  "جرّب إنشاء واجهة تطبيق مبسّطة على Figma AI",
+  "ولّد ٣ أيقونات بنمط ثابت على Recraft",
+])}
+`,
+    quiz: [
+      { question: "ما فعل Magic Design في Canva؟", options: ["يحذف الملفات", "يُنشئ قالباً كاملاً من صورة ووصف", "يشغّل الفيديو", "يترجم النص"], correct: 1, feedback: "أحسنت! Magic Design يوفر ساعات في بناء التصاميم." },
+      { question: "أي أداة الأنسب لتصميم واجهات تطبيقات احترافية؟", options: ["Canva", "Figma", "Word", "Excel"], correct: 1, feedback: "صحيح! Figma هو المعيار الاحترافي للواجهات." },
+      { question: "ما فائدة Background Remover؟", options: ["إضافة موسيقى", "إزالة خلفية أي صورة في ثانية", "قصّ الفيديو", "ترجمة النص"], correct: 1, feedback: "بالضبط! توفير وقت هائل مقارنة بـPhotoshop." },
+      { question: "أي أداة الأفضل لتوليد أيقونات بنمط متسق؟", options: ["Recraft", "Suno", "ElevenLabs", "Notion"], correct: 0, feedback: "ممتاز! Recraft متخصص في الأنماط الثابتة." },
+      { question: "ما ميزة Adobe Express؟", options: ["مجاني بالكامل بلا حدود", "قوة أدوات Adobe مع سهولة الذكاء الاصطناعي والتصاميم متعددة الصفحات", "الأسرع في العالم", "يعمل بلا إنترنت"], correct: 1, feedback: "أحسنت! توازن جيد بين القوة والسهولة." },
+    ],
+  },
+
+  // ============ الفصل الحادي عشر ============
+  {
+    id: 10,
+    title: "بناء نموذج العمل على الذكاء الاصطناعي",
+    content: `
+${intro("مهارات الذكاء الاصطناعي التي تعلّمتها لها سوق ضخم. في هذا الفصل ستعرف كيف تُحوّلها إلى دخل حقيقي — من أول عميل حتى محفظة أعمال تُثير الإعجاب.")}
+${learn([
+  "كيف تُحوّل مهاراتك في الذكاء الاصطناعي إلى دخل",
+  "نماذج العمل الأكثر طلباً الآن",
+  "كيف تُسعّر خدماتك",
+  "بناء محفظة أعمال تُثير إعجاب العملاء",
+])}
+
+<h3>الخدمات الأكثر طلباً في سوق الذكاء الاصطناعي</h3>
+
+<h3>١. إنشاء وإدارة محتوى وسائل التواصل</h3>
+<ul class="bullet-list">
+  <li><strong>سعر الخدمة:</strong> من مئتين إلى ألف دولار شهرياً للعميل الواحد</li>
+  <li><strong>ما تقدمه:</strong> خطة محتوى، كتابة، تصميم، جدولة تلقائية</li>
+</ul>
+
+<h3>٢. بناء روبوتات المحادثة للشركات</h3>
+<ul class="bullet-list">
+  <li><strong>سعر الخدمة:</strong> من خمسمئة إلى ثلاثة آلاف دولار لكل مشروع</li>
+  <li><strong>ما تقدمه:</strong> روبوت مُدرَّب على بيانات الشركة</li>
+</ul>
+
+<h3>٣. إنشاء الهوية البصرية بالذكاء الاصطناعي</h3>
+<ul class="bullet-list">
+  <li><strong>سعر الخدمة:</strong> من مئتين إلى ألف دولار للمشروع</li>
+  <li><strong>ما تقدمه:</strong> شعار وألوان وخطوط ومواد تسويقية</li>
+</ul>
+
+<h3>٤. بناء المواقع والتطبيقات بـLovable</h3>
+<ul class="bullet-list">
+  <li><strong>سعر الخدمة:</strong> من خمسمئة إلى خمسة آلاف دولار للمشروع</li>
+  <li><strong>ما تقدمه:</strong> موقع أو تطبيق كامل جاهز للعمل</li>
+</ul>
+
+${tools([
+  { name: "Upwork", desc: "أكبر منصة عالمية للحصول على عملاء دوليين.", url: "upwork.com", level: "easy", cost: "free" },
+  { name: "Fiverr", desc: "مناسب للخدمات المحددة والباقات السريعة.", url: "fiverr.com", level: "easy", cost: "free" },
+  { name: "Contra", desc: "منصة مستقلين حديثة بدون عمولة.", url: "contra.com", level: "easy", cost: "free" },
+  { name: "LinkedIn", desc: "بناء علامة شخصية والتواصل مع عملاء الشركات.", url: "linkedin.com", level: "easy", cost: "free" },
+])}
+
+${checklist("قائمة التطبيق العملي", [
+  "اختر خدمة واحدة من الأربع",
+  "أنشئ ملفاً على Upwork وLinkedIn",
+  "اصنع ٣ مشاريع عرض (Case studies) — حتى لو وهمية",
+  "اكتب سعر خدمتك وسبب هذا السعر في فقرة",
+  "أرسل ١٠ عروض تواصل هذا الأسبوع",
+])}
+`,
+    quiz: [
+      { question: "ما نطاق السعر الشهري المذكور لخدمة إدارة محتوى وسائل التواصل؟", options: ["١٠-٢٠ دولار", "٢٠٠-١٠٠٠ دولار للعميل الواحد", "١ مليون دولار", "مجاناً"], correct: 1, feedback: "أحسنت! هذا نطاق واقعي وقابل للتحقيق." },
+      { question: "ما أهم شيء لجذب أول عميل؟", options: ["الحظ", "محفظة أعمال (مشاريع عرض) وعرض قيمة واضح", "لون البطاقة", "اسم مثير"], correct: 1, feedback: "بالضبط! العملاء يشترون الثقة، والمحفظة أفضل دليل." },
+      { question: "أي خدمة تحقق أعلى سعر مذكور للمشروع الواحد؟", options: ["الشعار", "بناء المواقع والتطبيقات بـLovable", "الترجمة", "التدقيق اللغوي"], correct: 1, feedback: "صحيح! المواقع والتطبيقات تصل حتى ٥٠٠٠ دولار للمشروع." },
+      { question: "أي منصة الأنسب للعملاء الدوليين؟", options: ["إنستغرام", "Upwork", "تيك توك", "Snapchat"], correct: 1, feedback: "أحسنت! Upwork أكبر منصة عالمية للمستقلين." },
+      { question: "ماذا تقدم في خدمة روبوت المحادثة للشركات؟", options: ["رسم الشعار", "روبوت مُدرَّب على بيانات الشركة", "تصميم فيديو", "كتابة رواية"], correct: 1, feedback: "ممتاز! التخصيص على بيانات الشركة هو الجوهر." },
+    ],
+  },
+
+  // ============ الفصل الثاني عشر ============
+  {
+    id: 11,
+    title: "مشروع المستوى المتوسط — بناء حضور رقمي متكامل",
+    content: `
+${intro("هذا الفصل هو نقطة التتويج. ستُطبّق كل ما تعلّمته في المستوى المتوسط لبناء حضور رقمي كامل يمكنك عرضه على العملاء أو استخدامه لمشروعك.")}
+${learn([
+  "دمج كل مهارات المستوى المتوسط في مشروع واحد",
+  "بناء هوية بصرية كاملة",
+  "بناء موقع إلكتروني كامل بـLovable",
+  "بناء خطة محتوى وروبوت محادثة ونظام جدولة",
+])}
+
+<h3>المشروع النهائي</h3>
+<p>ستبني في هذا الفصل حضوراً رقمياً متكاملاً لمشروع حقيقي أو وهمي يتضمن:</p>
+<ol class="bullet-list">
+  <li><strong>الهوية البصرية الكاملة:</strong> شعار وألوان وخطوط</li>
+  <li><strong>موقع إلكتروني كامل بـLovable</strong></li>
+  <li><strong>خطة محتوى لشهر كامل على وسائل التواصل</strong></li>
+  <li><strong>روبوت محادثة بسيط للموقع يرد على الزوار</strong></li>
+  <li><strong>نظام جدولة تلقائية للنشر</strong></li>
+</ol>
+
+<div class="info-box">
+  <p class="box-title">مخرجات المشروع</p>
+  <p>في نهاية هذا الفصل سيكون لديك مشروع حقيقي يمكن عرضه في محفظة أعمالك، وقد تعلّمت عملياً كيف تدمج كل أدوات المستوى المتوسط في نظام واحد يعمل.</p>
+</div>
+
+${tools([
+  { name: "Canva AI", desc: "الهوية البصرية والمحتوى المرئي.", url: "canva.com", level: "easy", cost: "partial" },
+  { name: "Lovable", desc: "الموقع الإلكتروني الكامل.", url: "lovable.dev", level: "easy", cost: "partial" },
+  { name: "ChatGPT", desc: "خطة المحتوى والنصوص.", url: "chatgpt.com", level: "easy", cost: "partial" },
+  { name: "Chatbase", desc: "روبوت المحادثة على الموقع.", url: "chatbase.co", level: "easy", cost: "partial" },
+  { name: "Buffer", desc: "جدولة المنشورات تلقائياً.", url: "buffer.com", level: "easy", cost: "partial" },
+])}
+
+${checklist("قائمة تسليم المشروع", [
+  "اختر اسم المشروع وحدّد جمهوره في فقرة",
+  "أنشئ الهوية البصرية (شعار + ألوان + خطوط)",
+  "ابنِ الموقع الإلكتروني على Lovable ونشره",
+  "أنتج خطة محتوى ٣٠ يوماً + النصوص كاملة",
+  "درّب روبوت محادثة على أسئلة عملائك واربطه بالموقع",
+  "اربط الموقع بحساب Buffer وجدول أول أسبوع نشر",
+  "احفظ رابط الموقع ولقطات الشاشة في محفظة أعمالك",
+])}
+`,
+    quiz: [
+      { question: "كم عنصراً يتضمنه مشروع الحضور الرقمي المتكامل؟", options: ["اثنان", "خمسة", "عشرون", "واحد فقط"], correct: 1, feedback: "أحسنت! ٥ عناصر: هوية + موقع + محتوى + روبوت + جدولة." },
+      { question: "أي أداة تبني بها الموقع في المشروع؟", options: ["Photoshop", "Lovable", "Excel", "Zoom"], correct: 1, feedback: "صحيح! Lovable هو الأداة الرئيسية للموقع." },
+      { question: "لماذا تُضاف خطة محتوى الشهر كاملاً في المشروع؟", options: ["لتطويل المشروع", "لإثبات القدرة على بناء نظام محتوى متكامل ومستدام", "لأنها ممتعة", "لا سبب"], correct: 1, feedback: "بالضبط! العملاء يشترون النظام لا المنشور الواحد." },
+      { question: "ما فائدة روبوت المحادثة في المشروع؟", options: ["زخرفة", "الرد الفوري على زوار الموقع ٢٤ ساعة", "طباعة التقارير", "تصميم الشعار"], correct: 1, feedback: "ممتاز! يزيد التحويل ويحسّن تجربة الزائر." },
+      { question: "ما أهم مخرج نهائي لهذا المشروع؟", options: ["شهادة إلكترونية", "مشروع حقيقي قابل للعرض في محفظة أعمالك", "قهوة", "كتاب"], correct: 1, feedback: "أحسنت! المحفظة الفعلية هي مفتاح أول عميل." },
+    ],
+  },
 ];
