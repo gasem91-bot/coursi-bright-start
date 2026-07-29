@@ -21,7 +21,7 @@ export const COURSE_CONTENT = {
   },
   advanced: {
     name: "إتقان الذكاء الاصطناعي — بناء منتجات وأعمال",
-    meta: "٦ فصول · ٦ أسابيع",
+    meta: "١٢ فصلاً · ٨ أسابيع",
     coverImage: "https://d8j0ntlcm91z4.cloudfront.net/user_3CToPP2SDwUfirzHh6Rbzt3Wuos/hf_20260630_163544_aa9e5673-6027-4988-b6cd-53a161272b55.png",
     chapters: ADVANCED_CHAPTERS,
   },
