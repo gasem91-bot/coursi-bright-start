@@ -15,7 +15,7 @@ export const COURSE_CONTENT = {
   },
   intermediate: {
     name: "الذكاء الاصطناعي للمحترفين",
-    meta: "٦ فصول · ٦ أسابيع",
+    meta: "١٢ فصلاً · ٨ أسابيع",
     coverImage: "https://d8j0ntlcm91z4.cloudfront.net/user_3CToPP2SDwUfirzHh6Rbzt3Wuos/hf_20260630_163538_f4d91532-2374-4247-8fb2-8c556cc367ea.png",
     chapters: INTERMEDIATE_CHAPTERS,
   },
