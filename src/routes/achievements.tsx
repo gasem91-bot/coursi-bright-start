@@ -1,5 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { sendCertificateEmail } from "@/lib/certificate-email.functions";
+
 import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/contexts/ProfileContext";
 import PortalHeader from "@/components/portal-nav";
@@ -62,6 +65,18 @@ function AchievementsPage() {
       setLoadingProgress(false);
     })();
   }, [navigate]);
+
+  // Once a level is fully complete, send the branded certificate email (once per level).
+  const sendCertEmail = useServerFn(sendCertificateEmail);
+  useEffect(() => {
+    if (loadingProgress || !userId) return;
+    (["beginner", "intermediate", "advanced"] as CertLevel[])
+      .filter((l) => isLevelComplete(l, completedIds))
+      .forEach((l) => {
+        void sendCertEmail({ data: { level: l } }).catch(() => {});
+      });
+  }, [loadingProgress, userId, completedIds, sendCertEmail]);
+
 
   const streak = profile?.streak_days ?? 0;
   const xp = profile?.xp_points ?? 0;

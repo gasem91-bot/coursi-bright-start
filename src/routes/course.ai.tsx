@@ -8,6 +8,10 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { ThemeToggle } from "@/lib/theme";
 import { PortalNav } from "@/components/portal-nav";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
+import { isLevelComplete } from "@/lib/certificate";
+import { sendCertificateEmail } from "@/lib/certificate-email.functions";
+
 
 export const Route = createFileRoute("/course/ai")({
   component: CourseAIPage,
@@ -38,6 +42,8 @@ const ARABIC_LETTERS = ["أ", "ب", "ج", "د"];
 function CourseAIPage() {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const sendCertEmail = useServerFn(sendCertificateEmail);
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [level, setLevel] = useState<Level>("beginner");
@@ -200,7 +206,19 @@ function CourseAIPage() {
       toast.success(`🏅 وسام جديد: أتممت الفصل ${toAr(activeChapter + 1)} — +١٠ نقاط خبرة`);
     }
     await fetchProgress(userId);
+
+    // If this completes the whole level, send the certificate email (server-side, once).
+    const nextIds = new Set(completedIds);
+    nextIds.add(cid);
+    if (isLevelComplete(level, nextIds)) {
+      void sendCertEmail({ data: { level } })
+        .then((r) => {
+          if (r?.sent) toast.success("🏆 شهادتك جاهزة — أرسلنا لك رابط التحميل على بريدك");
+        })
+        .catch(() => {});
+    }
   };
+
 
   useEffect(() => {
     if (quizComplete) {
