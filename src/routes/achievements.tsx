@@ -27,6 +27,10 @@ function AchievementsPage() {
   const navigate = useNavigate();
   const { profile, loading: profileLoading } = useProfile();
   const [completedChapters, setCompletedChapters] = useState(0);
+  const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
+  const [completedAt, setCompletedAt] = useState<Record<string, Date>>({});
+  const [userId, setUserId] = useState("");
+  const [userEmail, setUserEmail] = useState("");
   const [loadingProgress, setLoadingProgress] = useState(true);
 
   useEffect(() => {
@@ -36,12 +40,25 @@ function AchievementsPage() {
         navigate({ to: "/login" });
         return;
       }
+      setUserId(session.user.id);
+      setUserEmail(session.user.email ?? "");
       const { data: progress } = await supabase
         .from("course_progress")
-        .select("completed")
+        .select("chapter_id, completed, updated_at")
         .eq("user_id", session.user.id)
         .eq("completed", true);
-      setCompletedChapters((progress ?? []).length);
+      const rows = progress ?? [];
+      setCompletedChapters(rows.length);
+      setCompletedIds(new Set(rows.map((r) => r.chapter_id)));
+      const dates: Record<string, Date> = {};
+      for (const lvl of ["beginner", "intermediate", "advanced"] as CertLevel[]) {
+        const latest = rows
+          .filter((r) => r.chapter_id.startsWith(`ai-${lvl}-`))
+          .map((r) => new Date(r.updated_at))
+          .sort((a, b) => b.getTime() - a.getTime())[0];
+        if (latest) dates[lvl] = latest;
+      }
+      setCompletedAt(dates);
       setLoadingProgress(false);
     })();
   }, [navigate]);
@@ -51,11 +68,12 @@ function AchievementsPage() {
   const level: Level = (profile?.level as Level) ?? "beginner";
   const loading = profileLoading || loadingProgress;
 
-  const totals = { beginner: 8, intermediate: 10, advanced: 12 } as const;
-  const certificates =
-    (level === "intermediate" || level === "advanced" ? 1 : 0) +
-    (level === "advanced" ? 1 : 0) +
-    (completedChapters >= totals[level] ? 1 : 0);
+  const certLevels: CertLevel[] = ["beginner", "intermediate", "advanced"];
+  const earnedCerts = certLevels.filter((l) => isLevelComplete(l, completedIds));
+  const certificates = earnedCerts.length;
+  const userName =
+    profile?.display_name?.trim() || (profile?.email || userEmail || "").split("@")[0] || "طالب كورسي";
+
 
   const badges: Badge[] = [
     { id: "beginner_ai", icon: "🌱", name: "مبتدئ AI", earned: true },
