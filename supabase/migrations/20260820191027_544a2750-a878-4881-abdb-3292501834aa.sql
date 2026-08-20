@@ -1,0 +1,1 @@
+delete from public.course_progress where user_id = 'af88143e-d6d9-4985-8ca9-0c53cf490ab7' and chapter_id like 'ai-beginner-%';
