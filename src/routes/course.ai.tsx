@@ -6,6 +6,7 @@ const coursiLogo = coursiLogoAsset.url;
 import { COURSE_CONTENT, type QuizQuestion } from "@/lib/course-content";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ThemeToggle } from "@/lib/theme";
+import { PortalNav } from "@/components/portal-nav";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/course/ai")({
@@ -292,6 +293,7 @@ function CourseAIPage() {
           <div style={{ width: isMobile ? 60 : 100, height: 4, background: "color-mix(in srgb, var(--text-primary) 6%, transparent)", borderRadius: 4, overflow: "hidden" }}>
             <div style={{ width: `${pct}%`, height: "100%", background: `linear-gradient(90deg,${PURPLE},${CYAN})`, transition: "width 600ms ease" }} />
           </div>
+          <PortalNav iconsOnly />
           <ThemeToggle style={{ width: 32, height: 32, fontSize: 14 }} />
         </div>
       </div>
@@ -350,7 +352,7 @@ function CourseAIPage() {
               if (i < activeChapter || isDone) { goToChapter(i); return; }
               if (i === activeChapter) return;
               if (isLocked) {
-                toast("أكمل أسئلة هذا الفصل أولاً للمتابعة 🔒");
+                toast("أكمل أسئلة هذا الفصل أولاً للمتابعة 🔒", { id: "chapter-locked", duration: 3000 });
                 return;
               }
               goToChapter(i);
