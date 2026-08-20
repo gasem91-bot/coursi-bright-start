@@ -128,6 +128,10 @@ function CourseAIPage() {
   const quizQuestions: QuizQuestion[] = currentChapter?.quiz ?? [];
 
   const goToChapter = (i: number) => {
+    if (quizTimerRef.current) {
+      clearTimeout(quizTimerRef.current);
+      quizTimerRef.current = null;
+    }
     setActiveChapter(i);
     setActiveTab("content");
     setCurrentQ(0);
@@ -135,6 +139,7 @@ function CourseAIPage() {
     setSelectedAnswer(null);
     setQuizComplete(false);
     setScore(0);
+    setFinalResult(null);
     setSidebarOpen(false);
     contentScrollRef.current?.scrollTo({ top: 0 });
   };
@@ -142,19 +147,34 @@ function CourseAIPage() {
   const handleAnswer = (idx: number) => {
     if (answered || !quizQuestions[currentQ]) return;
     const correct = quizQuestions[currentQ].correct;
+    const isCorrect = idx === correct;
     setAnswered(true);
     setSelectedAnswer(idx);
-    if (idx === correct) setScore((s) => s + 1);
-    setTimeout(() => {
-      if (currentQ < quizQuestions.length - 1) {
+    const nextScore = score + (isCorrect ? 1 : 0);
+    if (isCorrect) setScore(nextScore);
+    const totalQs = quizQuestions.length;
+    const isLastQ = currentQ >= totalQs - 1;
+    if (quizTimerRef.current) clearTimeout(quizTimerRef.current);
+    quizTimerRef.current = setTimeout(() => {
+      quizTimerRef.current = null;
+      if (!isLastQ) {
         setCurrentQ((q) => q + 1);
         setAnswered(false);
         setSelectedAnswer(null);
       } else {
+        // Snapshot the result so the summary never depends on later state resets
+        setFinalResult({ score: nextScore, total: totalQs });
         setQuizComplete(true);
       }
     }, 3500);
   };
+
+  useEffect(() => {
+    return () => {
+      if (quizTimerRef.current) clearTimeout(quizTimerRef.current);
+    };
+  }, []);
+
 
   const markComplete = async () => {
     if (!userId) return;
