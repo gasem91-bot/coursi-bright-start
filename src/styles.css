@@ -839,3 +839,36 @@ html, body {
     left: 16px;
   }
 }
+
+/* Portal quick nav (desktop) */
+.portal-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+@media (max-width: 768px) {
+  .portal-nav { display: none; }
+}
+.portal-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+.portal-nav-link:hover {
+  color: var(--text-primary);
+  background: color-mix(in srgb, var(--text-primary) 6%, transparent);
+}
+.portal-nav-link.active {
+  color: var(--accent-cyan-text);
+  border-color: var(--accent-purple-border);
+  background: var(--accent-purple-soft);
+}

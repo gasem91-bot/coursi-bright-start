@@ -7,6 +7,7 @@ import { COURSE_CONTENT } from "@/lib/course-content";
 import ShaderBackground from "@/components/ui/shader-background";
 import { ThemeToggle, useTheme } from "@/lib/theme";
 import { useProfile } from "@/contexts/ProfileContext";
+import { PortalNav } from "@/components/portal-nav";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -170,6 +171,7 @@ function DashboardPage() {
             <DropdownMenuItem className="menu-item" onSelect={handleLogout}>🚪 خروج</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        <PortalNav />
         <span style={{ color: "var(--text-secondary)", fontSize: 12, flex: "1 1 auto", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{userEmail || "بوابة الذكاء الاصطناعي"}</span>
         <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
           <ThemeToggle style={{ width: 32, height: 32, fontSize: 14 }} />

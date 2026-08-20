@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/contexts/ProfileContext";
+import PortalHeader from "@/components/portal-nav";
 
 export const Route = createFileRoute("/achievements")({
   component: AchievementsPage,
@@ -76,8 +77,9 @@ function AchievementsPage() {
   }
 
   return (
-    <div className="page-content" style={{ minHeight: "100vh", background: "var(--bg-primary)", fontFamily: font, direction: "rtl", padding: "24px 16px", paddingBottom: 100 }}>
-      <div style={{ maxWidth: 720, margin: "0 auto" }}>
+    <div className="page-content" style={{ minHeight: "100vh", background: "var(--bg-primary)", fontFamily: font, direction: "rtl", paddingBottom: 100 }}>
+      <PortalHeader />
+      <div style={{ maxWidth: 720, margin: "0 auto", padding: "24px 16px" }}>
         <h1 style={{ color: "var(--text-primary)", fontWeight: 800, fontSize: 28, marginBottom: 18 }}>إنجازاتي</h1>
 
         {/* Streak */}

@@ -4,6 +4,7 @@ import {
   createRootRouteWithContext,
   HeadContent,
   Scripts,
+  useRouter,
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
@@ -11,7 +12,7 @@ import { ThemeProvider } from "@/lib/theme";
 import FloatingNav from "@/components/floating-nav";
 import MobileTopbar from "@/components/mobile-topbar";
 import AccountPanel from "@/components/account-panel";
-import { Toaster } from "@/components/ui/sonner";
+import { Toaster, toast } from "@/components/ui/sonner";
 import { useStreak } from "@/hooks/use-streak";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -71,6 +72,7 @@ function RootComponent() {
       <ThemeProvider>
         <ProfileProvider>
           <StreakRunner />
+          <ToastDismissOnNavigate />
           <MobileTopbar />
           <Outlet />
           <FloatingNav />
@@ -80,6 +82,16 @@ function RootComponent() {
       </ThemeProvider>
     </QueryClientProvider>
   );
+}
+
+function ToastDismissOnNavigate() {
+  const router = useRouter();
+  useEffect(() => {
+    return router.subscribe("onResolved", () => {
+      toast.dismiss();
+    });
+  }, [router]);
+  return null;
 }
 
 function StreakRunner() {
