@@ -100,7 +100,7 @@ function DashboardPage() {
     navigate({ to: "/login" });
   };
 
-  if (loading) {
+  if (loading || profileLoading || (!profile && !notFound)) {
     return (
       <div style={{ minHeight: "100vh", background: "var(--bg-primary)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, fontFamily: font }}>
         <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
