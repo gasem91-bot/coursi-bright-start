@@ -3,6 +3,9 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/contexts/ProfileContext";
 import PortalHeader from "@/components/portal-nav";
+import CertificateCard from "@/components/certificate-card";
+import { completedCount, isLevelComplete, totalChapters, type Level as CertLevel } from "@/lib/certificate";
+
 
 export const Route = createFileRoute("/achievements")({
   component: AchievementsPage,
@@ -24,6 +27,10 @@ function AchievementsPage() {
   const navigate = useNavigate();
   const { profile, loading: profileLoading } = useProfile();
   const [completedChapters, setCompletedChapters] = useState(0);
+  const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
+  const [completedAt, setCompletedAt] = useState<Record<string, Date>>({});
+  const [userId, setUserId] = useState("");
+  const [userEmail, setUserEmail] = useState("");
   const [loadingProgress, setLoadingProgress] = useState(true);
 
   useEffect(() => {
@@ -33,12 +40,25 @@ function AchievementsPage() {
         navigate({ to: "/login" });
         return;
       }
+      setUserId(session.user.id);
+      setUserEmail(session.user.email ?? "");
       const { data: progress } = await supabase
         .from("course_progress")
-        .select("completed")
+        .select("chapter_id, completed, updated_at")
         .eq("user_id", session.user.id)
         .eq("completed", true);
-      setCompletedChapters((progress ?? []).length);
+      const rows = progress ?? [];
+      setCompletedChapters(rows.length);
+      setCompletedIds(new Set(rows.map((r) => r.chapter_id)));
+      const dates: Record<string, Date> = {};
+      for (const lvl of ["beginner", "intermediate", "advanced"] as CertLevel[]) {
+        const latest = rows
+          .filter((r) => r.chapter_id.startsWith(`ai-${lvl}-`))
+          .map((r) => new Date(r.updated_at))
+          .sort((a, b) => b.getTime() - a.getTime())[0];
+        if (latest) dates[lvl] = latest;
+      }
+      setCompletedAt(dates);
       setLoadingProgress(false);
     })();
   }, [navigate]);
@@ -48,11 +68,12 @@ function AchievementsPage() {
   const level: Level = (profile?.level as Level) ?? "beginner";
   const loading = profileLoading || loadingProgress;
 
-  const totals = { beginner: 8, intermediate: 10, advanced: 12 } as const;
-  const certificates =
-    (level === "intermediate" || level === "advanced" ? 1 : 0) +
-    (level === "advanced" ? 1 : 0) +
-    (completedChapters >= totals[level] ? 1 : 0);
+  const certLevels: CertLevel[] = ["beginner", "intermediate", "advanced"];
+  const earnedCerts = certLevels.filter((l) => isLevelComplete(l, completedIds));
+  const certificates = earnedCerts.length;
+  const userName =
+    profile?.display_name?.trim() || (profile?.email || userEmail || "").split("@")[0] || "طالب كورسي";
+
 
   const badges: Badge[] = [
     { id: "beginner_ai", icon: "🌱", name: "مبتدئ AI", earned: true },
@@ -127,22 +148,25 @@ function AchievementsPage() {
 
         {/* Certificates */}
         <div style={{ color: "var(--accent-purple-text)", fontSize: 11, letterSpacing: 2, textTransform: "uppercase", fontWeight: 700, margin: "20px 0 12px" }}>✦ شهاداتي</div>
-        {certificates === 0 ? (
-          <div style={{ background: "var(--bg-card)", border: "1px dashed var(--border)", borderRadius: 14, padding: 28, textAlign: "center", color: "var(--text-secondary)" }}>
-            <div style={{ fontSize: 40 }}>🏆</div>
-            <p style={{ marginTop: 10, fontSize: 13 }}>أكمل أول مستوى لتحصل على شهادتك</p>
-          </div>
-        ) : (
-          <div style={{ background: "linear-gradient(135deg, rgba(251,191,36,0.08), rgba(123,53,192,0.05))", border: "1px solid rgba(251,191,36,0.25)", borderRadius: 14, padding: 18, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
-            <div>
-              <div style={{ fontSize: 24 }}>🏆</div>
-              <div style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: 14, marginTop: 4 }}>شهادة {level === "advanced" ? "المستوى المتقدم" : level === "intermediate" ? "المستوى المتوسط" : "المستوى المبتدئ"}</div>
-            </div>
-            <button style={{ background: "transparent", border: "1px solid #fbbf24", color: "#fbbf24", padding: "8px 16px", borderRadius: 30, fontFamily: font, fontWeight: 700, cursor: "pointer" }}>
-              تحميل
-            </button>
+        {certificates === 0 && (
+          <div style={{ background: "var(--bg-card)", border: "1px dashed var(--border)", borderRadius: 14, padding: 22, textAlign: "center", color: "var(--text-secondary)", marginBottom: 12 }}>
+            <div style={{ fontSize: 36 }}>🏆</div>
+            <p style={{ marginTop: 8, fontSize: 13 }}>أكمل جميع فصول أي مستوى لتحصل على شهادتك</p>
           </div>
         )}
+        {certLevels.map((l) => (
+          <CertificateCard
+            key={l}
+            level={l}
+            userId={userId}
+            userName={userName}
+            unlocked={isLevelComplete(l, completedIds)}
+            completed={completedCount(l, completedIds)}
+            total={totalChapters(l)}
+            completedAt={completedAt[l]}
+          />
+        ))}
+
       </div>
     </div>
   );
