@@ -63,6 +63,18 @@ function AchievementsPage() {
     })();
   }, [navigate]);
 
+  // Once a level is fully complete, send the branded certificate email (once per level).
+  const sendCertEmail = useServerFn(sendCertificateEmail);
+  useEffect(() => {
+    if (loadingProgress || !userId) return;
+    (["beginner", "intermediate", "advanced"] as CertLevel[])
+      .filter((l) => isLevelComplete(l, completedIds))
+      .forEach((l) => {
+        void sendCertEmail({ data: { level: l } }).catch(() => {});
+      });
+  }, [loadingProgress, userId, completedIds, sendCertEmail]);
+
+
   const streak = profile?.streak_days ?? 0;
   const xp = profile?.xp_points ?? 0;
   const level: Level = (profile?.level as Level) ?? "beginner";
