@@ -986,6 +986,7 @@ function QuizTab({
   selectedAnswer,
   quizComplete,
   score,
+  totalQuestions,
   isLast,
   courseName,
   level,
@@ -1000,6 +1001,7 @@ function QuizTab({
   selectedAnswer: number | null;
   quizComplete: boolean;
   score: number;
+  totalQuestions: number;
   isLast: boolean;
   courseName: string;
   level: Level;
