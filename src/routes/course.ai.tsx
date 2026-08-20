@@ -200,7 +200,19 @@ function CourseAIPage() {
       toast.success(`🏅 وسام جديد: أتممت الفصل ${toAr(activeChapter + 1)} — +١٠ نقاط خبرة`);
     }
     await fetchProgress(userId);
+
+    // If this completes the whole level, send the certificate email (server-side, once).
+    const nextIds = new Set(completedIds);
+    nextIds.add(cid);
+    if (isLevelComplete(level, nextIds)) {
+      void sendCertEmail({ data: { level } })
+        .then((r) => {
+          if (r?.sent) toast.success("🏆 شهادتك جاهزة — أرسلنا لك رابط التحميل على بريدك");
+        })
+        .catch(() => {});
+    }
   };
+
 
   useEffect(() => {
     if (quizComplete) {
