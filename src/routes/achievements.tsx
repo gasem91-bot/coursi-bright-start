@@ -148,22 +148,25 @@ function AchievementsPage() {
 
         {/* Certificates */}
         <div style={{ color: "var(--accent-purple-text)", fontSize: 11, letterSpacing: 2, textTransform: "uppercase", fontWeight: 700, margin: "20px 0 12px" }}>✦ شهاداتي</div>
-        {certificates === 0 ? (
-          <div style={{ background: "var(--bg-card)", border: "1px dashed var(--border)", borderRadius: 14, padding: 28, textAlign: "center", color: "var(--text-secondary)" }}>
-            <div style={{ fontSize: 40 }}>🏆</div>
-            <p style={{ marginTop: 10, fontSize: 13 }}>أكمل أول مستوى لتحصل على شهادتك</p>
-          </div>
-        ) : (
-          <div style={{ background: "linear-gradient(135deg, rgba(251,191,36,0.08), rgba(123,53,192,0.05))", border: "1px solid rgba(251,191,36,0.25)", borderRadius: 14, padding: 18, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
-            <div>
-              <div style={{ fontSize: 24 }}>🏆</div>
-              <div style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: 14, marginTop: 4 }}>شهادة {level === "advanced" ? "المستوى المتقدم" : level === "intermediate" ? "المستوى المتوسط" : "المستوى المبتدئ"}</div>
-            </div>
-            <button style={{ background: "transparent", border: "1px solid #fbbf24", color: "#fbbf24", padding: "8px 16px", borderRadius: 30, fontFamily: font, fontWeight: 700, cursor: "pointer" }}>
-              تحميل
-            </button>
+        {certificates === 0 && (
+          <div style={{ background: "var(--bg-card)", border: "1px dashed var(--border)", borderRadius: 14, padding: 22, textAlign: "center", color: "var(--text-secondary)", marginBottom: 12 }}>
+            <div style={{ fontSize: 36 }}>🏆</div>
+            <p style={{ marginTop: 8, fontSize: 13 }}>أكمل جميع فصول أي مستوى لتحصل على شهادتك</p>
           </div>
         )}
+        {certLevels.map((l) => (
+          <CertificateCard
+            key={l}
+            level={l}
+            userId={userId}
+            userName={userName}
+            unlocked={isLevelComplete(l, completedIds)}
+            completed={completedCount(l, completedIds)}
+            total={totalChapters(l)}
+            completedAt={completedAt[l]}
+          />
+        ))}
+
       </div>
     </div>
   );
