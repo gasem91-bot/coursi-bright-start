@@ -3,6 +3,9 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/contexts/ProfileContext";
 import PortalHeader from "@/components/portal-nav";
+import CertificateCard from "@/components/certificate-card";
+import { completedCount, isLevelComplete, totalChapters, type Level as CertLevel } from "@/lib/certificate";
+
 
 export const Route = createFileRoute("/achievements")({
   component: AchievementsPage,
