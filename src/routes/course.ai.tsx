@@ -42,6 +42,8 @@ const ARABIC_LETTERS = ["أ", "ب", "ج", "د"];
 function CourseAIPage() {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const sendCertEmail = useServerFn(sendCertificateEmail);
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [level, setLevel] = useState<Level>("beginner");
