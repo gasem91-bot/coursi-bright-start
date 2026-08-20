@@ -100,7 +100,7 @@ function DashboardPage() {
     navigate({ to: "/login" });
   };
 
-  if (loading) {
+  if (loading || profileLoading || (!profile && !notFound)) {
     return (
       <div style={{ minHeight: "100vh", background: "var(--bg-primary)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, fontFamily: font }}>
         <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
@@ -110,7 +110,7 @@ function DashboardPage() {
     );
   }
 
-  if (notFound) {
+  if (notFound || !profile) {
     return (
       <div style={{ minHeight: "100vh", background: "var(--bg-primary)", display: "flex", alignItems: "center", justifyContent: "center", padding: 24, fontFamily: font }}>
         <div style={{ background: "var(--card-glass)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)", border: "1px solid var(--card-glass-border)", borderRadius: 16, padding: "28px 32px", maxWidth: 480, textAlign: "center", color: "var(--text-primary)" }}>
@@ -120,7 +120,7 @@ function DashboardPage() {
     );
   }
 
-  const level = profile!.level;
+  const level = profile.level;
   const lb = levelBadge(level);
   const course = courseInfo(level);
   const completedChapters = progress.filter((p) => p.completed).length;
