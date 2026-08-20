@@ -10,22 +10,18 @@ export const checkAiAccess = createServerFn({ method: "POST" })
     z.object({ email: z.string().email() }).parse(input),
   )
   .handler(async ({ data }): Promise<CheckAiAccessResult> => {
-    const { createClient } = await import("@supabase/supabase-js");
-
-    const url = process.env.OWN_SUPABASE_URL;
-    const serviceRoleKey = process.env.OWN_SUPABASE_SERVICE_ROLE_KEY;
-
-    if (!url || !serviceRoleKey) {
-      console.error("[checkAiAccess] missing OWN_SUPABASE_URL or OWN_SUPABASE_SERVICE_ROLE_KEY");
+    // Use THIS project's own Lovable Cloud database (same project as VITE_SUPABASE_URL).
+    let admin;
+    try {
+      ({ supabaseAdmin: admin } = await import("@/integrations/supabase/client.server"));
+    } catch (e) {
+      console.error("[checkAiAccess] admin client unavailable:", e);
       return { ok: false, reason: "misconfigured" };
     }
 
-    const admin = createClient(url, serviceRoleKey, {
-      auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
-    });
-
     const email = data.email.trim().toLowerCase();
     if (!email) return { ok: false, reason: "not_registered" };
+
 
     // Look up profile by email in the user's own Supabase project.
     // Fail-closed: any error or no match blocks login.
