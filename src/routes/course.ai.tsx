@@ -506,7 +506,8 @@ function CourseAIPage() {
               answered={answered}
               selectedAnswer={selectedAnswer}
               quizComplete={quizComplete}
-              score={score}
+              score={finalResult ? finalResult.score : score}
+              totalQuestions={finalResult ? finalResult.total : quizQuestions.length}
               isLast={isLast}
               courseName={course.name}
               level={level}
