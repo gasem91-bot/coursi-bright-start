@@ -8,6 +8,10 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { ThemeToggle } from "@/lib/theme";
 import { PortalNav } from "@/components/portal-nav";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
+import { isLevelComplete } from "@/lib/certificate";
+import { sendCertificateEmail } from "@/lib/certificate-email.functions";
+
 
 export const Route = createFileRoute("/course/ai")({
   component: CourseAIPage,
