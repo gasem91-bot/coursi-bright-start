@@ -1028,8 +1028,8 @@ function QuizTab({
           }}
         >
           <div style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: 36, lineHeight: 1 }}>{toAr(score)}</div>
-          <div style={{ color: "rgba(255,255,255,0.85)", fontSize: 13, marginTop: 4 }}>
-            {toAr(totalQuestions || questions.length)} / {toAr(score)}
+          <div dir="ltr" style={{ color: "rgba(255,255,255,0.85)", fontSize: 13, marginTop: 4 }}>
+            {`${toAr(score)}/${toAr(totalQuestions || questions.length)}`}
           </div>
         </div>
         <div style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: 22, textAlign: "center" }}>
