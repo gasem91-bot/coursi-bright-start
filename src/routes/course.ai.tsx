@@ -55,6 +55,8 @@ function CourseAIPage() {
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [quizComplete, setQuizComplete] = useState(false);
   const [score, setScore] = useState(0);
+  const [finalResult, setFinalResult] = useState<{ score: number; total: number } | null>(null);
+  const quizTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [chatOpen, setChatOpen] = useState(false);
   const [chatInput, setChatInput] = useState("");
