@@ -19,6 +19,7 @@ import { Route as SupportRouteImport } from './routes/support'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as AdminEmailsRouteImport } from './routes/admin.emails'
 import { Route as CourseAiRouteImport } from './routes/course.ai'
+import { Route as ApiPublicEmailPreviewRouteImport } from './routes/api/public/email-preview'
 import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe-webhook'
 import { Route as ApiPublicTelegramTicketRouteImport } from './routes/api/public/telegram-ticket'
 
@@ -72,6 +73,11 @@ const CourseAiRoute = CourseAiRouteImport.update({
   path: '/course/ai',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicEmailPreviewRoute = ApiPublicEmailPreviewRouteImport.update({
+  id: '/api/public/email-preview',
+  path: '/api/public/email-preview',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicStripeWebhookRoute = ApiPublicStripeWebhookRouteImport.update({
   id: '/api/public/stripe-webhook',
   path: '/api/public/stripe-webhook',
@@ -94,6 +100,7 @@ export interface FileRoutesByFullPath {
   '/welcome': typeof WelcomeRoute
   '/admin/emails': typeof AdminEmailsRoute
   '/course/ai': typeof CourseAiRoute
+  '/api/public/email-preview': typeof ApiPublicEmailPreviewRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/telegram-ticket': typeof ApiPublicTelegramTicketRoute
 }
@@ -108,6 +115,7 @@ export interface FileRoutesByTo {
   '/welcome': typeof WelcomeRoute
   '/admin/emails': typeof AdminEmailsRoute
   '/course/ai': typeof CourseAiRoute
+  '/api/public/email-preview': typeof ApiPublicEmailPreviewRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/telegram-ticket': typeof ApiPublicTelegramTicketRoute
 }
@@ -123,6 +131,7 @@ export interface FileRoutesById {
   '/welcome': typeof WelcomeRoute
   '/admin/emails': typeof AdminEmailsRoute
   '/course/ai': typeof CourseAiRoute
+  '/api/public/email-preview': typeof ApiPublicEmailPreviewRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/telegram-ticket': typeof ApiPublicTelegramTicketRoute
 }
@@ -139,6 +148,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/admin/emails'
     | '/course/ai'
+    | '/api/public/email-preview'
     | '/api/public/stripe-webhook'
     | '/api/public/telegram-ticket'
   fileRoutesByTo: FileRoutesByTo
@@ -153,6 +163,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/admin/emails'
     | '/course/ai'
+    | '/api/public/email-preview'
     | '/api/public/stripe-webhook'
     | '/api/public/telegram-ticket'
   id:
@@ -167,6 +178,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/admin/emails'
     | '/course/ai'
+    | '/api/public/email-preview'
     | '/api/public/stripe-webhook'
     | '/api/public/telegram-ticket'
   fileRoutesById: FileRoutesById
@@ -182,6 +194,7 @@ export interface RootRouteChildren {
   WelcomeRoute: typeof WelcomeRoute
   AdminEmailsRoute: typeof AdminEmailsRoute
   CourseAiRoute: typeof CourseAiRoute
+  ApiPublicEmailPreviewRoute: typeof ApiPublicEmailPreviewRoute
   ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
   ApiPublicTelegramTicketRoute: typeof ApiPublicTelegramTicketRoute
 }
@@ -258,6 +271,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CourseAiRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/email-preview': {
+      id: '/api/public/email-preview'
+      path: '/api/public/email-preview'
+      fullPath: '/api/public/email-preview'
+      preLoaderRoute: typeof ApiPublicEmailPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/stripe-webhook': {
       id: '/api/public/stripe-webhook'
       path: '/api/public/stripe-webhook'
@@ -286,6 +306,7 @@ const rootRouteChildren: RootRouteChildren = {
   WelcomeRoute: WelcomeRoute,
   AdminEmailsRoute: AdminEmailsRoute,
   CourseAiRoute: CourseAiRoute,
+  ApiPublicEmailPreviewRoute: ApiPublicEmailPreviewRoute,
   ApiPublicStripeWebhookRoute: ApiPublicStripeWebhookRoute,
   ApiPublicTelegramTicketRoute: ApiPublicTelegramTicketRoute,
 }
