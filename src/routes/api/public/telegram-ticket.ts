@@ -43,7 +43,7 @@ export const Route = createFileRoute("/api/public/telegram-ticket")({
           return Response.json({ ok: false, error: "email_required" }, { status: 400, headers: CORS });
         }
 
-        const result = await createTicket({ ...parsed.data, userId: null });
+        const result = await createTicket({ ...parsed.data, source: "telegram", userId: null });
         if (!result.ok) {
           return Response.json(
             { ok: false, error: result.reason },
