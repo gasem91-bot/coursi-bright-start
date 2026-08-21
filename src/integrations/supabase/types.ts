@@ -175,9 +175,10 @@ export type Database = {
           id: string
           message: string
           name: string | null
+          source: string
           status: string
           updated_at: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           category: string
@@ -186,9 +187,10 @@ export type Database = {
           id?: string
           message: string
           name?: string | null
+          source?: string
           status?: string
           updated_at?: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           category?: string
@@ -197,9 +199,10 @@ export type Database = {
           id?: string
           message?: string
           name?: string | null
+          source?: string
           status?: string
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: []
       }
