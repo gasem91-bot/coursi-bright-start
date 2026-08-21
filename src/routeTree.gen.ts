@@ -15,6 +15,7 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as OffersRouteImport } from './routes/offers'
 import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as SupportRouteImport } from './routes/support'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as CourseAiRouteImport } from './routes/course.ai'
 import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe-webhook'
@@ -49,6 +50,11 @@ const ProfileRoute = ProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SupportRoute = SupportRouteImport.update({
+  id: '/support',
+  path: '/support',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WelcomeRoute = WelcomeRouteImport.update({
   id: '/welcome',
   path: '/welcome',
@@ -72,6 +78,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/offers': typeof OffersRoute
   '/profile': typeof ProfileRoute
+  '/support': typeof SupportRoute
   '/welcome': typeof WelcomeRoute
   '/course/ai': typeof CourseAiRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
@@ -83,6 +90,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/offers': typeof OffersRoute
   '/profile': typeof ProfileRoute
+  '/support': typeof SupportRoute
   '/welcome': typeof WelcomeRoute
   '/course/ai': typeof CourseAiRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
@@ -95,6 +103,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/offers': typeof OffersRoute
   '/profile': typeof ProfileRoute
+  '/support': typeof SupportRoute
   '/welcome': typeof WelcomeRoute
   '/course/ai': typeof CourseAiRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
@@ -108,6 +117,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/offers'
     | '/profile'
+    | '/support'
     | '/welcome'
     | '/course/ai'
     | '/api/public/stripe-webhook'
@@ -119,6 +129,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/offers'
     | '/profile'
+    | '/support'
     | '/welcome'
     | '/course/ai'
     | '/api/public/stripe-webhook'
@@ -130,6 +141,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/offers'
     | '/profile'
+    | '/support'
     | '/welcome'
     | '/course/ai'
     | '/api/public/stripe-webhook'
@@ -142,6 +154,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   OffersRoute: typeof OffersRoute
   ProfileRoute: typeof ProfileRoute
+  SupportRoute: typeof SupportRoute
   WelcomeRoute: typeof WelcomeRoute
   CourseAiRoute: typeof CourseAiRoute
   ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
@@ -191,6 +204,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/support': {
+      id: '/support'
+      path: '/support'
+      fullPath: '/support'
+      preLoaderRoute: typeof SupportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/welcome': {
       id: '/welcome'
       path: '/welcome'
@@ -222,6 +242,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   OffersRoute: OffersRoute,
   ProfileRoute: ProfileRoute,
+  SupportRoute: SupportRoute,
   WelcomeRoute: WelcomeRoute,
   CourseAiRoute: CourseAiRoute,
   ApiPublicStripeWebhookRoute: ApiPublicStripeWebhookRoute,
