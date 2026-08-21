@@ -35,11 +35,11 @@ export function buildWelcomeHtml(level: string, tier: string, loginLink: string)
   <div class="badge">✦ رحلتك المهنية بدأت للتو</div>
   <h1>أهلاً بك في مجتمع<br><span>المتعلمين العرب الطموحين</span></h1>
   <div class="hero-sub">
-    <p>لقد اتخذت القرار الأذكى اليوم.<br>
-    كورسك جاهز، مسارك محدد، وفريق كورسي معك في كل خطوة.</p>
+    <p>لقد اتخذت القرار الأذكى اليوم<br>
+    كورسك جاهز، مسارك محدد، وفريق كورسي معك في كل خطوة</p>
   </div>
 </div>
-<div class="card">
+<div class="card" dir="rtl">
   <div class="card-label">✦ كورسك المخصص</div>
   <div class="card-name">${courseName}</div>
   <div class="card-level">${levelArabic}</div>
