@@ -6,6 +6,7 @@ const tabs = [
   { id: "offers", icon: "🎁", label: "العروض", path: "/offers" },
   { id: "achievements", icon: "🏅", label: "إنجازاتي", path: "/achievements" },
   { id: "profile", icon: "👤", label: "حسابي", path: "/profile" },
+  { id: "support", icon: "🎧", label: "الدعم", path: "/support" },
 ];
 
 export default function FloatingNav() {
