@@ -15,8 +15,8 @@ export function buildCertificateHtml(params: {
   <div class="badge">🏆 إنجاز جديد</div>
   <h1>مبروك ${userName}!<br><span>أكملت ${levelLabel}</span></h1>
   <div class="hero-sub">
-    <p>أنهيت جميع فصول مستواك واجتزت اختباراته.<br>
-    شهادة الإتمام الخاصة بك جاهزة للتحميل الآن من بوابة كورسي.</p>
+    <p>أنهيت جميع فصول مستواك واجتزت اختباراته<br>
+    شهادة الإتمام الخاصة بك جاهزة للتحميل الآن من بوابة كورسي</p>
   </div>
 </div>
 <div class="card card-center">
