@@ -11,6 +11,7 @@ const links = [
   { to: "/offers", icon: "🎁", label: "العروض" },
   { to: "/achievements", icon: "🏅", label: "إنجازاتي" },
   { to: "/profile", icon: "👤", label: "حسابي" },
+  { to: "/support", icon: "🎧", label: "الدعم" },
 ] as const;
 
 /** Compact horizontal quick-nav (desktop only; mobile uses the floating nav). */
