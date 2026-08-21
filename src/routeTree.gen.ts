@@ -19,6 +19,7 @@ import { Route as SupportRouteImport } from './routes/support'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as CourseAiRouteImport } from './routes/course.ai'
 import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe-webhook'
+import { Route as ApiPublicTelegramTicketRouteImport } from './routes/api/public/telegram-ticket'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -70,6 +71,11 @@ const ApiPublicStripeWebhookRoute = ApiPublicStripeWebhookRouteImport.update({
   path: '/api/public/stripe-webhook',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicTelegramTicketRoute = ApiPublicTelegramTicketRouteImport.update({
+  id: '/api/public/telegram-ticket',
+  path: '/api/public/telegram-ticket',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -82,6 +88,7 @@ export interface FileRoutesByFullPath {
   '/welcome': typeof WelcomeRoute
   '/course/ai': typeof CourseAiRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
+  '/api/public/telegram-ticket': typeof ApiPublicTelegramTicketRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -94,6 +101,7 @@ export interface FileRoutesByTo {
   '/welcome': typeof WelcomeRoute
   '/course/ai': typeof CourseAiRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
+  '/api/public/telegram-ticket': typeof ApiPublicTelegramTicketRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -107,6 +115,7 @@ export interface FileRoutesById {
   '/welcome': typeof WelcomeRoute
   '/course/ai': typeof CourseAiRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
+  '/api/public/telegram-ticket': typeof ApiPublicTelegramTicketRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -121,6 +130,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/course/ai'
     | '/api/public/stripe-webhook'
+    | '/api/public/telegram-ticket'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -133,6 +143,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/course/ai'
     | '/api/public/stripe-webhook'
+    | '/api/public/telegram-ticket'
   id:
     | '__root__'
     | '/'
@@ -145,6 +156,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/course/ai'
     | '/api/public/stripe-webhook'
+    | '/api/public/telegram-ticket'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -158,6 +170,7 @@ export interface RootRouteChildren {
   WelcomeRoute: typeof WelcomeRoute
   CourseAiRoute: typeof CourseAiRoute
   ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
+  ApiPublicTelegramTicketRoute: typeof ApiPublicTelegramTicketRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -232,6 +245,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicStripeWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/telegram-ticket': {
+      id: '/api/public/telegram-ticket'
+      path: '/api/public/telegram-ticket'
+      fullPath: '/api/public/telegram-ticket'
+      preLoaderRoute: typeof ApiPublicTelegramTicketRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -246,6 +266,7 @@ const rootRouteChildren: RootRouteChildren = {
   WelcomeRoute: WelcomeRoute,
   CourseAiRoute: CourseAiRoute,
   ApiPublicStripeWebhookRoute: ApiPublicStripeWebhookRoute,
+  ApiPublicTelegramTicketRoute: ApiPublicTelegramTicketRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
