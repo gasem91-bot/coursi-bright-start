@@ -17,6 +17,7 @@ import { Route as OffersRouteImport } from './routes/offers'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as SupportRouteImport } from './routes/support'
 import { Route as WelcomeRouteImport } from './routes/welcome'
+import { Route as AdminEmailsRouteImport } from './routes/admin.emails'
 import { Route as CourseAiRouteImport } from './routes/course.ai'
 import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe-webhook'
 import { Route as ApiPublicTelegramTicketRouteImport } from './routes/api/public/telegram-ticket'
@@ -61,6 +62,11 @@ const WelcomeRoute = WelcomeRouteImport.update({
   path: '/welcome',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminEmailsRoute = AdminEmailsRouteImport.update({
+  id: '/admin/emails',
+  path: '/admin/emails',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CourseAiRoute = CourseAiRouteImport.update({
   id: '/course/ai',
   path: '/course/ai',
@@ -86,6 +92,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/support': typeof SupportRoute
   '/welcome': typeof WelcomeRoute
+  '/admin/emails': typeof AdminEmailsRoute
   '/course/ai': typeof CourseAiRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/telegram-ticket': typeof ApiPublicTelegramTicketRoute
@@ -99,6 +106,7 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRoute
   '/support': typeof SupportRoute
   '/welcome': typeof WelcomeRoute
+  '/admin/emails': typeof AdminEmailsRoute
   '/course/ai': typeof CourseAiRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/telegram-ticket': typeof ApiPublicTelegramTicketRoute
@@ -113,6 +121,7 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRoute
   '/support': typeof SupportRoute
   '/welcome': typeof WelcomeRoute
+  '/admin/emails': typeof AdminEmailsRoute
   '/course/ai': typeof CourseAiRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/telegram-ticket': typeof ApiPublicTelegramTicketRoute
@@ -128,6 +137,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/support'
     | '/welcome'
+    | '/admin/emails'
     | '/course/ai'
     | '/api/public/stripe-webhook'
     | '/api/public/telegram-ticket'
@@ -141,6 +151,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/support'
     | '/welcome'
+    | '/admin/emails'
     | '/course/ai'
     | '/api/public/stripe-webhook'
     | '/api/public/telegram-ticket'
@@ -154,6 +165,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/support'
     | '/welcome'
+    | '/admin/emails'
     | '/course/ai'
     | '/api/public/stripe-webhook'
     | '/api/public/telegram-ticket'
@@ -168,6 +180,7 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   SupportRoute: typeof SupportRoute
   WelcomeRoute: typeof WelcomeRoute
+  AdminEmailsRoute: typeof AdminEmailsRoute
   CourseAiRoute: typeof CourseAiRoute
   ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
   ApiPublicTelegramTicketRoute: typeof ApiPublicTelegramTicketRoute
@@ -231,6 +244,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WelcomeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/emails': {
+      id: '/admin/emails'
+      path: '/admin/emails'
+      fullPath: '/admin/emails'
+      preLoaderRoute: typeof AdminEmailsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/course/ai': {
       id: '/course/ai'
       path: '/course/ai'
@@ -264,6 +284,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   SupportRoute: SupportRoute,
   WelcomeRoute: WelcomeRoute,
+  AdminEmailsRoute: AdminEmailsRoute,
   CourseAiRoute: CourseAiRoute,
   ApiPublicStripeWebhookRoute: ApiPublicStripeWebhookRoute,
   ApiPublicTelegramTicketRoute: ApiPublicTelegramTicketRoute,
