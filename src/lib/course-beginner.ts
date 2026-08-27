@@ -64,13 +64,13 @@ ${intro("قبل أن تتعلم كيف تستخدم الذكاء الاصطنا�
         <stop offset="0%" stop-color="rgba(123,53,255,0.18)"/>
         <stop offset="100%" stop-color="rgba(0,212,200,0.06)"/>
       </linearGradient>
-      <marker id="cg-arrow" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
-        <path d="M9,4.5 L0,0 L0,9 Z" fill="url(#cg-brand)"/>
+      <marker id="cg-arrow" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+        <path d="M10,5 L0,0.5 L0,9.5 Z" fill="url(#cg-brand)"/>
       </marker>
     </defs>
 
     <!-- Traditional (top row) -->
-    <text x="700" y="30" class="cg-lane" text-anchor="end">البرمجة التقليدية — قواعد ثابتة</text>
+    <text x="700" y="30" class="cg-lane" text-anchor="start">البرمجة التقليدية — قواعد ثابتة</text>
     <g class="cg-row">
       <rect x="520" y="46" width="180" height="62" rx="14" fill="url(#cg-soft)" stroke="rgba(255,255,255,0.14)"/>
       <text x="610" y="72" class="cg-t" text-anchor="middle">مُدخل</text>
@@ -92,7 +92,7 @@ ${intro("قبل أن تتعلم كيف تستخدم الذكاء الاصطنا�
     <line x1="20" y1="140" x2="700" y2="140" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
 
     <!-- AI (bottom) -->
-    <text x="700" y="172" class="cg-lane cg-lane-ai" text-anchor="end">الذكاء الاصطناعي — يتعلّم من البيانات</text>
+    <text x="700" y="172" class="cg-lane cg-lane-ai" text-anchor="start">الذكاء الاصطناعي — يتعلّم من البيانات</text>
     <g class="cg-row">
       <rect x="520" y="188" width="180" height="62" rx="14" fill="url(#cg-soft)" stroke="rgba(0,212,200,0.30)"/>
       <text x="610" y="214" class="cg-t" text-anchor="middle">آلاف الأمثلة</text>
