@@ -150,7 +150,61 @@ ${learn([
 <h3>رابعاً — الذكاء الاصطناعي فرصة أم خطر؟</h3>
 <p>الذكاء الاصطناعي مثل الكهرباء تماماً، أداة محايدة. نتيجة استخدامها تعتمد على من يستخدمها. من يتعلم كيف يستخدمه سيضاعف إنتاجيته. من يتجاهله سيجد نفسه متأخراً.</p>
 
-${exercise("اكتب خمسة أشياء تفعلها يومياً. ثم فكّر: أيٌّ منها يستخدم الذكاء الاصطناعي بالفعل؟")}
+<div class="guess-wrap">
+  <div class="block-title"><span class="block-ic">🎯</span> جرّب بنفسك — خمّن أولاً ثم اكشف</div>
+  <p class="guess-caption">اضغط على كل بطاقة بعد أن تخمّن الإجابة في ذهنك. أربع مواقف يومية — أيّها يعمل بالذكاء الاصطناعي فعلاً؟</p>
+  <div class="guess-grid">
+    <button type="button" class="guess-card" data-guess>
+      <span class="guess-num">١</span>
+      <span class="guess-q">يوتيوب يقترح عليك الفيديو التالي</span>
+      <span class="guess-hint">اضغط للكشف</span>
+      <span class="guess-a"><b class="yes">نعم — ذكاء اصطناعي</b>نموذج توصية يتعلّم من كل ثانية تشاهدها ويتنبأ بما ستكمله.</span>
+    </button>
+    <button type="button" class="guess-card" data-guess>
+      <span class="guess-num">٢</span>
+      <span class="guess-q">الآلة الحاسبة تجمع ٢ + ٢</span>
+      <span class="guess-hint">اضغط للكشف</span>
+      <span class="guess-a"><b class="no">لا — برمجة عادية</b>قاعدة ثابتة كتبها مبرمج. لا تتعلم شيئاً ولا تتحسّن مع الاستخدام.</span>
+    </button>
+    <button type="button" class="guess-card" data-guess>
+      <span class="guess-num">٣</span>
+      <span class="guess-q">هاتفك يفتح بوجهك</span>
+      <span class="guess-hint">اضغط للكشف</span>
+      <span class="guess-a"><b class="yes">نعم — ذكاء اصطناعي</b>تعرَّف على ملامحك من أمثلة، ويميّزك رغم اللحية أو النظارة أو الإضاءة.</span>
+    </button>
+    <button type="button" class="guess-card" data-guess>
+      <span class="guess-num">٤</span>
+      <span class="guess-q">المنبّه يرنّ الساعة السابعة</span>
+      <span class="guess-hint">اضغط للكشف</span>
+      <span class="guess-a"><b class="no">لا — برمجة عادية</b>شرط واحد: إذا الوقت = ٧:٠٠ إذن رنّ. لا بيانات ولا استنتاج.</span>
+    </button>
+  </div>
+  <div class="guess-progress"><span data-guess-count>٠</span> من ٤ مكشوفة</div>
+</div>
+
+<div class="versus-wrap">
+  <div class="block-title"><span class="block-ic">⚡</span> أنت مقابل الذكاء الاصطناعي</div>
+  <p class="guess-caption">مهمتان واقعيتان — قدّر الوقت الذي تحتاجه أنت، ثم اكشف الفارق.</p>
+  <div class="versus-list">
+    <button type="button" class="versus-row" data-guess>
+      <span class="versus-task">تلخيص تقرير من ٢٠ صفحة</span>
+      <span class="versus-reveal"><b>أنت: ٤٥ دقيقة</b><b class="ai">الذكاء الاصطناعي: ٢٠ ثانية</b></span>
+      <span class="guess-hint">اكشف</span>
+    </button>
+    <button type="button" class="versus-row" data-guess>
+      <span class="versus-task">كتابة عشرة عناوين تسويقية</span>
+      <span class="versus-reveal"><b>أنت: ٣٠ دقيقة</b><b class="ai">الذكاء الاصطناعي: ١٥ ثانية</b></span>
+      <span class="guess-hint">اكشف</span>
+    </button>
+    <button type="button" class="versus-row" data-guess>
+      <span class="versus-task">اتخاذ القرار النهائي وتحمّل مسؤوليته</span>
+      <span class="versus-reveal"><b>أنت: أنت وحدك</b><b class="ai">الذكاء الاصطناعي: لا يستطيع</b></span>
+      <span class="guess-hint">اكشف</span>
+    </button>
+  </div>
+  <p class="versus-note">الخلاصة: هو لا يستبدلك — يُسرّع الجزء الممل ويترك لك القرار.</p>
+</div>
+
 `,
     quiz: [
       {
