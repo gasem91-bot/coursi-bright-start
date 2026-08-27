@@ -811,7 +811,49 @@ const CONTENT_CSS = `
 .coursi-content .gallery-name { color:#fff; font-weight:800; font-size:15px; margin-bottom:6px; }
 .coursi-content .gallery-desc { color:#B6AECC; font-size:13px; line-height:1.65; margin-bottom:10px; }
 .coursi-content .gallery-stack { color:${GOLD}; font-size:11.5px; font-weight:700; letter-spacing:0.3px; padding-top:8px; border-top:1px solid rgba(212,175,55,0.15); }
+
+/* ===== Beginner Ch1: SVG figure ===== */
+.coursi-content .svg-figure { background:linear-gradient(180deg, rgba(123,53,255,0.07), rgba(0,212,200,0.02)); border:1px solid ${BORDER}; border-radius:18px; padding:18px 18px 12px; margin:18px 0 24px; }
+.coursi-content .svg-figure-title { color:#fff; font-weight:800; font-size:15px; margin-bottom:12px; }
+.coursi-content .svg-figure svg { width:100%; height:auto; display:block; }
+.coursi-content .svg-figure .cg-lane { fill:${CYAN}; font-size:13px; font-weight:800; font-family:${font}; }
+.coursi-content .svg-figure .cg-lane:not(.cg-lane-ai) { fill:#9590A8; }
+.coursi-content .svg-figure .cg-t { fill:#fff; font-size:13px; font-weight:800; font-family:${font}; }
+.coursi-content .svg-figure .cg-s { fill:#B6AECC; font-size:11.5px; font-family:${font}; }
+.coursi-content .svg-figure .cg-ic { fill:#fff; font-size:15px; font-weight:800; font-family:${font}; }
+.coursi-content .svg-figure .cg-note { fill:#CFC8DE; font-size:12.5px; font-weight:700; font-family:${font}; }
+
+/* ===== Beginner Ch1: guess-then-reveal ===== */
+.coursi-content .guess-wrap, .coursi-content .versus-wrap { background:rgba(255,255,255,0.02); border:1px solid ${BORDER}; border-radius:16px; padding:18px 20px; margin:18px 0 24px; }
+.coursi-content .guess-caption { color:#9590A8; font-size:13px; line-height:1.7; margin:6px 0 14px; }
+.coursi-content .guess-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:12px; }
+.coursi-content .guess-card { position:relative; text-align:right; direction:rtl; display:flex; flex-direction:column; gap:8px; background:linear-gradient(180deg, rgba(123,53,255,0.10), rgba(0,212,200,0.03)); border:1.5px solid rgba(123,53,255,0.28); border-radius:14px; padding:16px 16px 14px; cursor:pointer; font-family:${font}; transition:all .25s; }
+.coursi-content .guess-card:hover { border-color:${CYAN}; transform:translateY(-3px); box-shadow:0 8px 26px rgba(0,212,200,0.14); }
+.coursi-content .guess-num { width:26px; height:26px; border-radius:50%; background:linear-gradient(135deg,${PURPLE},${CYAN}); color:#fff; font-size:12.5px; font-weight:800; display:flex; align-items:center; justify-content:center; }
+.coursi-content .guess-q { color:#fff; font-size:14.5px; font-weight:800; line-height:1.6; }
+.coursi-content .guess-hint { color:${CYAN}; font-size:11.5px; font-weight:800; }
+.coursi-content .guess-a { display:none; color:#CFC8DE; font-size:13px; line-height:1.75; border-top:1px solid rgba(255,255,255,0.08); padding-top:10px; }
+.coursi-content .guess-a b { display:block; font-size:13.5px; margin-bottom:4px; }
+.coursi-content .guess-a b.yes { color:${CYAN}; }
+.coursi-content .guess-a b.no { color:#FFB857; }
+.coursi-content .guess-card.revealed .guess-hint { display:none; }
+.coursi-content .guess-card.revealed .guess-a { display:block; animation:coursi-fade-up .3s ease-out both; }
+.coursi-content .guess-card.revealed { border-color:rgba(0,212,200,0.45); }
+.coursi-content .guess-progress { margin-top:14px; color:#9590A8; font-size:12.5px; font-weight:700; }
+.coursi-content .guess-progress span { color:${CYAN}; font-weight:800; }
+
+.coursi-content .versus-list { display:flex; flex-direction:column; gap:10px; }
+.coursi-content .versus-row { width:100%; text-align:right; direction:rtl; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; background:rgba(255,255,255,0.03); border:1px solid ${BORDER}; border-radius:12px; padding:14px 16px; cursor:pointer; font-family:${font}; transition:all .22s; }
+.coursi-content .versus-row:hover { border-color:${CYAN}; }
+.coursi-content .versus-task { color:#fff; font-size:14px; font-weight:700; }
+.coursi-content .versus-reveal { display:none; gap:16px; align-items:center; flex-wrap:wrap; }
+.coursi-content .versus-reveal b { color:#B6AECC; font-size:13px; font-weight:800; }
+.coursi-content .versus-reveal b.ai { color:${CYAN}; }
+.coursi-content .versus-row.revealed .versus-reveal { display:flex; animation:coursi-fade-up .3s ease-out both; }
+.coursi-content .versus-row.revealed .guess-hint { display:none; }
+.coursi-content .versus-note { color:#CFC8DE; font-size:13px; line-height:1.8; margin-top:14px; background:rgba(0,212,200,0.06); border-right:3px solid ${CYAN}; border-radius:10px; padding:12px 14px; }
 `;
+
 
 
 function ContentTab({
@@ -876,7 +918,18 @@ function ContentTab({
 
     const onClick = (e: Event) => {
       const target = e.target as HTMLElement;
+      const guess = target.closest<HTMLElement>("[data-guess]");
+      if (guess) {
+        guess.classList.add("revealed");
+        const counter = root.querySelector<HTMLElement>("[data-guess-count]");
+        if (counter) {
+          const n = root.querySelectorAll(".guess-card.revealed").length;
+          counter.textContent = ["٠", "١", "٢", "٣", "٤"][n] ?? String(n);
+        }
+        return;
+      }
       const item = target.closest<HTMLElement>(".try-item");
+
       if (item) {
         item.classList.toggle("done");
         return;
