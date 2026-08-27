@@ -51,6 +51,73 @@ export const BEGINNER_CHAPTERS: BeginnerChapter[] = [
     title: "ما هو الذكاء الاصطناعي؟",
     content: `
 ${intro("قبل أن تتعلم كيف تستخدم الذكاء الاصطناعي، يجب أن تفهم ما هو في الواقع. كثيرون يظنون أنه خيال علمي أو أنه مخصص للمبرمجين فقط. الحقيقة مختلفة تماماً.")}
+
+<div class="svg-figure">
+  <div class="svg-figure-title">كيف يقرر الحاسوب العادي؟ وكيف يقرر الذكاء الاصطناعي؟</div>
+  <svg viewBox="0 0 720 340" role="img" aria-label="مخطط يقارن بين البرمجة التقليدية القائمة على القواعد والذكاء الاصطناعي الذي يتعلم من البيانات">
+    <defs>
+      <linearGradient id="cg-brand" x1="1" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#7B35FF"/>
+        <stop offset="100%" stop-color="#00D4C8"/>
+      </linearGradient>
+      <linearGradient id="cg-soft" x1="1" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="rgba(123,53,255,0.18)"/>
+        <stop offset="100%" stop-color="rgba(0,212,200,0.06)"/>
+      </linearGradient>
+      <marker id="cg-arrow" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+        <path d="M9,4.5 L0,0 L0,9 Z" fill="url(#cg-brand)"/>
+      </marker>
+    </defs>
+
+    <!-- Traditional (top row) -->
+    <text x="700" y="30" class="cg-lane" text-anchor="end">البرمجة التقليدية — قواعد ثابتة</text>
+    <g class="cg-row">
+      <rect x="520" y="46" width="180" height="62" rx="14" fill="url(#cg-soft)" stroke="rgba(255,255,255,0.14)"/>
+      <text x="610" y="72" class="cg-t" text-anchor="middle">مُدخل</text>
+      <text x="610" y="93" class="cg-s" text-anchor="middle">صورة جديدة</text>
+
+      <line x1="520" y1="77" x2="450" y2="77" stroke="url(#cg-brand)" stroke-width="2" marker-end="url(#cg-arrow)"/>
+
+      <rect x="270" y="46" width="180" height="62" rx="14" fill="url(#cg-soft)" stroke="rgba(255,255,255,0.14)"/>
+      <text x="360" y="72" class="cg-t" text-anchor="middle">قاعدة كتبها إنسان</text>
+      <text x="360" y="93" class="cg-s" text-anchor="middle">لو كذا… إذن كذا</text>
+
+      <line x1="270" y1="77" x2="200" y2="77" stroke="url(#cg-brand)" stroke-width="2" marker-end="url(#cg-arrow)"/>
+
+      <rect x="20" y="46" width="180" height="62" rx="14" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.14)"/>
+      <text x="110" y="72" class="cg-t" text-anchor="middle">نتيجة واحدة</text>
+      <text x="110" y="93" class="cg-s" text-anchor="middle">تفشل خارج القاعدة</text>
+    </g>
+
+    <line x1="20" y1="140" x2="700" y2="140" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+
+    <!-- AI (bottom) -->
+    <text x="700" y="172" class="cg-lane cg-lane-ai" text-anchor="end">الذكاء الاصطناعي — يتعلّم من البيانات</text>
+    <g class="cg-row">
+      <rect x="520" y="188" width="180" height="62" rx="14" fill="url(#cg-soft)" stroke="rgba(0,212,200,0.30)"/>
+      <text x="610" y="214" class="cg-t" text-anchor="middle">آلاف الأمثلة</text>
+      <text x="610" y="235" class="cg-s" text-anchor="middle">بيانات تدريب</text>
+
+      <line x1="520" y1="219" x2="450" y2="219" stroke="url(#cg-brand)" stroke-width="2" marker-end="url(#cg-arrow)"/>
+
+      <rect x="270" y="176" width="180" height="86" rx="18" fill="url(#cg-soft)" stroke="url(#cg-brand)" stroke-width="1.6"/>
+      <circle cx="360" cy="203" r="15" fill="url(#cg-brand)"/>
+      <text x="360" y="209" class="cg-ic" text-anchor="middle">✦</text>
+      <text x="360" y="234" class="cg-t" text-anchor="middle">نموذج يستنتج نمطاً</text>
+      <text x="360" y="252" class="cg-s" text-anchor="middle">يُحسّن نفسه مع الوقت</text>
+
+      <line x1="270" y1="219" x2="200" y2="219" stroke="url(#cg-brand)" stroke-width="2" marker-end="url(#cg-arrow)"/>
+
+      <rect x="20" y="188" width="180" height="62" rx="14" fill="rgba(0,212,200,0.07)" stroke="rgba(0,212,200,0.30)"/>
+      <text x="110" y="214" class="cg-t" text-anchor="middle">قرار على حالة جديدة</text>
+      <text x="110" y="235" class="cg-s" text-anchor="middle">لم يرَها من قبل</text>
+    </g>
+
+    <rect x="20" y="284" width="680" height="42" rx="12" fill="rgba(123,53,255,0.08)" stroke="rgba(123,53,255,0.25)"/>
+    <text x="360" y="310" class="cg-note" text-anchor="middle">الفرق ليس في السرعة — بل في من يكتب القاعدة: الإنسان أم البيانات؟</text>
+  </svg>
+</div>
+
 ${learn([
   "التعريف الحقيقي للذكاء الاصطناعي بلغة بسيطة بعيداً عن المصطلحات التقنية",
   "الفرق بين الذكاء الاصطناعي والحاسوب العادي والروبوتات",
