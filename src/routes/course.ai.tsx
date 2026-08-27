@@ -918,7 +918,18 @@ function ContentTab({
 
     const onClick = (e: Event) => {
       const target = e.target as HTMLElement;
+      const guess = target.closest<HTMLElement>("[data-guess]");
+      if (guess) {
+        guess.classList.add("revealed");
+        const counter = root.querySelector<HTMLElement>("[data-guess-count]");
+        if (counter) {
+          const n = root.querySelectorAll(".guess-card.revealed").length;
+          counter.textContent = ["٠", "١", "٢", "٣", "٤"][n] ?? String(n);
+        }
+        return;
+      }
       const item = target.closest<HTMLElement>(".try-item");
+
       if (item) {
         item.classList.toggle("done");
         return;
