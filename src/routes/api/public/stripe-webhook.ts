@@ -45,8 +45,10 @@ export const Route = createFileRoute("/api/public/stripe-webhook")({
       POST: async ({ request }) => {
         const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
         const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-        const supabaseUrl = process.env.OWN_SUPABASE_URL;
-        const supabaseServiceRoleKey = process.env.OWN_SUPABASE_SERVICE_ROLE_KEY;
+        // Must be THIS portal's own database — the same one the portal front-end
+        // authenticates against, otherwise the magic link logs into nothing.
+        const supabaseUrl = process.env.SUPABASE_URL;
+        const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
         const resendApiKey = process.env.RESEND_API_KEY;
 
         if (!stripeSecretKey || !webhookSecret || !supabaseUrl || !supabaseServiceRoleKey || !resendApiKey) {
