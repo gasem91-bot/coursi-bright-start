@@ -98,7 +98,7 @@ function LoginPage() {
       }
       await supabase.auth.signInWithOtp({
         email,
-        options: { emailRedirectTo: "https://portal.coursi.ai/dashboard" },
+        options: { emailRedirectTo: "https://ai.portal.coursi.ai/dashboard" },
       });
       setMagicSent(true);
     } finally {
@@ -110,7 +110,7 @@ function LoginPage() {
     if (!resetEmail) return;
     setResetLoading(true);
     const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
-      redirectTo: "https://portal.coursi.ai/reset-password",
+      redirectTo: "https://ai.portal.coursi.ai/reset-password",
     });
     setResetLoading(false);
     if (!error) setResetSent(true);
