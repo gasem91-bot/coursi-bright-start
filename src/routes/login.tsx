@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { checkAiAccess } from "@/lib/check-ai-access.functions";
 import coursiLogo from "@/assets/arabic-logo.png.asset.json";
