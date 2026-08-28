@@ -22,7 +22,12 @@ export const LEVEL_ARABIC: Record<string, string> = {
   advanced: "متقدم 🔥",
 };
 
-export function buildWelcomeHtml(level: string, tier: string, loginLink: string): string {
+export function buildWelcomeHtml(
+  level: string,
+  tier: string,
+  loginLink: string,
+  userEmail?: string,
+): string {
   const courseName = LEVEL_NAMES[level] || LEVEL_NAMES.beginner;
   const courseMeta = LEVEL_META[level] || LEVEL_META.beginner;
   const levelArabic = LEVEL_ARABIC[level] || LEVEL_ARABIC.beginner;
