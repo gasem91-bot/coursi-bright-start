@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState, useRef, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { sendBrandedPasswordReset } from "@/lib/reset-email.functions";
+import { sendBrandedMagicLink } from "@/lib/magiclink-email.functions";
 import { checkAiAccess } from "@/lib/check-ai-access.functions";
 import coursiLogo from "@/assets/arabic-logo.png.asset.json";
 import ShaderBackground from "@/components/ui/shader-background";
@@ -107,9 +108,8 @@ function LoginPage() {
         setError(subError);
         return; // HARD BLOCK — do not call signInWithOtp
       }
-      await supabase.auth.signInWithOtp({
-        email,
-        options: { emailRedirectTo: "https://ai.portal.coursi.ai/dashboard" },
+      await sendBrandedMagicLink({
+        data: { email, redirectTo: "https://ai.portal.coursi.ai/dashboard" },
       });
       setMagicSent(true);
     } finally {

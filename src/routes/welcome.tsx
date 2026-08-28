@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import arabicLogo from "@/assets/arabic-logo.png.asset.json";
+import { sendBrandedMagicLink } from "@/lib/magiclink-email.functions";
 
 export const Route = createFileRoute("/welcome")({
   head: () => ({
@@ -70,13 +71,15 @@ function WelcomePage() {
       return;
     }
     setResending(true);
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: `${window.location.origin}/welcome` },
-    });
+    try {
+      await sendBrandedMagicLink({
+        data: { email, redirectTo: `${window.location.origin}/welcome` },
+      });
+      toast.success("تم إرسال الرابط إلى بريدك");
+    } catch {
+      toast.error("تعذّر إرسال الرابط، حاول مجدداً");
+    }
     setResending(false);
-    if (error) toast.error("تعذّر إرسال الرابط، حاول مجدداً");
-    else toast.success("تم إرسال الرابط إلى بريدك");
   };
 
   return (

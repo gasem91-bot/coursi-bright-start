@@ -17,6 +17,7 @@ export async function buildEmailPreviews(): Promise<EmailPreview[]> {
   const { arabicDate, LEVEL_LABEL, courseName, certificateId } = await import("./certificate");
   const { CATEGORY_LABEL } = await import("./support");
   const { buildResetHtml, RESET_SUBJECT } = await import("./reset-email.server");
+  const { buildMagicLinkHtml, MAGICLINK_SUBJECT } = await import("./magiclink-email.server");
 
   const dateText = arabicDate(new Date());
   const ticket = {
@@ -62,6 +63,17 @@ export async function buildEmailPreviews(): Promise<EmailPreview[]> {
       subject: RESET_SUBJECT,
       html: buildResetHtml({
         link: "https://ai.portal.coursi.ai/reset-password#access_token=sample",
+        email: "student@example.com",
+      }),
+    },
+    {
+      key: "magiclink",
+      label: "رابط الدخول السريع",
+      to: "student@example.com",
+      from: "كورسي <info@coursi.ai>",
+      subject: MAGICLINK_SUBJECT,
+      html: buildMagicLinkHtml({
+        link: "https://ai.portal.coursi.ai/dashboard#access_token=sample",
         email: "student@example.com",
       }),
     },
