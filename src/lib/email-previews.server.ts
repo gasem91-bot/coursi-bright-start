@@ -35,7 +35,7 @@ export async function buildEmailPreviews(): Promise<EmailPreview[]> {
       to: "student@example.com",
       from: "كورسي <info@coursi.ai>",
       subject: WELCOME_SUBJECT,
-      html: buildWelcomeHtml("intermediate", "course_ai", "https://ai.portal.coursi.ai/login"),
+      html: buildWelcomeHtml("intermediate", "course_ai", "https://ai.portal.coursi.ai/login", "student@example.com"),
     },
     {
       key: "ticket-user",

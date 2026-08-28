@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { checkAiAccess } from "@/lib/check-ai-access.functions";
 import coursiLogo from "@/assets/arabic-logo.png.asset.json";
@@ -44,6 +44,16 @@ function LoginPage() {
   const [showForgotEmail, setShowForgotEmail] = useState(false);
 
   const passwordRef = useRef<HTMLInputElement>(null);
+
+  // Deep-link from the payment-confirmation email: /login?reset=1
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("reset") === "1") {
+      setShowForgotPassword(true);
+      const prefill = params.get("email");
+      if (prefill) setResetEmail(prefill);
+    }
+  }, []);
 
   // Fail-closed check. Returns null only when explicitly { ok: true }.
   // Any error, network failure, or non-ok result blocks the login.
