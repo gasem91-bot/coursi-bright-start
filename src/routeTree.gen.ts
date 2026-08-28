@@ -15,6 +15,7 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as OffersRouteImport } from './routes/offers'
 import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SupportRouteImport } from './routes/support'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as AdminEmailsRouteImport } from './routes/admin.emails'
@@ -50,6 +51,11 @@ const OffersRoute = OffersRouteImport.update({
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SupportRoute = SupportRouteImport.update({
@@ -90,6 +96,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/offers': typeof OffersRoute
   '/profile': typeof ProfileRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/support': typeof SupportRoute
   '/welcome': typeof WelcomeRoute
   '/admin/emails': typeof AdminEmailsRoute
@@ -104,6 +111,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/offers': typeof OffersRoute
   '/profile': typeof ProfileRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/support': typeof SupportRoute
   '/welcome': typeof WelcomeRoute
   '/admin/emails': typeof AdminEmailsRoute
@@ -119,6 +127,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/offers': typeof OffersRoute
   '/profile': typeof ProfileRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/support': typeof SupportRoute
   '/welcome': typeof WelcomeRoute
   '/admin/emails': typeof AdminEmailsRoute
@@ -135,6 +144,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/offers'
     | '/profile'
+    | '/reset-password'
     | '/support'
     | '/welcome'
     | '/admin/emails'
@@ -149,6 +159,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/offers'
     | '/profile'
+    | '/reset-password'
     | '/support'
     | '/welcome'
     | '/admin/emails'
@@ -163,6 +174,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/offers'
     | '/profile'
+    | '/reset-password'
     | '/support'
     | '/welcome'
     | '/admin/emails'
@@ -178,6 +190,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   OffersRoute: typeof OffersRoute
   ProfileRoute: typeof ProfileRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   SupportRoute: typeof SupportRoute
   WelcomeRoute: typeof WelcomeRoute
   AdminEmailsRoute: typeof AdminEmailsRoute
@@ -228,6 +241,13 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/support': {
@@ -282,6 +302,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   OffersRoute: OffersRoute,
   ProfileRoute: ProfileRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   SupportRoute: SupportRoute,
   WelcomeRoute: WelcomeRoute,
   AdminEmailsRoute: AdminEmailsRoute,

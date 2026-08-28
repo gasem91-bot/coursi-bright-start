@@ -45,6 +45,16 @@ function LoginPage() {
 
   const passwordRef = useRef<HTMLInputElement>(null);
 
+  // Deep-link from the payment-confirmation email: /login?reset=1
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("reset") === "1") {
+      setShowForgotPassword(true);
+      const prefill = params.get("email");
+      if (prefill) setResetEmail(prefill);
+    }
+  }, []);
+
   // Fail-closed check. Returns null only when explicitly { ok: true }.
   // Any error, network failure, or non-ok result blocks the login.
   const checkAiSubscription = async (emailToCheck: string): Promise<string | null> => {
