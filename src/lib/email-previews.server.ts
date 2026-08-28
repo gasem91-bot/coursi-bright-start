@@ -16,6 +16,7 @@ export async function buildEmailPreviews(): Promise<EmailPreview[]> {
   const { buildCertificateHtml } = await import("./certificate-email.server");
   const { arabicDate, LEVEL_LABEL, courseName, certificateId } = await import("./certificate");
   const { CATEGORY_LABEL } = await import("./support");
+  const { buildResetHtml, RESET_SUBJECT } = await import("./reset-email.server");
 
   const dateText = arabicDate(new Date());
   const ticket = {
@@ -52,6 +53,17 @@ export async function buildEmailPreviews(): Promise<EmailPreview[]> {
       from: "دعم كورسي <info@coursi.ai>",
       subject: `🆕 تذكرة دعم جديدة ${ticket.ticketRef} — ${ticket.categoryLabel}`,
       html: buildTicketSupportHtml(ticket),
+    },
+    {
+      key: "reset",
+      label: "إعادة تعيين كلمة المرور",
+      to: "student@example.com",
+      from: "كورسي <info@coursi.ai>",
+      subject: RESET_SUBJECT,
+      html: buildResetHtml({
+        link: "https://ai.portal.coursi.ai/reset-password#access_token=sample",
+        email: "student@example.com",
+      }),
     },
     {
       key: "certificate",
