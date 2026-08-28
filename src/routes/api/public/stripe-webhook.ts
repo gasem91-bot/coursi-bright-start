@@ -20,7 +20,7 @@ async function sendWelcomeEmail(
   resendApiKey: string,
 ): Promise<void> {
   const { buildWelcomeHtml, WELCOME_SUBJECT } = await import("@/lib/welcome-email.server");
-  const html = buildWelcomeHtml(level, tier, loginLink);
+  const html = buildWelcomeHtml(level, tier, loginLink, email);
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
