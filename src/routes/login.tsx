@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useRef, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { sendBrandedPasswordReset } from "@/lib/reset-email.functions";
 import { checkAiAccess } from "@/lib/check-ai-access.functions";
 import coursiLogo from "@/assets/arabic-logo.png.asset.json";
 import ShaderBackground from "@/components/ui/shader-background";
@@ -119,11 +120,12 @@ function LoginPage() {
   const handlePasswordReset = async () => {
     if (!resetEmail) return;
     setResetLoading(true);
-    const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
-      redirectTo: "https://ai.portal.coursi.ai/reset-password",
-    });
-    setResetLoading(false);
-    if (!error) setResetSent(true);
+    try {
+      await sendBrandedPasswordReset({ data: { email: resetEmail } });
+      setResetSent(true);
+    } finally {
+      setResetLoading(false);
+    }
   };
 
   return (
