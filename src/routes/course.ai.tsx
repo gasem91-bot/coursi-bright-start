@@ -7,6 +7,7 @@ import { COURSE_CONTENT, type QuizQuestion } from "@/lib/course-content";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ThemeToggle } from "@/lib/theme";
 import { PortalNav } from "@/components/portal-nav";
+import LevelExam from "@/components/level-exam";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { isLevelComplete } from "@/lib/certificate";
@@ -54,7 +55,7 @@ function CourseAIPage() {
 
 
   const [activeChapter, setActiveChapter] = useState(0);
-  const [activeTab, setActiveTab] = useState<"content" | "quiz">("content");
+  const [activeTab, setActiveTab] = useState<"content" | "quiz" | "exam">("content");
 
   const [currentQ, setCurrentQ] = useState(0);
   const [answered, setAnswered] = useState(false);
@@ -483,9 +484,9 @@ function CourseAIPage() {
               zIndex: 10,
             }}
           >
-            {(["content", "quiz"] as const).map((t) => {
+            {(["content", "quiz", "exam"] as const).map((t) => {
               const isActive = activeTab === t;
-              const label = t === "content" ? "📖 المحتوى" : "✦ الاختبار";
+              const label = t === "content" ? "📖 المحتوى" : t === "quiz" ? "✦ اختبار الفصل" : "🎓 الاختبار النهائي";
               return (
                 <button
                   key={t}
@@ -509,7 +510,16 @@ function CourseAIPage() {
             })}
           </div>
 
-          {activeTab === "content" ? (
+          {activeTab === "exam" ? (
+            <LevelExam
+              level={level}
+              userId={userId ?? ""}
+              userName={userName}
+              onPassed={() => {
+                void sendCertEmail({ data: { level } }).catch(() => {});
+              }}
+            />
+          ) : activeTab === "content" ? (
             <ContentTab
               chapterIndex={activeChapter}
               chapterTitle={currentChapterTitle}
@@ -533,6 +543,7 @@ function CourseAIPage() {
 
               onAnswer={handleAnswer}
               onNextChapter={() => goToChapter(activeChapter + 1)}
+              onGoExam={() => setActiveTab("exam")}
             />
           )}
         </main>
@@ -1064,6 +1075,7 @@ function QuizTab({
   userName,
   onAnswer,
   onNextChapter,
+  onGoExam,
 }: {
   chapterIndex: number;
   questions: QuizQuestion[];
@@ -1079,6 +1091,7 @@ function QuizTab({
   userName: string;
   onAnswer: (i: number) => void;
   onNextChapter: () => void;
+  onGoExam: () => void;
 }) {
 
   if (quizComplete) {
