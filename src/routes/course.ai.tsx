@@ -1072,7 +1072,6 @@ function QuizTab({
   isLast,
   courseName,
   level,
-  userName,
   onAnswer,
   onNextChapter,
   onGoExam,
@@ -1088,7 +1087,6 @@ function QuizTab({
   isLast: boolean;
   courseName: string;
   level: Level;
-  userName: string;
   onAnswer: (i: number) => void;
   onNextChapter: () => void;
   onGoExam: () => void;
