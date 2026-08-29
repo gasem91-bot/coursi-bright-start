@@ -142,3 +142,29 @@ export const submitExam = createServerFn({ method: "POST" })
 
     return { ok: true, score, total, passed, results, certificateId: certId };
   });
+
+export interface EarnedCertificate {
+  level: "beginner" | "intermediate" | "advanced";
+  certificateId: string;
+  issuedAt: string;
+  score: number;
+  total: number;
+}
+
+/** All certificates the signed-in user has permanently earned. */
+export const getMyCertificates = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<EarnedCertificate[]> => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data } = await supabaseAdmin
+      .from("certificates")
+      .select("level, certificate_id, issued_at, score, total")
+      .eq("user_id", context.userId);
+    return (data ?? []).map((r) => ({
+      level: r.level as EarnedCertificate["level"],
+      certificateId: r.certificate_id,
+      issuedAt: r.issued_at,
+      score: r.score,
+      total: r.total,
+    }));
+  });
