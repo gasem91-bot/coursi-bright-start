@@ -7,6 +7,8 @@ import {
   courseName,
   LEVEL_ACCENT,
   LEVEL_LABEL,
+  LEVEL_STATEMENT,
+  LEVEL_TAGLINE,
   type Level,
 } from "@/lib/certificate";
 
@@ -17,6 +19,7 @@ export interface CertificateData {
   userName: string;
   date: Date;
   certId: string;
+  scoreText?: string;
 }
 
 /* ---------- canvas rendering ---------- */
@@ -46,6 +49,31 @@ function loadImage(src: string) {
     img.onerror = () => resolve(null);
     img.src = src;
   });
+}
+
+function wrapText(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  x: number,
+  y: number,
+  maxWidth: number,
+  lineHeight: number,
+) {
+  const words = text.split(" ");
+  let line = "";
+  let cy = y;
+  for (const w of words) {
+    const test = line ? `${line} ${w}` : w;
+    if (ctx.measureText(test).width > maxWidth && line) {
+      ctx.fillText(line, x, cy);
+      line = w;
+      cy += lineHeight;
+    } else {
+      line = test;
+    }
+  }
+  if (line) ctx.fillText(line, x, cy);
+  return cy;
 }
 
 async function renderCertificate(data: CertificateData): Promise<HTMLCanvasElement> {
@@ -124,6 +152,10 @@ async function renderCertificate(data: CertificateData): Promise<HTMLCanvasEleme
   ctx.font = `900 52px ${font}`;
   ctx.fillText(LEVEL_LABEL[data.level], W / 2, 400);
 
+  ctx.fillStyle = "#9590A8";
+  ctx.font = `600 24px ${font}`;
+  ctx.fillText(LEVEL_TAGLINE[data.level], W / 2, 440);
+
   // Recipient
   ctx.fillStyle = "#B6AECC";
   ctx.font = `400 26px ${font}`;
@@ -145,11 +177,16 @@ async function renderCertificate(data: CertificateData): Promise<HTMLCanvasEleme
 
   // Body
   ctx.fillStyle = "#CFC8DE";
-  ctx.font = `500 30px ${font}`;
-  ctx.fillText("لإكماله بنجاح جميع فصول دورة", W / 2, 675);
+  ctx.font = `500 26px ${font}`;
+  wrapText(ctx, LEVEL_STATEMENT[data.level], W / 2, 665, W - 420, 40);
   ctx.fillStyle = "#FFFFFF";
   ctx.font = `700 34px ${font}`;
-  ctx.fillText(courseName(data.level), W / 2, 730);
+  ctx.fillText(courseName(data.level), W / 2, 775);
+  if (data.scoreText) {
+    ctx.fillStyle = accent;
+    ctx.font = `700 24px ${font}`;
+    ctx.fillText(data.scoreText, W / 2, 820);
+  }
 
   // Footer meta
   const y = 900;
@@ -185,6 +222,10 @@ export default function CertificateCard({
   completed,
   total,
   completedAt,
+  certIdOverride,
+  examScore,
+  examTotal,
+  lockedHint,
 }: {
   level: Level;
   userName: string;
@@ -193,14 +234,20 @@ export default function CertificateCard({
   completed: number;
   total: number;
   completedAt?: Date;
+  certIdOverride?: string;
+  examScore?: number;
+  examTotal?: number;
+  lockedHint?: string;
 }) {
   const [busy, setBusy] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
   const accent = LEVEL_ACCENT[level];
-  const certId = certificateId(userId, level);
+  const certId = certIdOverride ?? certificateId(userId, level);
   const date = completedAt ?? new Date();
+  const scoreText =
+    examScore != null && examTotal ? `نتيجة الاختبار النهائي: ${examScore} / ${examTotal}` : undefined;
 
-  const build = () => renderCertificate({ level, userName, date, certId });
+  const build = () => renderCertificate({ level, userName, date, certId, scoreText });
 
   const downloadPng = async () => {
     setBusy(true);
@@ -264,7 +311,7 @@ export default function CertificateCard({
               {unlocked ? (
                 <span dir="ltr" style={{ letterSpacing: 1 }}>{certId}</span>
               ) : (
-                `${completed}/${total} فصلاً — أكمل جميع الفصول لفتح الشهادة`
+                lockedHint ?? `${completed}/${total} فصلاً — أكمل جميع الفصول ثم اجتز الاختبار النهائي`
               )}
             </div>
           </div>
@@ -338,7 +385,7 @@ export default function CertificateCard({
 
       {unlocked && (
         <div ref={previewRef} style={{ marginTop: 14, borderRadius: 12, overflow: "hidden", border: "1px solid var(--border)" }}>
-          <CertificatePreview level={level} userName={userName} certId={certId} date={date} />
+          <CertificatePreview level={level} userName={userName} certId={certId} date={date} scoreText={scoreText} />
         </div>
       )}
     </div>
@@ -350,11 +397,13 @@ function CertificatePreview({
   userName,
   certId,
   date,
+  scoreText,
 }: {
   level: Level;
   userName: string;
   certId: string;
   date: Date;
+  scoreText?: string;
 }) {
   const accent = LEVEL_ACCENT[level];
   return (
@@ -379,6 +428,7 @@ function CertificatePreview({
       <img src={arabicLogo.url} alt="COURSI" style={{ height: 46, width: "auto", margin: "0 auto 10px", display: "block" }} />
       <div style={{ color: accent, fontSize: 11, fontWeight: 800, letterSpacing: 3 }}>شهادة إتمام</div>
       <div style={{ color: "#fff", fontWeight: 900, fontSize: 18, marginTop: 6 }}>{LEVEL_LABEL[level]}</div>
+      <div style={{ color: "#9590A8", fontSize: 11, marginTop: 2 }}>{LEVEL_TAGLINE[level]}</div>
       <div style={{ color: "#B6AECC", fontSize: 11, marginTop: 12 }}>تُمنح هذه الشهادة إلى</div>
       <div
         style={{
@@ -394,8 +444,12 @@ function CertificatePreview({
         {userName}
       </div>
       <div style={{ color: "#CFC8DE", fontSize: 12, maxWidth: 460, margin: "6px auto 0", lineHeight: 1.8 }}>
-        لإكماله بنجاح جميع فصول دورة {courseName(level)}
+        {LEVEL_STATEMENT[level]}
       </div>
+      <div style={{ color: "#fff", fontSize: 12, fontWeight: 700, marginTop: 6 }}>{courseName(level)}</div>
+      {scoreText && (
+        <div style={{ color: accent, fontSize: 11, fontWeight: 700, marginTop: 4 }}>{scoreText}</div>
+      )}
       <div style={{ display: "flex", justifyContent: "space-between", marginTop: 18, color: "#9590A8", fontSize: 10, padding: "0 12px" }}>
         <span dir="ltr">{certId}</span>
         <span>{arabicDate(date)}</span>

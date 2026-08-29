@@ -38,6 +38,36 @@ export type Database = {
         }
         Relationships: []
       }
+      certificates: {
+        Row: {
+          certificate_id: string
+          id: string
+          issued_at: string
+          level: string
+          score: number
+          total: number
+          user_id: string
+        }
+        Insert: {
+          certificate_id: string
+          id?: string
+          issued_at?: string
+          level: string
+          score: number
+          total: number
+          user_id: string
+        }
+        Update: {
+          certificate_id?: string
+          id?: string
+          issued_at?: string
+          level?: string
+          score?: number
+          total?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       course_progress: {
         Row: {
           chapter_id: string
@@ -61,6 +91,36 @@ export type Database = {
           created_at?: string
           id?: string
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      exam_attempts: {
+        Row: {
+          created_at: string
+          id: string
+          level: string
+          passed: boolean
+          score: number
+          total: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          level: string
+          passed?: boolean
+          score: number
+          total: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          level?: string
+          passed?: boolean
+          score?: number
+          total?: number
           user_id?: string
         }
         Relationships: []

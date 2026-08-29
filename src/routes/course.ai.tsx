@@ -7,6 +7,7 @@ import { COURSE_CONTENT, type QuizQuestion } from "@/lib/course-content";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ThemeToggle } from "@/lib/theme";
 import { PortalNav } from "@/components/portal-nav";
+import LevelExam from "@/components/level-exam";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { isLevelComplete } from "@/lib/certificate";
@@ -54,7 +55,7 @@ function CourseAIPage() {
 
 
   const [activeChapter, setActiveChapter] = useState(0);
-  const [activeTab, setActiveTab] = useState<"content" | "quiz">("content");
+  const [activeTab, setActiveTab] = useState<"content" | "quiz" | "exam">("content");
 
   const [currentQ, setCurrentQ] = useState(0);
   const [answered, setAnswered] = useState(false);
@@ -483,9 +484,9 @@ function CourseAIPage() {
               zIndex: 10,
             }}
           >
-            {(["content", "quiz"] as const).map((t) => {
+            {(["content", "quiz", "exam"] as const).map((t) => {
               const isActive = activeTab === t;
-              const label = t === "content" ? "📖 المحتوى" : "✦ الاختبار";
+              const label = t === "content" ? "📖 المحتوى" : t === "quiz" ? "✦ اختبار الفصل" : "🎓 الاختبار النهائي";
               return (
                 <button
                   key={t}
@@ -509,7 +510,16 @@ function CourseAIPage() {
             })}
           </div>
 
-          {activeTab === "content" ? (
+          {activeTab === "exam" ? (
+            <LevelExam
+              level={level}
+              userId={userId ?? ""}
+              userName={userName}
+              onPassed={() => {
+                void sendCertEmail({ data: { level } }).catch(() => {});
+              }}
+            />
+          ) : activeTab === "content" ? (
             <ContentTab
               chapterIndex={activeChapter}
               chapterTitle={currentChapterTitle}
@@ -529,10 +539,10 @@ function CourseAIPage() {
               isLast={isLast}
               courseName={course.name}
               level={level}
-              userName={userName}
 
               onAnswer={handleAnswer}
               onNextChapter={() => goToChapter(activeChapter + 1)}
+              onGoExam={() => setActiveTab("exam")}
             />
           )}
         </main>
@@ -1061,9 +1071,9 @@ function QuizTab({
   isLast,
   courseName,
   level,
-  userName,
   onAnswer,
   onNextChapter,
+  onGoExam,
 }: {
   chapterIndex: number;
   questions: QuizQuestion[];
@@ -1076,9 +1086,9 @@ function QuizTab({
   isLast: boolean;
   courseName: string;
   level: Level;
-  userName: string;
   onAnswer: (i: number) => void;
   onNextChapter: () => void;
+  onGoExam: () => void;
 }) {
 
   if (quizComplete) {
@@ -1111,57 +1121,53 @@ function QuizTab({
         </div>
 
         {isLast ? (
-          level === "advanced" ? (
-            <GraduationCertificate userName={userName} courseName={courseName} />
-          ) : (
+          <div
+            style={{
+              margin: 24,
+              background: "linear-gradient(135deg, rgba(123,53,255,0.08), rgba(0,212,200,0.04))",
+              border: "1px solid rgba(123,53,255,0.2)",
+              borderRadius: 20,
+              padding: "48px 36px",
+              textAlign: "center",
+            }}
+          >
+            <div style={{ fontSize: 64, marginBottom: 16 }}>🎓</div>
+            <div style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: 26, marginBottom: 12 }}>
+              أنهيت جميع فصول {courseName}
+            </div>
             <div
               style={{
-                margin: 24,
-                background: "linear-gradient(135deg, rgba(123,53,255,0.08), rgba(0,212,200,0.04))",
-                border: "1px solid rgba(123,53,255,0.2)",
-                borderRadius: 20,
-                padding: "48px 36px",
-                textAlign: "center",
+                color: "var(--text-secondary)",
+                fontSize: 15,
+                lineHeight: 1.8,
+                maxWidth: 460,
+                margin: "0 auto 28px",
               }}
             >
-              <div style={{ fontSize: 64, marginBottom: 16 }}>🏆</div>
-              <div style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: 28, marginBottom: 12 }}>
-                مبروك! أتممت الكورس بنجاح
-              </div>
-              <div
-                style={{
-                  color: "var(--text-secondary)",
-                  fontSize: 15,
-                  lineHeight: 1.8,
-                  maxWidth: 440,
-                  margin: "0 auto 28px",
-                }}
-              >
-                لقد أكملت {courseName}. أنت الآن جاهز للمستوى التالي.
-              </div>
-              <button
-                onClick={() => {
-                  window.location.href = "https://coursi.ai/ai/payment";
-                }}
-                style={{
-                  background: "linear-gradient(135deg,#7B35FF,#00D4C8)",
-                  color: "var(--text-primary)",
-                  fontSize: 15,
-                  fontWeight: 700,
-                  padding: "14px 32px",
-                  borderRadius: 50,
-                  border: "none",
-                  cursor: "pointer",
-                  fontFamily: font,
-                  boxShadow: "0 0 24px rgba(123,53,255,0.3)",
-                }}
-              >
-                🚀 انتقل للمستوى التالي
-              </button>
+              بقيت خطوة واحدة: الاختبار النهائي — ١٥ سؤالاً تغطي المستوى بالكامل. باجتيازه تحصل على شهادة{" "}
+              {level === "beginner" ? "المستوى المبتدئ" : level === "intermediate" ? "المستوى المتوسط" : "المستوى المتقدم"}{" "}
+              وتُسجَّل في حسابك بشكل دائم
             </div>
-          )
-
+            <button
+              onClick={onGoExam}
+              style={{
+                background: "linear-gradient(135deg,#7B35FF,#00D4C8)",
+                color: "#fff",
+                fontSize: 15,
+                fontWeight: 700,
+                padding: "14px 32px",
+                borderRadius: 50,
+                border: "none",
+                cursor: "pointer",
+                fontFamily: font,
+                boxShadow: "0 0 24px rgba(123,53,255,0.3)",
+              }}
+            >
+              🎓 ابدأ الاختبار النهائي
+            </button>
+          </div>
         ) : (
+
           <button
             onClick={onNextChapter}
             style={{
@@ -1302,70 +1308,6 @@ function QuizTab({
           {q.feedback}
         </div>
       )}
-    </div>
-  );
-}
-
-function GraduationCertificate({ userName, courseName }: { userName: string; courseName: string }) {
-  const today = new Date().toLocaleDateString("ar-EG", { year: "numeric", month: "long", day: "numeric" });
-  const handlePrint = () => window.print();
-  return (
-    <div style={{ margin: 24 }}>
-      <style>{`@media print { body * { visibility:hidden } .coursi-cert, .coursi-cert * { visibility:visible } .coursi-cert { position:absolute; inset:0; margin:0; box-shadow:none } }`}</style>
-      <div
-        className="coursi-cert"
-        style={{
-          background: "linear-gradient(135deg, #0B0820, #1a0f2e)",
-          border: `2px solid ${GOLD}`,
-          borderRadius: 20,
-          padding: "48px 36px",
-          textAlign: "center",
-          boxShadow: `0 0 60px rgba(212,175,55,0.20)`,
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
-        <div style={{ position: "absolute", inset: 12, border: `1px solid rgba(212,175,55,0.35)`, borderRadius: 14, pointerEvents: "none" }} />
-        <div style={{ fontSize: 56, marginBottom: 8 }}>🏆</div>
-        <div style={{ color: GOLD, fontSize: 12, letterSpacing: 4, fontWeight: 800, marginBottom: 8 }}>شهادة إتمام</div>
-        <div style={{ color: "var(--text-primary)", fontWeight: 800, fontSize: 24, marginBottom: 18, fontFamily: font }}>
-          المستوى المتقدم — إتقان الذكاء الاصطناعي
-        </div>
-        <div style={{ color: "#B6AECC", fontSize: 13, marginBottom: 4 }}>تُمنح هذه الشهادة إلى</div>
-        <div style={{ color: GOLD, fontWeight: 800, fontSize: 30, fontFamily: font, padding: "10px 0", borderTop: `1px solid rgba(212,175,55,0.30)`, borderBottom: `1px solid rgba(212,175,55,0.30)`, margin: "10px 0 18px" }}>
-          {userName}
-        </div>
-        <div style={{ color: "#CFC8DE", fontSize: 14, lineHeight: 1.9, maxWidth: 520, margin: "0 auto 18px" }}>
-          لإكماله بنجاح {courseName} بمستوياته الثلاثة: المبتدئ، المتوسط، والمتقدم — وبنائه منتج ذكاء اصطناعي حقيقي كمشروع تخرّج.
-        </div>
-        <div style={{ display: "flex", justifyContent: "space-around", marginTop: 24, color: "#9590A8", fontSize: 12 }}>
-          <div><div style={{ color: GOLD, fontWeight: 800, marginBottom: 4 }}>التاريخ</div>{today}</div>
-          <div><div style={{ color: GOLD, fontWeight: 800, marginBottom: 4 }}>المنصة</div>COURSI · كورسي</div>
-        </div>
-        <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap", marginTop: 26 }}>
-          <button onClick={handlePrint} style={{ background: `linear-gradient(135deg, ${GOLD}, ${PURPLE})`, color: "#1a1208", fontWeight: 800, fontSize: 14, padding: "12px 24px", borderRadius: 50, border: "none", cursor: "pointer", fontFamily: font }}>
-            🖨 طباعة / حفظ PDF
-          </button>
-          <button onClick={() => (window.location.href = "https://coursi.ai")} style={{ background: "transparent", color: GOLD, fontWeight: 700, fontSize: 14, padding: "12px 24px", borderRadius: 50, border: `1px solid ${GOLD}`, cursor: "pointer", fontFamily: font }}>
-            الخطوات التالية ←
-          </button>
-        </div>
-      </div>
-      <div style={{ marginTop: 24, padding: 20, background: "rgba(255,255,255,0.02)", border: `1px solid ${BORDER}`, borderRadius: 14 }}>
-        <div style={{ color: "var(--text-primary)", fontWeight: 800, fontSize: 15, marginBottom: 10 }}>رحلتك في كورسي</div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 10 }}>
-          {[
-            { lvl: "المبتدئ", desc: "أساسيات الذكاء الاصطناعي والأدوات اليومية", c: CYAN },
-            { lvl: "المتوسط", desc: "هندسة الطلب، الأتمتة، وبناء روبوتات احترافية", c: PURPLE },
-            { lvl: "المتقدم", desc: "بناء منتجات SaaS كاملة بـAI من الصفر للسوق", c: GOLD },
-          ].map((s, i) => (
-            <div key={i} style={{ padding: 12, borderRadius: 10, background: "rgba(255,255,255,0.03)", borderRight: `3px solid ${s.c}` }}>
-              <div style={{ color: s.c, fontWeight: 800, fontSize: 13, marginBottom: 4 }}>✓ {s.lvl}</div>
-              <div style={{ color: "#B6AECC", fontSize: 12, lineHeight: 1.6 }}>{s.desc}</div>
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }

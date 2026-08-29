@@ -8,6 +8,7 @@ import { useProfile } from "@/contexts/ProfileContext";
 import PortalHeader from "@/components/portal-nav";
 import CertificateCard from "@/components/certificate-card";
 import { completedCount, isLevelComplete, totalChapters, type Level as CertLevel } from "@/lib/certificate";
+import { getMyCertificates, type EarnedCertificate } from "@/lib/exam.functions";
 
 
 export const Route = createFileRoute("/achievements")({
@@ -35,6 +36,8 @@ function AchievementsPage() {
   const [userId, setUserId] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [loadingProgress, setLoadingProgress] = useState(true);
+  const [certs, setCerts] = useState<EarnedCertificate[]>([]);
+  const loadCerts = useServerFn(getMyCertificates);
 
   useEffect(() => {
     (async () => {
@@ -62,20 +65,23 @@ function AchievementsPage() {
         if (latest) dates[lvl] = latest;
       }
       setCompletedAt(dates);
+      try {
+        setCerts(await loadCerts());
+      } catch {
+        /* certificates are optional here */
+      }
       setLoadingProgress(false);
     })();
-  }, [navigate]);
+  }, [navigate, loadCerts]);
 
   // Once a level is fully complete, send the branded certificate email (once per level).
   const sendCertEmail = useServerFn(sendCertificateEmail);
   useEffect(() => {
     if (loadingProgress || !userId) return;
-    (["beginner", "intermediate", "advanced"] as CertLevel[])
-      .filter((l) => isLevelComplete(l, completedIds))
-      .forEach((l) => {
-        void sendCertEmail({ data: { level: l } }).catch(() => {});
-      });
-  }, [loadingProgress, userId, completedIds, sendCertEmail]);
+    certs.forEach((c) => {
+      void sendCertEmail({ data: { level: c.level } }).catch(() => {});
+    });
+  }, [loadingProgress, userId, certs, sendCertEmail]);
 
 
   const streak = profile?.streak_days ?? 0;
@@ -84,7 +90,8 @@ function AchievementsPage() {
   const loading = profileLoading || loadingProgress;
 
   const certLevels: CertLevel[] = ["beginner", "intermediate", "advanced"];
-  const earnedCerts = certLevels.filter((l) => isLevelComplete(l, completedIds));
+  const certByLevel = new Map(certs.map((c) => [c.level, c]));
+  const earnedCerts = certLevels.filter((l) => certByLevel.has(l));
   const certificates = earnedCerts.length;
   const userName =
     profile?.display_name?.trim() || (profile?.email || userEmail || "").split("@")[0] || "طالب كورسي";
@@ -166,7 +173,7 @@ function AchievementsPage() {
         {certificates === 0 && (
           <div style={{ background: "var(--bg-card)", border: "1px dashed var(--border)", borderRadius: 14, padding: 22, textAlign: "center", color: "var(--text-secondary)", marginBottom: 12 }}>
             <div style={{ fontSize: 36 }}>🏆</div>
-            <p style={{ marginTop: 8, fontSize: 13 }}>أكمل جميع فصول أي مستوى لتحصل على شهادتك</p>
+            <p style={{ marginTop: 8, fontSize: 13 }}>أكمل جميع فصول أي مستوى ثم اجتز الاختبار النهائي لتحصل على شهادتك</p>
           </div>
         )}
         {certLevels.map((l) => (
@@ -175,10 +182,18 @@ function AchievementsPage() {
             level={l}
             userId={userId}
             userName={userName}
-            unlocked={isLevelComplete(l, completedIds)}
+            unlocked={certByLevel.has(l)}
+            certIdOverride={certByLevel.get(l)?.certificateId}
+            examScore={certByLevel.get(l)?.score}
+            examTotal={certByLevel.get(l)?.total}
             completed={completedCount(l, completedIds)}
             total={totalChapters(l)}
-            completedAt={completedAt[l]}
+            lockedHint={
+              isLevelComplete(l, completedIds)
+                ? "أكملت جميع الفصول — اجتز الاختبار النهائي لفتح الشهادة"
+                : undefined
+            }
+            completedAt={certByLevel.get(l) ? new Date(certByLevel.get(l)!.issuedAt) : completedAt[l]}
           />
         ))}
 
