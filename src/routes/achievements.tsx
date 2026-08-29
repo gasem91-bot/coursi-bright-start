@@ -66,7 +66,7 @@ function AchievementsPage() {
       }
       setCompletedAt(dates);
       try {
-        setCerts(await loadCerts({ data: {} }));
+        setCerts(await loadCerts());
       } catch {
         /* certificates are optional here */
       }
@@ -188,7 +188,11 @@ function AchievementsPage() {
             examTotal={certByLevel.get(l)?.total}
             completed={completedCount(l, completedIds)}
             total={totalChapters(l)}
-            chaptersDone={isLevelComplete(l, completedIds)}
+            lockedHint={
+              isLevelComplete(l, completedIds)
+                ? "أكملت جميع الفصول — اجتز الاختبار النهائي لفتح الشهادة"
+                : undefined
+            }
             completedAt={certByLevel.get(l) ? new Date(certByLevel.get(l)!.issuedAt) : completedAt[l]}
           />
         ))}
