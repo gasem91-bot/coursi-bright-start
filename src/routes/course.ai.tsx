@@ -539,7 +539,6 @@ function CourseAIPage() {
               isLast={isLast}
               courseName={course.name}
               level={level}
-              userName={userName}
 
               onAnswer={handleAnswer}
               onNextChapter={() => goToChapter(activeChapter + 1)}
