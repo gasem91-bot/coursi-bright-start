@@ -1124,57 +1124,53 @@ function QuizTab({
         </div>
 
         {isLast ? (
-          level === "advanced" ? (
-            <GraduationCertificate userName={userName} courseName={courseName} />
-          ) : (
+          <div
+            style={{
+              margin: 24,
+              background: "linear-gradient(135deg, rgba(123,53,255,0.08), rgba(0,212,200,0.04))",
+              border: "1px solid rgba(123,53,255,0.2)",
+              borderRadius: 20,
+              padding: "48px 36px",
+              textAlign: "center",
+            }}
+          >
+            <div style={{ fontSize: 64, marginBottom: 16 }}>🎓</div>
+            <div style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: 26, marginBottom: 12 }}>
+              أنهيت جميع فصول {courseName}
+            </div>
             <div
               style={{
-                margin: 24,
-                background: "linear-gradient(135deg, rgba(123,53,255,0.08), rgba(0,212,200,0.04))",
-                border: "1px solid rgba(123,53,255,0.2)",
-                borderRadius: 20,
-                padding: "48px 36px",
-                textAlign: "center",
+                color: "var(--text-secondary)",
+                fontSize: 15,
+                lineHeight: 1.8,
+                maxWidth: 460,
+                margin: "0 auto 28px",
               }}
             >
-              <div style={{ fontSize: 64, marginBottom: 16 }}>🏆</div>
-              <div style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: 28, marginBottom: 12 }}>
-                مبروك! أتممت الكورس بنجاح
-              </div>
-              <div
-                style={{
-                  color: "var(--text-secondary)",
-                  fontSize: 15,
-                  lineHeight: 1.8,
-                  maxWidth: 440,
-                  margin: "0 auto 28px",
-                }}
-              >
-                لقد أكملت {courseName}. أنت الآن جاهز للمستوى التالي.
-              </div>
-              <button
-                onClick={() => {
-                  window.location.href = "https://coursi.ai/ai/payment";
-                }}
-                style={{
-                  background: "linear-gradient(135deg,#7B35FF,#00D4C8)",
-                  color: "var(--text-primary)",
-                  fontSize: 15,
-                  fontWeight: 700,
-                  padding: "14px 32px",
-                  borderRadius: 50,
-                  border: "none",
-                  cursor: "pointer",
-                  fontFamily: font,
-                  boxShadow: "0 0 24px rgba(123,53,255,0.3)",
-                }}
-              >
-                🚀 انتقل للمستوى التالي
-              </button>
+              بقيت خطوة واحدة: الاختبار النهائي — ١٥ سؤالاً تغطي المستوى بالكامل. باجتيازه تحصل على شهادة{" "}
+              {level === "beginner" ? "المستوى المبتدئ" : level === "intermediate" ? "المستوى المتوسط" : "المستوى المتقدم"}{" "}
+              وتُسجَّل في حسابك بشكل دائم
             </div>
-          )
-
+            <button
+              onClick={onGoExam}
+              style={{
+                background: "linear-gradient(135deg,#7B35FF,#00D4C8)",
+                color: "#fff",
+                fontSize: 15,
+                fontWeight: 700,
+                padding: "14px 32px",
+                borderRadius: 50,
+                border: "none",
+                cursor: "pointer",
+                fontFamily: font,
+                boxShadow: "0 0 24px rgba(123,53,255,0.3)",
+              }}
+            >
+              🎓 ابدأ الاختبار النهائي
+            </button>
+          </div>
         ) : (
+
           <button
             onClick={onNextChapter}
             style={{
