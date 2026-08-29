@@ -15,6 +15,23 @@ export const LEVEL_ACCENT: Record<Level, string> = {
   advanced: "#D4AF37",
 };
 
+/** Per-level certificate wording — each level gets its own statement. */
+export const LEVEL_STATEMENT: Record<Level, string> = {
+  beginner:
+    "لإتمامه جميع فصول المستوى المبتدئ واجتيازه الاختبار النهائي، وإتقانه أساسيات الذكاء الاصطناعي وأدواته وكتابة الطلب",
+  intermediate:
+    "لإتمامه جميع فصول المستوى المتوسط واجتيازه الاختبار النهائي، وإتقانه هندسة الطلب المتقدمة وخريطة الأدوات وبناء سير العمل الآلي",
+  advanced:
+    "لإتمامه جميع فصول المستوى المتقدم واجتيازه الاختبار النهائي، وإتقانه بناء أنظمة ووكلاء ومنتجات حقيقية بالذكاء الاصطناعي",
+};
+
+export const LEVEL_TAGLINE: Record<Level, string> = {
+  beginner: "أساسيات الذكاء الاصطناعي",
+  intermediate: "الأدوات والأتمتة الاحترافية",
+  advanced: "بناء المنتجات والوكلاء",
+};
+
+
 const pad2 = (n: number) => String(n).padStart(2, "0");
 export const chapterId = (level: Level, idx: number) => `ai-${level}-${pad2(idx + 1)}`;
 
