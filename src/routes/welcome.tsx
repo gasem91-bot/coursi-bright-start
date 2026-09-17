@@ -168,13 +168,13 @@ function WelcomePage() {
               style={{ display: "flex", justifyContent: "center" }}
             >
               <a
-                href="https://wa.me/971561016095"
+                href="https://t.me/CoursiSupportBot"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
-                  background: "rgba(37,211,102,0.1)",
-                  border: "1px solid rgba(37,211,102,0.3)",
-                  color: "#25D366",
+                  background: "rgba(34,158,217,0.1)",
+                  border: "1px solid rgba(34,158,217,0.3)",
+                  color: "#229ED9",
                   padding: "10px 20px",
                   borderRadius: 50,
                   fontSize: 13,
@@ -182,7 +182,7 @@ function WelcomePage() {
                   marginLeft: 8,
                 }}
               >
-                واتساب 💬
+                تيليجرام 💬
               </a>
               <a
                 href="mailto:info@coursi.ai"
