@@ -134,6 +134,7 @@ function CourseAIPage() {
   const isLast = activeChapter === total - 1;
   const currentChapter = course.chapters[activeChapter];
   const currentChapterTitle = currentChapter?.title ?? "";
+  const currentChapterImage = currentChapter && "image" in currentChapter ? currentChapter.image : undefined;
   const quizQuestions: QuizQuestion[] = currentChapter?.quiz ?? [];
 
   const goToChapter = (i: number) => {
@@ -523,6 +524,7 @@ function CourseAIPage() {
             <ContentTab
               chapterIndex={activeChapter}
               chapterTitle={currentChapterTitle}
+              chapterImage={currentChapterImage}
               chapterHtml={currentChapter?.content ?? ""}
               onGoQuiz={() => setActiveTab("quiz")}
             />
@@ -862,6 +864,8 @@ const CONTENT_CSS = `
 .coursi-content .versus-row.revealed .versus-reveal { display:flex; animation:coursi-fade-up .3s ease-out both; }
 .coursi-content .versus-row.revealed .guess-hint { display:none; }
 .coursi-content .versus-note { color:#CFC8DE; font-size:13px; line-height:1.8; margin-top:14px; background:rgba(0,212,200,0.06); border-right:3px solid ${CYAN}; border-radius:10px; padding:12px 14px; }
+.chapter-visual { width:100%; margin:18px 0 24px; padding:1px; border-radius:15px; overflow:hidden; background:linear-gradient(135deg, rgba(123,53,255,.68), rgba(0,212,200,.52)); box-shadow:0 14px 36px rgba(123,53,255,.14), 0 0 22px rgba(0,212,200,.07); }
+.chapter-visual img { display:block; width:100%; height:auto; aspect-ratio:1344/752; object-fit:cover; border-radius:14px; background:${BG_SOFT}; }
 `;
 
 
@@ -869,11 +873,13 @@ const CONTENT_CSS = `
 function ContentTab({
   chapterIndex,
   chapterTitle,
+  chapterImage,
   chapterHtml,
   onGoQuiz,
 }: {
   chapterIndex: number;
   chapterTitle: string;
+  chapterImage?: string;
   chapterHtml: string;
   onGoQuiz: () => void;
 }) {
@@ -1033,6 +1039,12 @@ function ContentTab({
         <span>✦ اختبار في النهاية</span>
         <span>🎯 مهمة عملية</span>
       </div>
+
+      {chapterImage && (
+        <figure className="chapter-visual">
+          <img src={chapterImage} alt={`رسم توضيحي للفصل: ${chapterTitle}`} />
+        </figure>
+      )}
 
       <div ref={rootRef} className="coursi-content" dir="rtl" dangerouslySetInnerHTML={{ __html: chapterHtml }} />
 

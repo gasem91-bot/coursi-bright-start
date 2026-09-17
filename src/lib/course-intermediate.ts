@@ -1,10 +1,14 @@
 // Intermediate Course — 12 chapters, content from COURS_Level2_Intermediate.md
 // Uses global .coursi-content classes defined in src/routes/course.ai.tsx
 import type { QuizQuestion } from "./course-content-types";
+import intermediateCh08Asset from "@/assets/intermediate-ch08.png.asset.json";
+import intermediateCh09Asset from "@/assets/intermediate-ch09.png.asset.json";
+import intermediateCh10Asset from "@/assets/intermediate-ch10.png.asset.json";
 
 export interface IntermediateChapter {
   id: number;
   title: string;
+  image?: string;
   content: string;
   quiz: QuizQuestion[];
 }
@@ -481,6 +485,7 @@ ${checklist("قائمة التطبيق العملي", [
   {
     id: 7,
     title: "اختيار الأداة الصحيحة للمهمة الصحيحة",
+    image: intermediateCh08Asset.url,
     content: `
 ${intro("في المستوى الأول تعرّفت على الأدوات، وهنا تتعلّم الأصعب: متى تستخدم كل أداة، ومتى تدمج أداتين، ومتى لا تستخدم الذكاء الاصطناعي أصلاً. المحترف لا يُميّزه عدد الأدوات التي يعرفها، بل سرعته في اختيار الأداة الصحيحة من أول محاولة.")}
 ${learn([
@@ -573,6 +578,7 @@ ${checklist("قائمة التطبيق العملي", [
   {
     id: 8,
     title: "تصميم مسارات عمل متعدّدة الأدوات",
+    image: intermediateCh09Asset.url,
     content: `
 ${intro("النتيجة الاحترافية نادراً ما تخرج من أداة واحدة. تخرج من سلسلة: بحث ← مسودة ← تصميم ← مراجعة ← نشر. في هذا الفصل تتعلّم كيف تُصمّم هذه السلسلة وتُثبّتها حتى تُنتج نفس الجودة كل مرة، حتى لو نفّذها شخص آخر بدلاً عنك.")}
 ${learn([
@@ -650,6 +656,7 @@ ${checklist("قائمة التطبيق العملي", [
   {
     id: 9,
     title: "الإخراج الإبداعي والاتساق على نطاق واسع",
+    image: intermediateCh10Asset.url,
     content: `
 ${intro("عندما تُنتج عشرة مخرجات في الأسبوع، تصبح المشكلة ليست الإنتاج بل التشابه: كل مخرج بنبرة مختلفة وألوان مختلفة فتذوب هويتك. في هذا الفصل تنتقل من «مستخدم للأداة» إلى «مخرج فني» يقود الأدوات نحو هوية واحدة معروفة.")}
 ${learn([

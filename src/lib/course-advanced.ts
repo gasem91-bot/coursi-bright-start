@@ -1,10 +1,16 @@
 // Advanced Course — 12 chapters, content from COURS_Level3_Advanced.md
 // Uses global .coursi-content classes defined in src/routes/course.ai.tsx
 import type { QuizQuestion } from "./course-content-types";
+import advancedCh08Asset from "@/assets/advanced-ch08.png.asset.json";
+import advancedCh09Asset from "@/assets/advanced-ch09.png.asset.json";
+import advancedCh10Asset from "@/assets/advanced-ch10.png.asset.json";
+import advancedCh11Asset from "@/assets/advanced-ch11.png.asset.json";
+import advancedCh12Asset from "@/assets/advanced-ch12.png.asset.json";
 
 export interface AdvancedChapter {
   id: number;
   title: string;
+  image?: string;
   content: string;
   quiz: QuizQuestion[];
 }
@@ -340,6 +346,7 @@ ${exercise("اختر نموذج التسعير الأنسب لمنتجك: اشت
   {
     id: 7,
     title: "البرمجة بمساعدة الذكاء الاصطناعي — من الفكرة إلى كود يعمل",
+    image: advancedCh08Asset.url,
     content: `
 ${intro("هنا يبدأ التحوّل الحقيقي: من استخدام الأدوات الجاهزة إلى بناء برامجك أنت. لن تحتاج شهادة في علوم الحاسب، لكنك تحتاج طريقة منظّمة في الحوار مع النموذج وقدرة على قراءة الكود بما يكفي للحكم عليه.")}
 ${learn([
@@ -391,6 +398,7 @@ ${exercise("اكتب مواصفة تقنية كاملة لأداة صغيرة ت
   {
     id: 8,
     title: "من سكربت إلى منتج حقيقي",
+    image: advancedCh09Asset.url,
     content: `
 ${intro("أن تكتب برنامجاً يعمل على جهازك شيء، وأن تبني منتجاً يستخدمه غرباء ويدفعون مقابله شيء آخر تماماً. الفجوة بينهما ليست في الكود، بل في الحسابات والأمان والدفع والدعم والاستقرار.")}
 ${learn([
@@ -443,6 +451,7 @@ ${exercise("احسب تكلفة المستخدم الواحد شهرياً في 
   {
     id: 9,
     title: "هيكلة عملك كشركة حقيقية",
+    image: advancedCh10Asset.url,
     content: `
 ${intro("الفرق بين من يكسب من الذكاء الاصطناعي بشكل متقطّع ومن يبني به عملاً مستداماً هو الهيكل: عرض واضح، عملية موثّقة، أنظمة تعمل بدونك، وأرقام تراجعها أسبوعياً.")}
 ${learn([
@@ -498,6 +507,7 @@ ${exercise("اكتب عرض قيمتك بالصيغة الرباعية (لمن +
   {
     id: 10,
     title: "نماذج توليد الدخل من الذكاء الاصطناعي",
+    image: advancedCh11Asset.url,
     content: `
 ${intro("أربعة طرق مجرَّبة لتحويل مهاراتك إلى دخل: العمل الحر، الخدمة المُنتَجة، الوكالة، والمنتج البرمجي. لكل منها سرعة مختلفة في الوصول لأول دينار، وسقف مختلف تماماً.")}
 ${learn([
@@ -550,6 +560,7 @@ ${exercise("استخدم الحاسبة أعلاه على فكرتك الحال�
   {
     id: 11,
     title: "التوسّع ومشروع التخرج",
+    image: advancedCh12Asset.url,
     content: `
 ${intro("آخر فصل ليس نظرياً. هنا تجمع كل ما تعلّمته في مشروع واحد حقيقي: تبنيه، تُطلقه، وتحصل على أول مستخدمين دافعين. ثم تتعلّم كيف تتوسّع دون أن ينهار ما بنيته.")}
 ${learn([
