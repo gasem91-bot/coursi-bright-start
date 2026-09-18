@@ -110,8 +110,8 @@ function OffersPage() {
             <p style={{ color: "var(--text-secondary)", fontSize: 13, marginTop: 10, lineHeight: 1.8 }}>
               ✓ إجابات فورية بالعربية &nbsp; · &nbsp; ✓ يتذكر مستواك &nbsp; · &nbsp; ✓ متاح ٢٤/٧
             </p>
-            <button onClick={() => toast.info("صفحة الدفع قيد التطوير")} style={{ marginTop: 14, background: "transparent", border: "1px solid var(--accent-cyan-text)", color: "var(--accent-cyan-text)", padding: "10px 18px", borderRadius: 50, fontFamily: font, fontWeight: 700, cursor: "pointer" }}>
-              ترقَّ للباقة الكاملة $49 ←
+            <button onClick={() => navigate({ to: "/upgrade" })} style={{ marginTop: 14, background: "transparent", border: "1px solid var(--accent-cyan-text)", color: "var(--accent-cyan-text)", padding: "10px 18px", borderRadius: 50, fontFamily: font, fontWeight: 700, cursor: "pointer" }}>
+              أضف المساعد الذكي $14 ←
             </button>
           </div>
         )}

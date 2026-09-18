@@ -2,6 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 
+// $14 one-time AI tutor bot top-up (keep in sync with src/lib/upgrade.functions.ts)
+const AI_TOPUP_PRICE_ID = "price_1UH5mPHNdqnRfyCHMmSUiMiK";
+
 // Real Stripe Price IDs → level + tier mapping
 const PRICE_MAP: Record<string, { level: string; tier: string }> = {
   "price_1Ts2H2HNdqnRfyCHpMVU9XNH": { level: "beginner", tier: "course" },
@@ -144,6 +147,78 @@ export const Route = createFileRoute("/api/public/stripe-webhook")({
         const admin = createClient(supabaseUrl, supabaseServiceRoleKey, {
           auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
         });
+
+        // --- AI tutor bot top-up (existing course buyer adding the assistant) ---
+        if (priceId === AI_TOPUP_PRICE_ID || session.metadata?.upgrade === "course_ai_topup") {
+          try {
+            const userId =
+              session.metadata?.user_id ||
+              session.client_reference_id ||
+              (
+                await admin.from("profiles").select("id").ilike("email", email).maybeSingle()
+              ).data?.id;
+            if (!userId) throw new Error("no user id for top-up");
+
+            const topupLevel = session.metadata?.level || "beginner";
+            const { error: upErr } = await admin.from("subscriptions").upsert(
+              {
+                user_id: userId,
+                level: topupLevel,
+                tier: "course_ai",
+                segment: "ai",
+                status: "active",
+                stripe_session_id: session.id,
+                amount: session.amount_total ? session.amount_total / 100 : 0,
+                currency: session.currency?.toUpperCase() || "USD",
+              },
+              { onConflict: "user_id" },
+            );
+            if (upErr) console.error("[stripe-webhook] top-up upsert error:", upErr);
+
+            const { buildAiUpgradeHtml, AI_UPGRADE_SUBJECT, AI_TUTOR_BOT_LINK } = await import(
+              "@/lib/ai-upgrade-email.server"
+            );
+            const res = await fetch("https://api.resend.com/emails", {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${resendApiKey}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                from: "كورسي <support@coursi.ai>",
+                to: [email],
+                subject: AI_UPGRADE_SUBJECT,
+                html: buildAiUpgradeHtml(AI_TUTOR_BOT_LINK),
+              }),
+            });
+            if (!res.ok) {
+              console.error("[stripe-webhook] top-up email error:", res.status, await res.text());
+            }
+
+            await sendInternalSaleNotification(
+              {
+                email,
+                name: session.customer_details?.name || "",
+                level: topupLevel,
+                tier: "course_ai (top-up)",
+                amount: session.amount_total ? session.amount_total / 100 : 0,
+                currency: session.currency?.toUpperCase() || "USD",
+                sessionId: session.id,
+                mode: session.mode || "payment",
+              },
+              resendApiKey,
+            );
+
+            console.log(`[stripe-webhook] AI top-up completed for ${email}`);
+            return Response.json({ success: true, upgrade: "course_ai_topup" });
+          } catch (err) {
+            console.error("[stripe-webhook] top-up processing error:", err);
+            return new Response(JSON.stringify({ error: String(err) }), {
+              status: 500,
+              headers: { "Content-Type": "application/json" },
+            });
+          }
+        }
 
         try {
           // 1. Find or create auth user in the OWN Supabase project

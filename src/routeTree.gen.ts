@@ -17,6 +17,7 @@ import { Route as OffersRouteImport } from './routes/offers'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SupportRouteImport } from './routes/support'
+import { Route as UpgradeRouteImport } from './routes/upgrade'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as AdminEmailsRouteImport } from './routes/admin.emails'
 import { Route as CourseAiRouteImport } from './routes/course.ai'
@@ -64,6 +65,11 @@ const SupportRoute = SupportRouteImport.update({
   path: '/support',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UpgradeRoute = UpgradeRouteImport.update({
+  id: '/upgrade',
+  path: '/upgrade',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WelcomeRoute = WelcomeRouteImport.update({
   id: '/welcome',
   path: '/welcome',
@@ -105,6 +111,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/reset-password': typeof ResetPasswordRoute
   '/support': typeof SupportRoute
+  '/upgrade': typeof UpgradeRoute
   '/welcome': typeof WelcomeRoute
   '/admin/emails': typeof AdminEmailsRoute
   '/course/ai': typeof CourseAiRoute
@@ -121,6 +128,7 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRoute
   '/reset-password': typeof ResetPasswordRoute
   '/support': typeof SupportRoute
+  '/upgrade': typeof UpgradeRoute
   '/welcome': typeof WelcomeRoute
   '/admin/emails': typeof AdminEmailsRoute
   '/course/ai': typeof CourseAiRoute
@@ -138,6 +146,7 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRoute
   '/reset-password': typeof ResetPasswordRoute
   '/support': typeof SupportRoute
+  '/upgrade': typeof UpgradeRoute
   '/welcome': typeof WelcomeRoute
   '/admin/emails': typeof AdminEmailsRoute
   '/course/ai': typeof CourseAiRoute
@@ -156,6 +165,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/reset-password'
     | '/support'
+    | '/upgrade'
     | '/welcome'
     | '/admin/emails'
     | '/course/ai'
@@ -172,6 +182,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/reset-password'
     | '/support'
+    | '/upgrade'
     | '/welcome'
     | '/admin/emails'
     | '/course/ai'
@@ -188,6 +199,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/reset-password'
     | '/support'
+    | '/upgrade'
     | '/welcome'
     | '/admin/emails'
     | '/course/ai'
@@ -205,6 +217,7 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SupportRoute: typeof SupportRoute
+  UpgradeRoute: typeof UpgradeRoute
   WelcomeRoute: typeof WelcomeRoute
   AdminEmailsRoute: typeof AdminEmailsRoute
   CourseAiRoute: typeof CourseAiRoute
@@ -271,6 +284,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SupportRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/upgrade': {
+      id: '/upgrade'
+      path: '/upgrade'
+      fullPath: '/upgrade'
+      preLoaderRoute: typeof UpgradeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/welcome': {
       id: '/welcome'
       path: '/welcome'
@@ -325,6 +345,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SupportRoute: SupportRoute,
+  UpgradeRoute: UpgradeRoute,
   WelcomeRoute: WelcomeRoute,
   AdminEmailsRoute: AdminEmailsRoute,
   CourseAiRoute: CourseAiRoute,
