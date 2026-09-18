@@ -39,6 +39,63 @@ async function sendWelcomeEmail(
   }
 }
 
+const INTERNAL_NOTIFY_TO = "info.coursi.ai@gmail.com";
+
+async function sendInternalSaleNotification(
+  params: {
+    email: string;
+    name: string;
+    level: string;
+    tier: string;
+    amount: number;
+    currency: string;
+    sessionId: string;
+    mode: string;
+  },
+  resendApiKey: string,
+): Promise<void> {
+  const { email, name, level, tier, amount, currency, sessionId, mode } = params;
+  const kind = mode === "subscription" ? "Subscription" : "Purchase";
+  const rows: Array<[string, string]> = [
+    ["Type", kind],
+    ["Name", name || "—"],
+    ["Email", email],
+    ["Vertical", "AI"],
+    ["Level", level],
+    ["Tier", tier],
+    ["Amount", `${amount.toFixed(2)} ${currency}`],
+    ["Stripe session", sessionId],
+  ];
+  const html = `<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#111">
+    <h2 style="margin:0 0 12px">New ${kind.toLowerCase()} — Coursi AI</h2>
+    <table cellpadding="6" style="border-collapse:collapse">
+      ${rows
+        .map(
+          ([k, v]) =>
+            `<tr><td style="border:1px solid #ddd;background:#f6f6f6"><b>${k}</b></td><td style="border:1px solid #ddd">${v}</td></tr>`,
+        )
+        .join("")}
+    </table>
+  </div>`;
+
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${resendApiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: "كورسي <support@coursi.ai>",
+      to: [INTERNAL_NOTIFY_TO],
+      subject: `New ${kind.toLowerCase()}: ${email} — ${level} / ${tier} — ${amount.toFixed(2)} ${currency}`,
+      html,
+    }),
+  });
+  if (!res.ok) {
+    console.error("[stripe-webhook] internal notification error:", res.status, await res.text());
+  }
+}
+
 export const Route = createFileRoute("/api/public/stripe-webhook")({
   server: {
     handlers: {
