@@ -20,6 +20,7 @@ import { Route as SupportRouteImport } from './routes/support'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as AdminEmailsRouteImport } from './routes/admin.emails'
 import { Route as CourseAiRouteImport } from './routes/course.ai'
+import { Route as ApiPublicCheckSubscriptionRouteImport } from './routes/api/public/check-subscription'
 import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe-webhook'
 import { Route as ApiPublicTelegramTicketRouteImport } from './routes/api/public/telegram-ticket'
 
@@ -78,6 +79,12 @@ const CourseAiRoute = CourseAiRouteImport.update({
   path: '/course/ai',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicCheckSubscriptionRoute =
+  ApiPublicCheckSubscriptionRouteImport.update({
+    id: '/api/public/check-subscription',
+    path: '/api/public/check-subscription',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicStripeWebhookRoute = ApiPublicStripeWebhookRouteImport.update({
   id: '/api/public/stripe-webhook',
   path: '/api/public/stripe-webhook',
@@ -101,6 +108,7 @@ export interface FileRoutesByFullPath {
   '/welcome': typeof WelcomeRoute
   '/admin/emails': typeof AdminEmailsRoute
   '/course/ai': typeof CourseAiRoute
+  '/api/public/check-subscription': typeof ApiPublicCheckSubscriptionRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/telegram-ticket': typeof ApiPublicTelegramTicketRoute
 }
@@ -116,6 +124,7 @@ export interface FileRoutesByTo {
   '/welcome': typeof WelcomeRoute
   '/admin/emails': typeof AdminEmailsRoute
   '/course/ai': typeof CourseAiRoute
+  '/api/public/check-subscription': typeof ApiPublicCheckSubscriptionRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/telegram-ticket': typeof ApiPublicTelegramTicketRoute
 }
@@ -132,6 +141,7 @@ export interface FileRoutesById {
   '/welcome': typeof WelcomeRoute
   '/admin/emails': typeof AdminEmailsRoute
   '/course/ai': typeof CourseAiRoute
+  '/api/public/check-subscription': typeof ApiPublicCheckSubscriptionRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/telegram-ticket': typeof ApiPublicTelegramTicketRoute
 }
@@ -149,6 +159,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/admin/emails'
     | '/course/ai'
+    | '/api/public/check-subscription'
     | '/api/public/stripe-webhook'
     | '/api/public/telegram-ticket'
   fileRoutesByTo: FileRoutesByTo
@@ -164,6 +175,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/admin/emails'
     | '/course/ai'
+    | '/api/public/check-subscription'
     | '/api/public/stripe-webhook'
     | '/api/public/telegram-ticket'
   id:
@@ -179,6 +191,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/admin/emails'
     | '/course/ai'
+    | '/api/public/check-subscription'
     | '/api/public/stripe-webhook'
     | '/api/public/telegram-ticket'
   fileRoutesById: FileRoutesById
@@ -195,6 +208,7 @@ export interface RootRouteChildren {
   WelcomeRoute: typeof WelcomeRoute
   AdminEmailsRoute: typeof AdminEmailsRoute
   CourseAiRoute: typeof CourseAiRoute
+  ApiPublicCheckSubscriptionRoute: typeof ApiPublicCheckSubscriptionRoute
   ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
   ApiPublicTelegramTicketRoute: typeof ApiPublicTelegramTicketRoute
 }
@@ -278,6 +292,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CourseAiRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/check-subscription': {
+      id: '/api/public/check-subscription'
+      path: '/api/public/check-subscription'
+      fullPath: '/api/public/check-subscription'
+      preLoaderRoute: typeof ApiPublicCheckSubscriptionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/stripe-webhook': {
       id: '/api/public/stripe-webhook'
       path: '/api/public/stripe-webhook'
@@ -307,6 +328,7 @@ const rootRouteChildren: RootRouteChildren = {
   WelcomeRoute: WelcomeRoute,
   AdminEmailsRoute: AdminEmailsRoute,
   CourseAiRoute: CourseAiRoute,
+  ApiPublicCheckSubscriptionRoute: ApiPublicCheckSubscriptionRoute,
   ApiPublicStripeWebhookRoute: ApiPublicStripeWebhookRoute,
   ApiPublicTelegramTicketRoute: ApiPublicTelegramTicketRoute,
 }
