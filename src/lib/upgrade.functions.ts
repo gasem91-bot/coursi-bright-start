@@ -69,11 +69,7 @@ export const createAiUpgradeCheckout = createServerFn({ method: "POST" })
     if (!tiers.includes("course")) return { error: "not_eligible" };
 
     const Stripe = (await import("stripe")).default;
-    const stripe = new Stripe(stripeSecretKey, {
-      apiVersion: "2024-06-20" as InstanceType<typeof Stripe>["VERSION"] extends string
-        ? never
-        : never,
-    } as unknown as Stripe.StripeConfig);
+    const stripe = new Stripe(stripeSecretKey);
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
