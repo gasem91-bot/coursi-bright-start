@@ -184,11 +184,6 @@ async function renderCertificate(data: CertificateData): Promise<HTMLCanvasEleme
   const accent = LEVEL_ACCENT[data.level];
   context.fillStyle = paper;
   context.fillRect(0, 0, width, height);
-  const wash = context.createRadialGradient(width / 2, height / 2, 0, width / 2, height / 2, width * 0.7);
-  wash.addColorStop(0, "rgba(255,255,255,0.92)");
-  wash.addColorStop(1, `${accent}0B`);
-  context.fillStyle = wash;
-  context.fillRect(0, 0, width, height);
   drawFrame(context, accent, width, height);
 
   context.textAlign = "center";
