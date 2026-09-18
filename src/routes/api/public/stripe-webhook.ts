@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
-import { AI_TOPUP_PRICE_ID } from "@/lib/upgrade.functions";
+
+// $14 one-time AI tutor bot top-up (keep in sync with src/lib/upgrade.functions.ts)
+const AI_TOPUP_PRICE_ID = "price_1UH5mPHNdqnRfyCHMmSUiMiK";
 
 // Real Stripe Price IDs → level + tier mapping
 const PRICE_MAP: Record<string, { level: string; tier: string }> = {
