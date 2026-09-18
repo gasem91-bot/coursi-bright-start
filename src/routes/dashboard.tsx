@@ -8,6 +8,7 @@ import ShaderBackground from "@/components/ui/shader-background";
 import { ThemeToggle, useTheme } from "@/lib/theme";
 import { useProfile } from "@/contexts/ProfileContext";
 import { PortalNav } from "@/components/portal-nav";
+import { BadgeMedallion } from "@/components/badge-medallion";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -245,9 +246,10 @@ function DashboardPage() {
         </section>
 
         {/* Card 3: Course */}
-        <section style={{ background: "var(--dashboard-course-bg)", border: "1px solid var(--dashboard-course-border)", borderRadius: 16, marginBottom: 16, overflow: "hidden" }}>
+        <section className="dashboard-course-badge-card" style={{ background: "var(--dashboard-course-bg)", border: "1px solid var(--dashboard-course-border)", borderRadius: 16, marginBottom: 16, position: "relative" }}>
+          <BadgeMedallion level={level} size={112} className="dashboard-course-medallion" />
           {COURSE_CONTENT[level]?.coverImage && (
-            <div className="course-card-cover">
+            <div className="course-card-cover" style={{ overflow: "hidden", borderRadius: "15px 15px 0 0" }}>
               <img
                 src={COURSE_CONTENT[level].coverImage}
                 alt={course.name}

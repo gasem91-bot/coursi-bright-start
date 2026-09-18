@@ -872,3 +872,24 @@ html, body {
   border-color: var(--accent-purple-border);
   background: var(--accent-purple-soft);
 }
+
+.dashboard-course-medallion {
+  position: absolute !important;
+  inset-inline-end: -12px;
+  top: -18px;
+  z-index: 3;
+}
+
+@media (max-width: 640px) {
+  .dashboard-course-medallion {
+    width: 84px !important;
+    height: 84px !important;
+    inset-inline-end: -7px;
+    top: -12px;
+  }
+
+  .profile-medallions > div {
+    width: 52px !important;
+    height: 52px !important;
+  }
+}

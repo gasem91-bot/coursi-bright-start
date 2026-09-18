@@ -8,6 +8,7 @@ import {
   LEVEL_STATEMENT,
   type Level,
 } from "@/lib/certificate";
+import { BADGE_NODE_LINKS, BADGE_NODE_POSITIONS, BadgeMedallion } from "@/components/badge-medallion";
 
 const arabicFont = "Cairo, 'Noto Sans Arabic', sans-serif";
 const wordmarkFont = "'Six Caps', Impact, sans-serif";
@@ -20,18 +21,6 @@ export interface CertificateData {
   date: Date;
   certId: string;
 }
-
-const NODE_POSITIONS: Record<Level, Array<[number, number]>> = {
-  beginner: [[0, 0]],
-  intermediate: [[0, -20], [-23, 17], [23, 17]],
-  advanced: [[0, -27], [-27, -7], [27, -7], [-19, 25], [19, 25], [0, 5]],
-};
-
-const NODE_LINKS: Record<Level, Array<[number, number]>> = {
-  beginner: [],
-  intermediate: [[0, 1], [0, 2], [1, 2]],
-  advanced: [[0, 1], [0, 2], [1, 5], [2, 5], [1, 3], [2, 4], [3, 5], [4, 5], [3, 4]],
-};
 
 function drawPolygon(
   ctx: CanvasRenderingContext2D,
@@ -111,10 +100,10 @@ function drawMedallion(ctx: CanvasRenderingContext2D, level: Level, cx: number, 
   ctx.globalAlpha = 1;
 
   const nodeScale = radius / 68;
-  const positions = NODE_POSITIONS[level].map(([x, y]) => [cx + x * nodeScale, cy + y * nodeScale] as [number, number]);
+  const positions = BADGE_NODE_POSITIONS[level].map(([x, y]) => [cx + x * nodeScale, cy + y * nodeScale] as [number, number]);
   ctx.strokeStyle = paper;
   ctx.lineWidth = 4 * nodeScale;
-  NODE_LINKS[level].forEach(([from, to]) => {
+  BADGE_NODE_LINKS[level].forEach(([from, to]) => {
     const start = positions[from];
     const end = positions[to];
     if (!start || !end) return;
@@ -242,38 +231,6 @@ async function renderCertificate(data: CertificateData): Promise<HTMLCanvasEleme
   return canvas;
 }
 
-function NodeSeal({ level }: { level: Level }) {
-  const accent = LEVEL_ACCENT[level];
-  const nodes = NODE_POSITIONS[level];
-  return (
-    <svg viewBox="0 0 160 160" aria-hidden="true" style={{ width: "100%", height: "100%", display: "block" }}>
-      <defs>
-        <radialGradient id={`seal-${level}`} cx="36%" cy="28%">
-          <stop offset="0%" stopColor="#FFFFFF" />
-          <stop offset="24%" stopColor={accent} />
-          <stop offset="100%" stopColor="#28212E" />
-        </radialGradient>
-        <filter id={`glow-${level}`} x="-60%" y="-60%" width="220%" height="220%">
-          <feGaussianBlur stdDeviation="3" result="blur" />
-          <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
-        </filter>
-      </defs>
-      <circle cx="80" cy="80" r="70" fill={`url(#seal-${level})`} stroke={accent} strokeWidth="4" />
-      <circle cx="80" cy="80" r="60" fill="none" stroke={paper} strokeOpacity=".68" strokeWidth="2" />
-      <circle cx="80" cy="80" r="50" fill="none" stroke={accent} strokeWidth="2" />
-      {NODE_LINKS[level].map(([from, to]) => {
-        const start = nodes[from];
-        const end = nodes[to];
-        if (!start || !end) return null;
-        return <line key={`${from}-${to}`} x1={80 + start[0]} y1={80 + start[1]} x2={80 + end[0]} y2={80 + end[1]} stroke={paper} strokeWidth="4" />;
-      })}
-      {nodes.map(([x, y], index) => (
-        <circle key={index} cx={80 + x} cy={80 + y} r="9" fill={paper} stroke="#2B2430" strokeWidth="2" filter={`url(#glow-${level})`} />
-      ))}
-    </svg>
-  );
-}
-
 function AuthenticatedStamp({ accent }: { accent: string }) {
   return (
     <div style={{ width: 74, height: 74, border: `2px solid ${accent}`, borderRadius: "50%", display: "grid", placeItems: "center", color: accent, position: "relative", fontFamily: wordmarkFont, lineHeight: 1 }}>
@@ -399,7 +356,7 @@ function CertificatePreview({ level, userName, certId, date }: CertificateData) 
         <div dir="ltr" style={{ color: accent, fontFamily: "Arial, sans-serif", fontSize: "1cqw", letterSpacing: 2, marginTop: "0.7cqw" }}>ARTIFICIAL INTELLIGENCE</div>
       </div>
 
-      <div style={{ position: "absolute", width: "15cqw", height: "15cqw", left: "42.5%", top: "21%", zIndex: 1 }}><NodeSeal level={level} /></div>
+      <BadgeMedallion level={level} size="15cqw" style={{ position: "absolute", left: "42.5%", top: "21%", zIndex: 1 }} />
 
       <div style={{ position: "absolute", top: "44%", left: "8%", right: "8%", zIndex: 1 }}>
         <div style={{ fontSize: "3.5cqw", fontWeight: 700 }}>{"شهادة إتمام"}</div>

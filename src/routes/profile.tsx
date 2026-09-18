@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import arabicLogo from "@/assets/arabic-logo.png.asset.json";
 import { ThemeToggle } from "@/lib/theme";
 import { useProfile } from "@/contexts/ProfileContext";
+import { BadgeMedallion } from "@/components/badge-medallion";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -143,6 +144,16 @@ function ProfilePage() {
   const memberSince = profile?.created_at ? arabicMonth(new Date(profile.created_at)) : "";
 
   const lb = useMemo(() => (profile ? levelBadge(profile.level) : null), [profile]);
+  const enrolledLevels = useMemo(() => {
+    const levels = new Set<Level>();
+    if (profile?.level) levels.add(profile.level);
+    progress.forEach((item) => {
+      if (item.chapter_id.startsWith("ai-beginner-")) levels.add("beginner");
+      if (item.chapter_id.startsWith("ai-intermediate-")) levels.add("intermediate");
+      if (item.chapter_id.startsWith("ai-advanced-")) levels.add("advanced");
+    });
+    return (["beginner", "intermediate", "advanced"] as Level[]).filter((level) => levels.has(level));
+  }, [profile?.level, progress]);
   const tierBadge = subscription?.tier === "course_ai"
     ? { label: "باقة الكورس + مساعد AI", bg: "linear-gradient(135deg, var(--accent-purple-soft), var(--accent-cyan-soft))", border: "var(--accent-purple-border)", color: "var(--accent-cyan-text)" }
     : { label: "باقة الكورس", bg: "var(--bg-card)", border: "var(--border)", color: "var(--text-secondary)" };
@@ -197,6 +208,11 @@ function ProfilePage() {
             {initial}
           </div>
           <h1 style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: 20 }}>{displayName}</h1>
+          <div className="profile-medallions" style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 6, marginTop: 10 }}>
+            {enrolledLevels.map((enrolledLevel) => (
+              <BadgeMedallion key={enrolledLevel} level={enrolledLevel} size={58} />
+            ))}
+          </div>
           {(profile?.country_name || profile?.country_flag) && (
             <p style={{ color: "var(--text-secondary)", fontSize: 13, marginTop: 4 }}>
               {profile?.country_flag ?? ""} {profile?.country_name ?? ""}

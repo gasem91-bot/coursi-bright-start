@@ -1,5 +1,5 @@
 import { LockKeyhole } from "lucide-react";
-import type { CSSProperties } from "react";
+import { useId, type CSSProperties } from "react";
 import { LEVEL_ACCENT, LEVEL_LABEL, type Level } from "@/lib/certificate";
 
 const paper = "#FAF9F4";
@@ -16,8 +16,6 @@ export const BADGE_NODE_LINKS: Record<Level, Array<[number, number]>> = {
   advanced: [[0, 1], [0, 2], [1, 5], [2, 5], [1, 3], [2, 4], [3, 5], [4, 5], [3, 4]],
 };
 
-let badgeInstance = 0;
-
 interface BadgeMedallionProps {
   level: Level;
   locked?: boolean;
@@ -29,7 +27,8 @@ interface BadgeMedallionProps {
 export function BadgeMedallion({ level, locked = false, size = 96, className, style }: BadgeMedallionProps) {
   const accent = LEVEL_ACCENT[level];
   const nodes = BADGE_NODE_POSITIONS[level];
-  const uid = `badge-${level}-${++badgeInstance}`;
+  const reactId = useId().replace(/:/g, "");
+  const uid = `badge-${level}-${reactId}`;
 
   return (
     <div
