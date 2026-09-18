@@ -203,6 +203,21 @@ export const Route = createFileRoute("/api/public/stripe-webhook")({
           // 5. Send welcome email
           await sendWelcomeEmail(email, level, tier, loginLink, resendApiKey);
 
+          // 6. Internal notification to the team
+          await sendInternalSaleNotification(
+            {
+              email,
+              name: session.customer_details?.name || "",
+              level,
+              tier,
+              amount: session.amount_total ? session.amount_total / 100 : 0,
+              currency: session.currency?.toUpperCase() || "USD",
+              sessionId: session.id,
+              mode: session.mode || "payment",
+            },
+            resendApiKey,
+          );
+
           console.log(`[stripe-webhook] onboarded ${email} — ${level} ${tier}`);
           return Response.json({ success: true });
         } catch (err) {
