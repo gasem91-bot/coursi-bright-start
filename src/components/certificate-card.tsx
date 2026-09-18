@@ -1,218 +1,289 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
-import arabicLogo from "@/assets/arabic-logo.png.asset.json";
 import {
   arabicDate,
   certificateId,
-  courseName,
   LEVEL_ACCENT,
   LEVEL_LABEL,
   LEVEL_STATEMENT,
-  LEVEL_TAGLINE,
   type Level,
 } from "@/lib/certificate";
 
-const font = "Cairo, 'Noto Sans Arabic', sans-serif";
+const arabicFont = "Cairo, 'Noto Sans Arabic', sans-serif";
+const wordmarkFont = "'Six Caps', Impact, sans-serif";
+const paper = "#FAF9F4";
+const ink = "#242127";
 
 export interface CertificateData {
   level: Level;
   userName: string;
   date: Date;
   certId: string;
-  scoreText?: string;
 }
 
-/* ---------- canvas rendering ---------- */
+const NODE_POSITIONS: Record<Level, Array<[number, number]>> = {
+  beginner: [[0, 0]],
+  intermediate: [[0, -20], [-23, 17], [23, 17]],
+  advanced: [[0, -27], [-27, -7], [27, -7], [-19, 25], [19, 25], [0, 5]],
+};
 
-function roundRect(
+const NODE_LINKS: Record<Level, Array<[number, number]>> = {
+  beginner: [],
+  intermediate: [[0, 1], [0, 2], [1, 2]],
+  advanced: [[0, 1], [0, 2], [1, 5], [2, 5], [1, 3], [2, 4], [3, 5], [4, 5], [3, 4]],
+};
+
+function drawPolygon(
   ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  w: number,
-  h: number,
-  r: number,
+  points: Array<[number, number]>,
+  stroke: string,
+  width: number,
+  fill?: string,
 ) {
   ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.arcTo(x + w, y, x + w, y + h, r);
-  ctx.arcTo(x + w, y + h, x, y + h, r);
-  ctx.arcTo(x, y + h, x, y, r);
-  ctx.arcTo(x, y, x + w, y, r);
+  points.forEach(([x, y], index) => (index === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y)));
   ctx.closePath();
+  if (fill) {
+    ctx.fillStyle = fill;
+    ctx.fill();
+  }
+  ctx.strokeStyle = stroke;
+  ctx.lineWidth = width;
+  ctx.stroke();
 }
 
-function loadImage(src: string) {
-  return new Promise<HTMLImageElement | null>((resolve) => {
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.onload = () => resolve(img);
-    img.onerror = () => resolve(null);
-    img.src = src;
+function drawFrame(ctx: CanvasRenderingContext2D, accent: string, width: number, height: number) {
+  const outer = [[54, 54], [width - 54, 54], [width - 54, height - 54], [54, height - 54]] as Array<[number, number]>;
+  drawPolygon(ctx, outer, accent, 12);
+
+  const cut = 46;
+  const inset = 82;
+  const inner = [
+    [inset + cut, inset], [width - inset - cut, inset], [width - inset, inset + cut],
+    [width - inset, height - inset - cut], [width - inset - cut, height - inset],
+    [inset + cut, height - inset], [inset, height - inset - cut], [inset, inset + cut],
+  ] as Array<[number, number]>;
+  drawPolygon(ctx, inner, accent, 3);
+
+  ctx.save();
+  ctx.globalAlpha = 0.42;
+  ctx.strokeStyle = accent;
+  ctx.lineWidth = 1;
+  for (let offset = 96; offset <= 116; offset += 5) {
+    ctx.strokeRect(offset, offset, width - offset * 2, height - offset * 2);
+  }
+  ctx.restore();
+
+  const corner = 82;
+  const depth = 105;
+  const corners: Array<Array<[number, number]>> = [
+    [[54, 54], [54 + depth, 54], [54 + depth - corner, 82], [82, 82], [82, 54 + depth - corner]],
+    [[width - 54, 54], [width - 54 - depth, 54], [width - 54 - depth + corner, 82], [width - 82, 82], [width - 82, 54 + depth - corner]],
+    [[54, height - 54], [54 + depth, height - 54], [54 + depth - corner, height - 82], [82, height - 82], [82, height - 54 - depth + corner]],
+    [[width - 54, height - 54], [width - 54 - depth, height - 54], [width - 54 - depth + corner, height - 82], [width - 82, height - 82], [width - 82, height - 54 - depth + corner]],
+  ];
+  corners.forEach((points) => drawPolygon(ctx, points, accent, 2, `${accent}24`));
+}
+
+function drawMedallion(ctx: CanvasRenderingContext2D, level: Level, cx: number, cy: number, radius: number) {
+  const accent = LEVEL_ACCENT[level];
+  ctx.save();
+  ctx.shadowColor = `${accent}70`;
+  ctx.shadowBlur = 28;
+  const gradient = ctx.createRadialGradient(cx - radius * 0.28, cy - radius * 0.3, 4, cx, cy, radius);
+  gradient.addColorStop(0, "#FFFFFF");
+  gradient.addColorStop(0.18, accent);
+  gradient.addColorStop(1, "#28212E");
+  ctx.fillStyle = gradient;
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+
+  for (const scale of [0.88, 0.74]) {
+    ctx.strokeStyle = scale === 0.88 ? paper : accent;
+    ctx.globalAlpha = scale === 0.88 ? 0.65 : 1;
+    ctx.lineWidth = scale === 0.88 ? 3 : 2;
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius * scale, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+
+  const nodeScale = radius / 68;
+  const positions = NODE_POSITIONS[level].map(([x, y]) => [cx + x * nodeScale, cy + y * nodeScale] as [number, number]);
+  ctx.strokeStyle = paper;
+  ctx.lineWidth = 4 * nodeScale;
+  NODE_LINKS[level].forEach(([from, to]) => {
+    const start = positions[from];
+    const end = positions[to];
+    if (!start || !end) return;
+    ctx.beginPath();
+    ctx.moveTo(start[0], start[1]);
+    ctx.lineTo(end[0], end[1]);
+    ctx.stroke();
+  });
+  positions.forEach(([x, y]) => {
+    const node = ctx.createRadialGradient(x - 3, y - 4, 1, x, y, 10 * nodeScale);
+    node.addColorStop(0, "#FFFFFF");
+    node.addColorStop(0.35, paper);
+    node.addColorStop(1, accent);
+    ctx.fillStyle = node;
+    ctx.beginPath();
+    ctx.arc(x, y, 10 * nodeScale, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = "#2B2430";
+    ctx.lineWidth = 2;
+    ctx.stroke();
   });
 }
 
-function wrapText(
-  ctx: CanvasRenderingContext2D,
-  text: string,
-  x: number,
-  y: number,
-  maxWidth: number,
-  lineHeight: number,
-) {
-  const words = text.split(" ");
-  let line = "";
-  let cy = y;
-  for (const w of words) {
-    const test = line ? `${line} ${w}` : w;
-    if (ctx.measureText(test).width > maxWidth && line) {
-      ctx.fillText(line, x, cy);
-      line = w;
-      cy += lineHeight;
-    } else {
-      line = test;
-    }
-  }
-  if (line) ctx.fillText(line, x, cy);
-  return cy;
+function drawAuthenticatedStamp(ctx: CanvasRenderingContext2D, accent: string, cx: number, cy: number) {
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.strokeStyle = accent;
+  ctx.fillStyle = accent;
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.arc(0, 0, 62, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(0, 0, 49, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.textAlign = "center";
+  ctx.direction = "ltr";
+  ctx.font = `22px ${wordmarkFont}`;
+  ctx.fillText("AUTHENTICATED", 0, -40);
+  ctx.font = `52px ${wordmarkFont}`;
+  ctx.fillText("COURS!", 0, 17);
+  ctx.font = `16px ${wordmarkFont}`;
+  ctx.fillText("COURSI.AI", 0, 42);
+  ctx.restore();
 }
 
 async function renderCertificate(data: CertificateData): Promise<HTMLCanvasElement> {
-  const W = 1600;
-  const H = 1131;
+  const width = 1600;
+  const height = 1131;
   const canvas = document.createElement("canvas");
-  canvas.width = W;
-  canvas.height = H;
-  const ctx = canvas.getContext("2d")!;
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext("2d");
+  if (!context) throw new Error("Canvas is unavailable");
 
   try {
     await Promise.all([
+      document.fonts.load("400 100px 'Six Caps'"),
       document.fonts.load("900 64px Cairo"),
-      document.fonts.load("700 34px Cairo"),
-      document.fonts.load("400 26px Cairo"),
+      document.fonts.load("600 28px Cairo"),
       document.fonts.ready,
     ]);
   } catch {
-    /* fonts best-effort */
+    // Browser font loading is best-effort; fallbacks preserve the export.
   }
 
   const accent = LEVEL_ACCENT[data.level];
+  context.fillStyle = paper;
+  context.fillRect(0, 0, width, height);
+  drawFrame(context, accent, width, height);
 
-  // Background
-  ctx.fillStyle = "#060410";
-  ctx.fillRect(0, 0, W, H);
+  context.textAlign = "center";
+  context.direction = "ltr";
+  context.fillStyle = ink;
+  context.font = `400 96px ${wordmarkFont}`;
+  context.fillText("COURS!", width / 2, 190);
+  context.font = `500 19px Arial, sans-serif`;
+  context.fillStyle = accent;
+  context.fillText("ARTIFICIAL INTELLIGENCE", width / 2, 220);
 
-  // Soft brand glows
-  const glow1 = ctx.createRadialGradient(220, 160, 0, 220, 160, 620);
-  glow1.addColorStop(0, "rgba(123,53,255,0.28)");
-  glow1.addColorStop(1, "rgba(123,53,255,0)");
-  ctx.fillStyle = glow1;
-  ctx.fillRect(0, 0, W, H);
-  const glow2 = ctx.createRadialGradient(W - 200, H - 140, 0, W - 200, H - 140, 620);
-  glow2.addColorStop(0, "rgba(0,212,200,0.22)");
-  glow2.addColorStop(1, "rgba(0,212,200,0)");
-  ctx.fillStyle = glow2;
-  ctx.fillRect(0, 0, W, H);
+  drawMedallion(context, data.level, width / 2, 320, 82);
 
-  // Gradient frame
-  const frame = ctx.createLinearGradient(60, 60, W - 60, H - 60);
-  frame.addColorStop(0, "#7B35FF");
-  frame.addColorStop(0.5, accent);
-  frame.addColorStop(1, "#00D4C8");
-  ctx.strokeStyle = frame;
-  ctx.lineWidth = 6;
-  roundRect(ctx, 48, 48, W - 96, H - 96, 34);
-  ctx.stroke();
+  context.direction = "rtl";
+  context.fillStyle = ink;
+  context.font = `700 48px ${arabicFont}`;
+  context.fillText("شهادة إتمام", width / 2, 452);
+  context.font = `900 66px ${arabicFont}`;
+  context.fillText(data.userName, width / 2, 550);
+  context.strokeStyle = accent;
+  context.lineWidth = 2;
+  context.beginPath();
+  context.moveTo(width / 2 - 370, 575);
+  context.lineTo(width / 2 + 370, 575);
+  context.stroke();
 
-  ctx.strokeStyle = "rgba(255,255,255,0.12)";
-  ctx.lineWidth = 2;
-  roundRect(ctx, 74, 74, W - 148, H - 148, 24);
-  ctx.stroke();
+  context.fillStyle = accent;
+  context.font = `700 28px ${arabicFont}`;
+  context.fillText(`${LEVEL_LABEL[data.level]} - الذكاء الاصطناعي`, width / 2, 628);
+  context.fillStyle = ink;
+  context.font = `600 27px ${arabicFont}`;
+  context.fillText(LEVEL_STATEMENT[data.level], width / 2, 695);
 
-  ctx.textAlign = "center";
-  ctx.direction = "rtl";
+  const metaY = 855;
+  context.strokeStyle = `${accent}A8`;
+  context.lineWidth = 2;
+  context.beginPath();
+  context.moveTo(250, metaY);
+  context.lineTo(585, metaY);
+  context.moveTo(1015, metaY);
+  context.lineTo(1350, metaY);
+  context.stroke();
+  context.fillStyle = ink;
+  context.direction = "ltr";
+  context.font = `600 25px ${arabicFont}`;
+  context.fillText(arabicDate(data.date), 417, metaY - 16);
+  context.fillText("Date Issued", 417, metaY + 34);
+  context.font = `600 25px Arial, sans-serif`;
+  context.fillText("Founder and CEO", 1182, metaY + 20);
 
-  // Logo
-  const logo = await loadImage(arabicLogo.url);
-  if (logo) {
-    const lw = 260;
-    const lh = (logo.height / logo.width) * lw;
-    ctx.drawImage(logo, W / 2 - lw / 2, 120, lw, lh);
-  } else {
-    ctx.fillStyle = "#FFFFFF";
-    ctx.font = `900 54px ${font}`;
-    ctx.fillText("COURSI", W / 2, 190);
-  }
-
-  // Heading
-  ctx.fillStyle = accent;
-  ctx.font = `800 28px ${font}`;
-  ctx.fillText("شهادة إتمام", W / 2, 330);
-
-  ctx.fillStyle = "#FFFFFF";
-  ctx.font = `900 52px ${font}`;
-  ctx.fillText(LEVEL_LABEL[data.level], W / 2, 400);
-
-  ctx.fillStyle = "#9590A8";
-  ctx.font = `600 24px ${font}`;
-  ctx.fillText(LEVEL_TAGLINE[data.level], W / 2, 440);
-
-  // Recipient
-  ctx.fillStyle = "#B6AECC";
-  ctx.font = `400 26px ${font}`;
-  ctx.fillText("تُمنح هذه الشهادة إلى", W / 2, 480);
-
-  const nameGrad = ctx.createLinearGradient(W / 2 - 400, 0, W / 2 + 400, 0);
-  nameGrad.addColorStop(0, "#7B35FF");
-  nameGrad.addColorStop(1, "#00D4C8");
-  ctx.fillStyle = nameGrad;
-  ctx.font = `900 68px ${font}`;
-  ctx.fillText(data.userName, W / 2, 570);
-
-  ctx.strokeStyle = "rgba(255,255,255,0.16)";
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(W / 2 - 380, 605);
-  ctx.lineTo(W / 2 + 380, 605);
-  ctx.stroke();
-
-  // Body
-  ctx.fillStyle = "#CFC8DE";
-  ctx.font = `500 26px ${font}`;
-  wrapText(ctx, LEVEL_STATEMENT[data.level], W / 2, 665, W - 420, 40);
-  ctx.fillStyle = "#FFFFFF";
-  ctx.font = `700 34px ${font}`;
-  ctx.fillText(courseName(data.level), W / 2, 775);
-  if (data.scoreText) {
-    ctx.fillStyle = accent;
-    ctx.font = `700 24px ${font}`;
-    ctx.fillText(data.scoreText, W / 2, 820);
-  }
-
-  // Footer meta
-  const y = 900;
-  ctx.font = `800 24px ${font}`;
-  ctx.fillStyle = accent;
-  ctx.fillText("تاريخ الإتمام", W / 2 + 380, y);
-  ctx.fillText("رقم الشهادة", W / 2 - 380, y);
-  ctx.fillStyle = "#E8E4F2";
-  ctx.font = `500 26px ${font}`;
-  ctx.fillText(arabicDate(data.date), W / 2 + 380, y + 46);
-  ctx.direction = "ltr";
-  ctx.fillText(data.certId, W / 2 - 380, y + 46);
-  ctx.direction = "rtl";
-
-  ctx.fillStyle = "#9590A8";
-  ctx.font = `600 24px ${font}`;
-  ctx.fillText("منصّة كورسي · COURSI.ai", W / 2, y + 30);
-
-  ctx.fillStyle = "rgba(255,255,255,0.35)";
-  ctx.font = `400 20px ${font}`;
-  ctx.fillText("للتحقق من صحة الشهادة تواصل معنا عبر coursi.ai", W / 2, H - 110);
-
+  context.fillStyle = "#686269";
+  context.font = `500 18px Arial, sans-serif`;
+  context.textAlign = "left";
+  context.fillText(data.certId, 130, height - 105);
+  drawAuthenticatedStamp(context, accent, width - 178, height - 160);
   return canvas;
 }
 
-/* ---------- component ---------- */
+function NodeSeal({ level }: { level: Level }) {
+  const accent = LEVEL_ACCENT[level];
+  const nodes = NODE_POSITIONS[level];
+  return (
+    <svg viewBox="0 0 160 160" aria-hidden="true" style={{ width: "100%", height: "100%", display: "block" }}>
+      <defs>
+        <radialGradient id={`seal-${level}`} cx="36%" cy="28%">
+          <stop offset="0%" stopColor="#FFFFFF" />
+          <stop offset="24%" stopColor={accent} />
+          <stop offset="100%" stopColor="#28212E" />
+        </radialGradient>
+        <filter id={`glow-${level}`} x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur stdDeviation="3" result="blur" />
+          <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+        </filter>
+      </defs>
+      <circle cx="80" cy="80" r="70" fill={`url(#seal-${level})`} stroke={accent} strokeWidth="4" />
+      <circle cx="80" cy="80" r="60" fill="none" stroke={paper} strokeOpacity=".68" strokeWidth="2" />
+      <circle cx="80" cy="80" r="50" fill="none" stroke={accent} strokeWidth="2" />
+      {NODE_LINKS[level].map(([from, to]) => {
+        const start = nodes[from];
+        const end = nodes[to];
+        if (!start || !end) return null;
+        return <line key={`${from}-${to}`} x1={80 + start[0]} y1={80 + start[1]} x2={80 + end[0]} y2={80 + end[1]} stroke={paper} strokeWidth="4" />;
+      })}
+      {nodes.map(([x, y], index) => (
+        <circle key={index} cx={80 + x} cy={80 + y} r="9" fill={paper} stroke="#2B2430" strokeWidth="2" filter={`url(#glow-${level})`} />
+      ))}
+    </svg>
+  );
+}
+
+function AuthenticatedStamp({ accent }: { accent: string }) {
+  return (
+    <div style={{ width: 74, height: 74, border: `2px solid ${accent}`, borderRadius: "50%", display: "grid", placeItems: "center", color: accent, position: "relative", fontFamily: wordmarkFont, lineHeight: 1 }}>
+      <div style={{ position: "absolute", inset: 6, border: `1px solid ${accent}`, borderRadius: "50%" }} />
+      <span style={{ position: "absolute", top: 9, fontSize: 9, letterSpacing: 1 }}>AUTHENTICATED</span>
+      <strong style={{ fontSize: 26, fontWeight: 400 }}>COURS!</strong>
+      <span style={{ position: "absolute", bottom: 9, fontSize: 8, letterSpacing: 1 }}>COURSI.AI</span>
+    </div>
+  );
+}
 
 export default function CertificateCard({
   level,
@@ -223,8 +294,6 @@ export default function CertificateCard({
   total,
   completedAt,
   certIdOverride,
-  examScore,
-  examTotal,
   lockedHint,
 }: {
   level: Level;
@@ -240,24 +309,19 @@ export default function CertificateCard({
   lockedHint?: string;
 }) {
   const [busy, setBusy] = useState(false);
-  const previewRef = useRef<HTMLDivElement>(null);
   const accent = LEVEL_ACCENT[level];
   const certId = certIdOverride ?? certificateId(userId, level);
   const date = completedAt ?? new Date();
-  const scoreText =
-    examScore != null && examTotal ? `نتيجة الاختبار النهائي: ${examScore} / ${examTotal}` : undefined;
-
-  const build = () => renderCertificate({ level, userName, date, certId, scoreText });
+  const build = () => renderCertificate({ level, userName, date, certId });
 
   const downloadPng = async () => {
     setBusy(true);
     try {
       const canvas = await build();
-      const url = canvas.toDataURL("image/png");
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${certId}.png`;
-      a.click();
+      const link = document.createElement("a");
+      link.href = canvas.toDataURL("image/png");
+      link.download = `${certId}.png`;
+      link.click();
       toast.success("تم تحميل الشهادة 🎉");
     } catch {
       toast.error("تعذّر إنشاء الشهادة، حاول مرة أخرى");
@@ -270,16 +334,16 @@ export default function CertificateCard({
     setBusy(true);
     try {
       const canvas = await build();
-      const url = canvas.toDataURL("image/png");
-      const w = window.open("", "_blank");
-      if (!w) {
+      const imageUrl = canvas.toDataURL("image/png");
+      const printWindow = window.open("", "_blank");
+      if (!printWindow) {
         toast.error("افتح النوافذ المنبثقة لتحميل PDF");
         return;
       }
-      w.document.write(
-        `<html><head><title>${certId}</title><style>@page{size:A4 landscape;margin:0}html,body{margin:0;padding:0;background:#060410}img{width:100%;height:auto;display:block}</style></head><body><img src="${url}" onload="window.focus();window.print()" /></body></html>`,
+      printWindow.document.write(
+        `<html><head><title>${certId}</title><style>@page{size:A4 landscape;margin:0}html,body{width:297mm;height:210mm;margin:0;background:${paper};overflow:hidden}img{width:297mm;height:210mm;object-fit:fill;display:block}</style></head><body><img src="${imageUrl}" onload="window.focus();window.print()" /></body></html>`,
       );
-      w.document.close();
+      printWindow.document.close();
     } catch {
       toast.error("تعذّر إنشاء ملف PDF");
     } finally {
@@ -288,172 +352,74 @@ export default function CertificateCard({
   };
 
   return (
-    <div
-      style={{
-        background: unlocked
-          ? `linear-gradient(160deg, ${accent}14, rgba(123,53,255,0.06))`
-          : "var(--bg-card)",
-        border: `1px solid ${unlocked ? `${accent}55` : "var(--border)"}`,
-        borderRadius: 16,
-        padding: 18,
-        marginBottom: 12,
-        fontFamily: font,
-      }}
-    >
+    <div style={{ background: unlocked ? `linear-gradient(160deg, ${accent}14, rgba(123,53,255,0.06))` : "var(--bg-card)", border: `1px solid ${unlocked ? `${accent}55` : "var(--border)"}`, borderRadius: 8, padding: 18, marginBottom: 12, fontFamily: arabicFont }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <div style={{ fontSize: 30, opacity: unlocked ? 1 : 0.4 }}>{unlocked ? "🏆" : "🔒"}</div>
           <div>
-            <div style={{ color: "var(--text-primary)", fontWeight: 800, fontSize: 15 }}>
-              شهادة {LEVEL_LABEL[level]}
-            </div>
+            <div style={{ color: "var(--text-primary)", fontWeight: 800, fontSize: 15 }}>شهادة {LEVEL_LABEL[level]}</div>
             <div style={{ color: "var(--text-secondary)", fontSize: 12, marginTop: 3 }}>
-              {unlocked ? (
-                <span dir="ltr" style={{ letterSpacing: 1 }}>{certId}</span>
-              ) : (
-                lockedHint ?? `${completed}/${total} فصلاً — أكمل جميع الفصول ثم اجتز الاختبار النهائي`
-              )}
+              {unlocked ? <span dir="ltr">{certId}</span> : lockedHint ?? `${completed}/${total} فصلاً — أكمل جميع الفصول ثم اجتز الاختبار النهائي`}
             </div>
           </div>
         </div>
-
         {unlocked ? (
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            <button
-              onClick={downloadPdf}
-              disabled={busy}
-              style={{
-                background: `linear-gradient(135deg, #7B35FF, ${accent})`,
-                color: "#fff",
-                fontWeight: 800,
-                fontSize: 13,
-                padding: "10px 18px",
-                borderRadius: 30,
-                border: "none",
-                cursor: busy ? "wait" : "pointer",
-                fontFamily: font,
-                opacity: busy ? 0.7 : 1,
-              }}
-            >
-              ⬇ تحميل PDF
-            </button>
-            <button
-              onClick={downloadPng}
-              disabled={busy}
-              style={{
-                background: "transparent",
-                color: accent,
-                fontWeight: 700,
-                fontSize: 13,
-                padding: "10px 18px",
-                borderRadius: 30,
-                border: `1px solid ${accent}`,
-                cursor: busy ? "wait" : "pointer",
-                fontFamily: font,
-                opacity: busy ? 0.7 : 1,
-              }}
-            >
-              🖼 صورة PNG
-            </button>
+            <button onClick={downloadPdf} disabled={busy} style={{ background: accent, color: "#FFFFFF", fontWeight: 800, fontSize: 13, padding: "10px 18px", borderRadius: 30, border: "none", cursor: busy ? "wait" : "pointer", fontFamily: arabicFont, opacity: busy ? 0.7 : 1 }}>⬇ تحميل PDF</button>
+            <button onClick={downloadPng} disabled={busy} style={{ background: "transparent", color: accent, fontWeight: 700, fontSize: 13, padding: "10px 18px", borderRadius: 30, border: `1px solid ${accent}`, cursor: busy ? "wait" : "pointer", fontFamily: arabicFont, opacity: busy ? 0.7 : 1 }}>🖼 صورة PNG</button>
           </div>
         ) : (
-          <div
-            style={{
-              color: "var(--text-muted)",
-              fontSize: 12,
-              border: "1px dashed var(--border)",
-              borderRadius: 30,
-              padding: "8px 16px",
-            }}
-          >
-            قيد الإنجاز
-          </div>
+          <div style={{ color: "var(--text-muted)", fontSize: 12, border: "1px dashed var(--border)", borderRadius: 30, padding: "8px 16px" }}>قيد الإنجاز</div>
         )}
       </div>
-
       {!unlocked && (
         <div style={{ marginTop: 12, height: 6, background: "var(--border)", borderRadius: 4, overflow: "hidden" }}>
-          <div
-            style={{
-              height: "100%",
-              width: `${total ? (completed / total) * 100 : 0}%`,
-              background: `linear-gradient(90deg, #7B35FF, ${accent})`,
-            }}
-          />
+          <div style={{ height: "100%", width: `${total ? (completed / total) * 100 : 0}%`, background: accent, transition: "width 0.8s" }} />
         </div>
       )}
-
       {unlocked && (
-        <div ref={previewRef} style={{ marginTop: 14, borderRadius: 12, overflow: "hidden", border: "1px solid var(--border)" }}>
-          <CertificatePreview level={level} userName={userName} certId={certId} date={date} scoreText={scoreText} />
+        <div style={{ marginTop: 14, borderRadius: 4, overflow: "hidden", border: `1px solid ${accent}55` }}>
+          <CertificatePreview level={level} userName={userName} certId={certId} date={date} />
         </div>
       )}
     </div>
   );
 }
 
-function CertificatePreview({
-  level,
-  userName,
-  certId,
-  date,
-  scoreText,
-}: {
-  level: Level;
-  userName: string;
-  certId: string;
-  date: Date;
-  scoreText?: string;
-}) {
+function CertificatePreview({ level, userName, certId, date }: CertificateData) {
   const accent = LEVEL_ACCENT[level];
   return (
-    <div
-      style={{
-        background: "#060410",
-        padding: "26px 20px",
-        textAlign: "center",
-        direction: "rtl",
-        position: "relative",
-      }}
-    >
-      <div
-        style={{
-          position: "absolute",
-          inset: 10,
-          borderRadius: 12,
-          border: "1px solid rgba(255,255,255,0.10)",
-          pointerEvents: "none",
-        }}
-      />
-      <img src={arabicLogo.url} alt="COURSI" style={{ height: 46, width: "auto", margin: "0 auto 10px", display: "block" }} />
-      <div style={{ color: accent, fontSize: 11, fontWeight: 800, letterSpacing: 3 }}>شهادة إتمام</div>
-      <div style={{ color: "#fff", fontWeight: 900, fontSize: 18, marginTop: 6 }}>{LEVEL_LABEL[level]}</div>
-      <div style={{ color: "#9590A8", fontSize: 11, marginTop: 2 }}>{LEVEL_TAGLINE[level]}</div>
-      <div style={{ color: "#B6AECC", fontSize: 11, marginTop: 12 }}>تُمنح هذه الشهادة إلى</div>
-      <div
-        style={{
-          background: `linear-gradient(135deg, #7B35FF, ${accent})`,
-          WebkitBackgroundClip: "text",
-          WebkitTextFillColor: "transparent",
-          backgroundClip: "text",
-          fontWeight: 900,
-          fontSize: 26,
-          padding: "6px 0",
-        }}
-      >
-        {userName}
+    <div style={{ background: paper, color: ink, aspectRatio: "1.414 / 1", textAlign: "center", direction: "rtl", position: "relative", isolation: "isolate", containerType: "inline-size" }}>
+      <div style={{ position: "absolute", inset: 12, border: `4px solid ${accent}`, pointerEvents: "none" }} />
+      <div style={{ position: "absolute", inset: 22, border: `1px solid ${accent}`, opacity: 0.7, pointerEvents: "none", clipPath: "polygon(5% 0,95% 0,100% 8%,100% 92%,95% 100%,5% 100%,0 92%,0 8%)" }} />
+      <div style={{ position: "absolute", inset: 28, border: `1px double ${accent}`, opacity: 0.32, pointerEvents: "none" }} />
+
+      <div style={{ position: "absolute", top: "6%", left: 0, right: 0, zIndex: 1 }}>
+        <div dir="ltr" style={{ fontFamily: wordmarkFont, fontSize: "9cqw", lineHeight: 0.82, letterSpacing: 1 }}>COURS!</div>
+        <div dir="ltr" style={{ color: accent, fontFamily: "Arial, sans-serif", fontSize: "1cqw", letterSpacing: 2, marginTop: "0.7cqw" }}>ARTIFICIAL INTELLIGENCE</div>
       </div>
-      <div style={{ color: "#CFC8DE", fontSize: 12, maxWidth: 460, margin: "6px auto 0", lineHeight: 1.8 }}>
-        {LEVEL_STATEMENT[level]}
+
+      <div style={{ position: "absolute", width: "15cqw", height: "15cqw", left: "42.5%", top: "21%", zIndex: 1 }}><NodeSeal level={level} /></div>
+
+      <div style={{ position: "absolute", top: "44%", left: "8%", right: "8%", zIndex: 1 }}>
+        <div style={{ fontSize: "3.5cqw", fontWeight: 700 }}>{"شهادة إتمام"}</div>
+        <div style={{ fontSize: "5.4cqw", fontWeight: 900, lineHeight: 1.3, maxWidth: "80%", margin: "0.2cqw auto 0", borderBottom: `1px solid ${accent}` }}>{userName}</div>
+        <div style={{ color: accent, fontSize: "1.8cqw", fontWeight: 700, marginTop: "0.7cqw" }}>{LEVEL_LABEL[level]} - الذكاء الاصطناعي</div>
+        <div style={{ fontSize: "1.55cqw", fontWeight: 600, marginTop: "1.25cqw", whiteSpace: "nowrap" }}>{LEVEL_STATEMENT[level]}</div>
       </div>
-      <div style={{ color: "#fff", fontSize: 12, fontWeight: 700, marginTop: 6 }}>{courseName(level)}</div>
-      {scoreText && (
-        <div style={{ color: accent, fontSize: 11, fontWeight: 700, marginTop: 4 }}>{scoreText}</div>
-      )}
-      <div style={{ display: "flex", justifyContent: "space-between", marginTop: 18, color: "#9590A8", fontSize: 10, padding: "0 12px" }}>
-        <span dir="ltr">{certId}</span>
-        <span>{arabicDate(date)}</span>
+
+      <div dir="ltr" style={{ position: "absolute", left: "11%", right: "11%", bottom: "10%", zIndex: 1, display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12cqw" }}>
+        <div style={{ borderTop: `1px solid ${accent}`, paddingTop: "0.5cqw" }}>
+          <div style={{ fontFamily: arabicFont, fontSize: "1.35cqw", fontWeight: 600 }}>{arabicDate(date)}</div>
+          <div style={{ fontFamily: "Arial, sans-serif", fontSize: "1.1cqw", marginTop: "0.2cqw" }}>Date Issued</div>
+        </div>
+        <div style={{ borderTop: `1px solid ${accent}`, paddingTop: "1.6cqw" }}>
+          <div style={{ fontFamily: "Arial, sans-serif", fontSize: "1.1cqw" }}>Founder and CEO</div>
+        </div>
       </div>
+
+      <div dir="ltr" style={{ position: "absolute", left: "4.5%", bottom: "3.7%", color: "#686269", fontFamily: "Arial, sans-serif", fontSize: "1cqw" }}>{certId}</div>
+      <div style={{ position: "absolute", right: "4.5%", bottom: "2.5%", width: "8cqw", height: "8cqw", transformOrigin: "bottom right" }}><div style={{ transform: "scale(calc(8cqw / 74px))", transformOrigin: "top left" }}><AuthenticatedStamp accent={accent} /></div></div>
     </div>
   );
 }
