@@ -236,10 +236,8 @@ async function renderCertificate(data: CertificateData): Promise<HTMLCanvasEleme
   context.font = `600 25px ${arabicFont}`;
   context.fillText(arabicDate(data.date), 417, metaY - 16);
   context.fillText("Date Issued", 417, metaY + 34);
-  context.font = `italic 44px Georgia, serif`;
-  context.fillText("Coursi", 1182, metaY - 18);
   context.font = `600 25px Arial, sans-serif`;
-  context.fillText("Founder and CEO", 1182, metaY + 34);
+  context.fillText("Founder and CEO", 1182, metaY + 20);
 
   context.fillStyle = "#686269";
   context.font = `500 18px Arial, sans-serif`;
@@ -396,38 +394,37 @@ export default function CertificateCard({
 function CertificatePreview({ level, userName, certId, date }: CertificateData) {
   const accent = LEVEL_ACCENT[level];
   return (
-    <div style={{ background: paper, color: ink, aspectRatio: "1.414 / 1", minHeight: 330, padding: "clamp(24px, 5vw, 48px)", textAlign: "center", direction: "rtl", position: "relative", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "space-between", isolation: "isolate" }}>
+    <div style={{ background: paper, color: ink, aspectRatio: "1.414 / 1", textAlign: "center", direction: "rtl", position: "relative", isolation: "isolate", containerType: "inline-size" }}>
       <div style={{ position: "absolute", inset: 12, border: `4px solid ${accent}`, pointerEvents: "none" }} />
       <div style={{ position: "absolute", inset: 22, border: `1px solid ${accent}`, opacity: 0.7, pointerEvents: "none", clipPath: "polygon(5% 0,95% 0,100% 8%,100% 92%,95% 100%,5% 100%,0 92%,0 8%)" }} />
       <div style={{ position: "absolute", inset: 28, border: `1px double ${accent}`, opacity: 0.32, pointerEvents: "none" }} />
 
-      <div style={{ zIndex: 1 }}>
-        <div dir="ltr" style={{ fontFamily: wordmarkFont, fontSize: "clamp(50px, 9vw, 78px)", lineHeight: 0.82, letterSpacing: 1 }}>COURS!</div>
-        <div dir="ltr" style={{ color: accent, fontFamily: "Arial, sans-serif", fontSize: 8, letterSpacing: 2, marginTop: 7 }}>ARTIFICIAL INTELLIGENCE</div>
+      <div style={{ position: "absolute", top: "6%", left: 0, right: 0, zIndex: 1 }}>
+        <div dir="ltr" style={{ fontFamily: wordmarkFont, fontSize: "9cqw", lineHeight: 0.82, letterSpacing: 1 }}>COURS!</div>
+        <div dir="ltr" style={{ color: accent, fontFamily: "Arial, sans-serif", fontSize: "1cqw", letterSpacing: 2, marginTop: "0.7cqw" }}>ARTIFICIAL INTELLIGENCE</div>
       </div>
 
-      <div style={{ width: "clamp(86px, 16vw, 126px)", height: "clamp(86px, 16vw, 126px)", margin: "4px 0", zIndex: 1 }}><NodeSeal level={level} /></div>
+      <div style={{ position: "absolute", width: "15cqw", height: "15cqw", left: "42.5%", top: "21%", zIndex: 1 }}><NodeSeal level={level} /></div>
 
-      <div style={{ zIndex: 1, width: "100%" }}>
-        <div style={{ fontSize: "clamp(18px, 4vw, 32px)", fontWeight: 700 }}>شهادة إتمام</div>
-        <div style={{ fontSize: "clamp(26px, 6vw, 48px)", fontWeight: 900, lineHeight: 1.35, maxWidth: "80%", margin: "4px auto 0", borderBottom: `1px solid ${accent}` }}>{userName}</div>
-        <div style={{ color: accent, fontSize: "clamp(11px, 2.4vw, 17px)", fontWeight: 700, marginTop: 8 }}>{LEVEL_LABEL[level]} - الذكاء الاصطناعي</div>
-        <div style={{ fontSize: "clamp(10px, 2vw, 15px)", fontWeight: 600, marginTop: 12 }}>{LEVEL_STATEMENT[level]}</div>
+      <div style={{ position: "absolute", top: "44%", left: "8%", right: "8%", zIndex: 1 }}>
+        <div style={{ fontSize: "3.5cqw", fontWeight: 700 }}>{"شهادة إتمام"}</div>
+        <div style={{ fontSize: "5.4cqw", fontWeight: 900, lineHeight: 1.3, maxWidth: "80%", margin: "0.2cqw auto 0", borderBottom: `1px solid ${accent}` }}>{userName}</div>
+        <div style={{ color: accent, fontSize: "1.8cqw", fontWeight: 700, marginTop: "0.7cqw" }}>{LEVEL_LABEL[level]} - الذكاء الاصطناعي</div>
+        <div style={{ fontSize: "1.55cqw", fontWeight: 600, marginTop: "1.25cqw", whiteSpace: "nowrap" }}>{LEVEL_STATEMENT[level]}</div>
       </div>
 
-      <div dir="ltr" style={{ zIndex: 1, width: "82%", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(28px, 10vw, 110px)", marginTop: 18 }}>
-        <div style={{ borderTop: `1px solid ${accent}`, paddingTop: 5 }}>
-          <div style={{ fontFamily: arabicFont, fontSize: "clamp(9px, 1.8vw, 13px)", fontWeight: 600 }}>{arabicDate(date)}</div>
-          <div style={{ fontFamily: "Arial, sans-serif", fontSize: "clamp(8px, 1.6vw, 11px)", marginTop: 2 }}>Date Issued</div>
+      <div dir="ltr" style={{ position: "absolute", left: "11%", right: "11%", bottom: "10%", zIndex: 1, display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12cqw" }}>
+        <div style={{ borderTop: `1px solid ${accent}`, paddingTop: "0.5cqw" }}>
+          <div style={{ fontFamily: arabicFont, fontSize: "1.35cqw", fontWeight: 600 }}>{arabicDate(date)}</div>
+          <div style={{ fontFamily: "Arial, sans-serif", fontSize: "1.1cqw", marginTop: "0.2cqw" }}>Date Issued</div>
         </div>
-        <div style={{ borderTop: `1px solid ${accent}`, paddingTop: 5 }}>
-          <div style={{ fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: "clamp(15px, 3vw, 22px)", lineHeight: 1 }}>Coursi</div>
-          <div style={{ fontFamily: "Arial, sans-serif", fontSize: "clamp(8px, 1.6vw, 11px)", marginTop: 3 }}>Founder and CEO</div>
+        <div style={{ borderTop: `1px solid ${accent}`, paddingTop: "1.6cqw" }}>
+          <div style={{ fontFamily: "Arial, sans-serif", fontSize: "1.1cqw" }}>Founder and CEO</div>
         </div>
       </div>
 
-      <div dir="ltr" style={{ position: "absolute", left: 38, bottom: 26, color: "#686269", fontFamily: "Arial, sans-serif", fontSize: "clamp(7px, 1.3vw, 10px)" }}>{certId}</div>
-      <div style={{ position: "absolute", right: 34, bottom: 20, transform: "scale(clamp(.72, 1.4vw, 1))", transformOrigin: "bottom right" }}><AuthenticatedStamp accent={accent} /></div>
+      <div dir="ltr" style={{ position: "absolute", left: "4.5%", bottom: "3.7%", color: "#686269", fontFamily: "Arial, sans-serif", fontSize: "1cqw" }}>{certId}</div>
+      <div style={{ position: "absolute", right: "4.5%", bottom: "2.5%", width: "8cqw", height: "8cqw", transformOrigin: "bottom right" }}><div style={{ transform: "scale(calc(8cqw / 74px))", transformOrigin: "top left" }}><AuthenticatedStamp accent={accent} /></div></div>
     </div>
   );
 }
