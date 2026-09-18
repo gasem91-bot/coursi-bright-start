@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/contexts/ProfileContext";
 import PortalHeader from "@/components/portal-nav";
 import CertificateCard from "@/components/certificate-card";
+import { BadgeMedallion } from "@/components/badge-medallion";
 import { completedCount, isLevelComplete, totalChapters, type Level as CertLevel } from "@/lib/certificate";
 import { getMyCertificates, type EarnedCertificate } from "@/lib/exam.functions";
 
@@ -25,6 +26,7 @@ interface Badge {
   icon: string;
   name: string;
   earned: boolean;
+  level?: CertLevel;
 }
 
 function AchievementsPage() {
@@ -98,9 +100,9 @@ function AchievementsPage() {
 
 
   const badges: Badge[] = [
-    { id: "beginner_ai", icon: "🌱", name: "مبتدئ AI", earned: true },
-    { id: "intermediate_ai", icon: "📈", name: "متوسط AI", earned: level === "intermediate" || level === "advanced" },
-    { id: "advanced_ai", icon: "🔥", name: "متقدم AI", earned: level === "advanced" },
+    { id: "beginner_ai", icon: "🌱", name: "مبتدئ AI", earned: isLevelComplete("beginner", completedIds), level: "beginner" },
+    { id: "intermediate_ai", icon: "📈", name: "متوسط AI", earned: isLevelComplete("intermediate", completedIds), level: "intermediate" },
+    { id: "advanced_ai", icon: "🔥", name: "متقدم AI", earned: isLevelComplete("advanced", completedIds), level: "advanced" },
     { id: "streak_7", icon: "🔥", name: "٧ أيام متواصلة", earned: streak >= 7 },
     { id: "streak_30", icon: "⚡", name: "٣٠ يوم متواصل", earned: streak >= 30 },
     { id: "perfect_quiz", icon: "💯", name: "اختبار مثالي", earned: xp >= 30 },
@@ -155,12 +157,12 @@ function AchievementsPage() {
           {badges.map((b) =>
             b.earned ? (
               <div key={b.id} style={{ background: "linear-gradient(160deg, rgba(123,53,192,0.08), rgba(64,200,200,0.05))", border: "1px solid rgba(123,53,192,0.25)", borderRadius: 12, padding: 16, textAlign: "center" }}>
-                <div style={{ fontSize: 32 }}>{b.icon}</div>
+                {b.level ? <BadgeMedallion level={b.level} size={92} style={{ margin: "0 auto" }} /> : <div style={{ fontSize: 32 }}>{b.icon}</div>}
                 <div style={{ color: "var(--text-primary)", fontSize: 12, fontWeight: 700, marginTop: 6 }}>{b.name}</div>
               </div>
             ) : (
-              <div key={b.id} style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 12, padding: 16, textAlign: "center", opacity: 0.35, filter: "grayscale(100%)" }}>
-                <div style={{ fontSize: 32 }}>{b.icon}</div>
+              <div key={b.id} style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 12, padding: 16, textAlign: "center", opacity: b.level ? 1 : 0.35, filter: b.level ? undefined : "grayscale(100%)" }}>
+                {b.level ? <BadgeMedallion level={b.level} locked size={92} style={{ margin: "0 auto" }} /> : <div style={{ fontSize: 32 }}>{b.icon}</div>}
                 <div style={{ color: "var(--text-primary)", fontSize: 12, fontWeight: 700, marginTop: 6 }}>{b.name}</div>
                 <div style={{ color: "var(--text-muted)", fontSize: 10, marginTop: 2 }}>قيد الإنجاز</div>
               </div>
