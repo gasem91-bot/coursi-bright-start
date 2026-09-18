@@ -88,7 +88,7 @@ export const sendCertificateEmail = createServerFn({ method: "POST" })
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "كورسي <info@coursi.ai>",
+        from: "كورسي <support@coursi.ai>",
         to: [email],
         subject: `مبروك! 🏆 شهادة إتمام ${LEVEL_LABEL[level]} جاهزة`,
         html,
