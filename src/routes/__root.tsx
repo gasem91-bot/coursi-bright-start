@@ -23,7 +23,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { title: "COURSI AI COURSE" },
       { property: "og:title", content: "COURSI AI COURSE" },
       { name: "twitter:title", content: "COURSI AI COURSE" },
