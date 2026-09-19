@@ -2,7 +2,16 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 // One-time $14 top-up: adds the AI tutor bot to an existing course-only purchase.
-export const AI_TOPUP_PRICE_ID = "price_1UH5mPHNdqnRfyCHMmSUiMiK";
+export const AI_TOPUP_PRICE_ID = "price_1UHJcAHNdqnRfyCH72zIGsP3";
+
+// One-time $10: unlock the next level, keeping the buyer's current tier.
+export const LEVEL_UPGRADE_PRICE_ID = "price_1UHK4FHNdqnRfyCHouwRtUrx";
+
+export const NEXT_LEVEL: Record<string, "intermediate" | "advanced" | null> = {
+  beginner: "intermediate",
+  intermediate: "advanced",
+  advanced: null,
+};
 
 const PORTAL_URL = "https://ai.portal.coursi.ai";
 
