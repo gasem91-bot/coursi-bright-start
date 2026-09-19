@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useTheme } from "@/lib/theme";
 import { useProfile } from "@/contexts/ProfileContext";
 import { toast } from "sonner";
+import { openExternal } from "@/lib/native";
 
 const font = "Cairo, 'Noto Sans Arabic', sans-serif";
 
@@ -181,8 +182,8 @@ export default function AccountPanel() {
         <div style={{ padding: "0 16px" }}>
           <SectionLabel>✦ المساعدة والدعم</SectionLabel>
           <PanelItem icon="💬" label="تواصل مع الدعم" onClick={() => { window.location.href = "mailto:support@coursi.ai"; }} />
-          <PanelItem icon="📋" label="الشروط والأحكام" onClick={() => window.open("https://coursi.ai/terms", "_blank")} />
-          <PanelItem icon="🔒" label="سياسة الخصوصية" onClick={() => window.open("https://coursi.ai/privacy", "_blank")} />
+          <PanelItem icon="📋" label="الشروط والأحكام" onClick={() => void openExternal("https://coursi.ai/terms")} />
+          <PanelItem icon="🔒" label="سياسة الخصوصية" onClick={() => void openExternal("https://coursi.ai/privacy")} />
         </div>
 
         <button onClick={handleLogout} style={{ margin: "20px 16px 40px", padding: "14px", background: "transparent", border: "1px solid var(--border)", color: "var(--text-primary)", borderRadius: 50, fontFamily: font, fontWeight: 700, cursor: "pointer", display: "block", width: "calc(100% - 32px)" }}>

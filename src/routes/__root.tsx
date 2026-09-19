@@ -18,6 +18,7 @@ import { useStreak } from "@/hooks/use-streak";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ProfileProvider } from "@/contexts/ProfileContext";
+import DeepLinkHandler from "@/components/deep-link-handler";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
@@ -82,6 +83,7 @@ function RootComponent() {
       <ThemeProvider>
         <ProfileProvider>
           <StreakRunner />
+          <DeepLinkHandler />
           <ToastDismissOnNavigate />
           <MobileTopbar />
           <Outlet />

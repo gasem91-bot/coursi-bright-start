@@ -18,6 +18,24 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <!-- Android App Links: magic-link / reset / portal URLs open the app
+                 when installed, and fall back to the browser when it is not.
+                 Verification uses https://ai.portal.coursi.ai/.well-known/assetlinks.json -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="ai.portal.coursi.ai" />
+            </intent-filter>
+
+            <!-- Custom scheme fallback (ai.coursi.app://) -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="@string/custom_url_scheme" />
+            </intent-filter>
         </activity>
 
         <provider

@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import arabicLogo from "@/assets/arabic-logo.png.asset.json";
 import { sendBrandedMagicLink } from "@/lib/magiclink-email.functions";
+import { isNative, openExternal } from "@/lib/native";
 
 export const Route = createFileRoute("/welcome")({
   head: () => ({
@@ -171,6 +172,12 @@ function WelcomePage() {
                 href="https://t.me/CoursiSupportBot"
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={(e) => {
+                  if (isNative()) {
+                    e.preventDefault();
+                    void openExternal("https://t.me/CoursiSupportBot");
+                  }
+                }}
                 style={{
                   background: "rgba(34,158,217,0.1)",
                   border: "1px solid rgba(34,158,217,0.3)",
