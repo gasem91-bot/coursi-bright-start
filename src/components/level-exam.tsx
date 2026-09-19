@@ -405,3 +405,66 @@ function Notice({ icon, title, children }: { icon: string; title: string; childr
     </div>
   );
 }
+
+const LEVEL_AR: Record<string, string> = {
+  beginner: "المستوى المبتدئ",
+  intermediate: "المستوى المتوسط",
+  advanced: "المستوى المتقدم",
+};
+
+function NextLevelUpgrade({ level }: { level: Level }) {
+  const loadStatus = useServerFn(getLevelUpgradeStatus);
+  const startCheckout = useServerFn(createLevelUpgradeCheckout);
+  const [status, setStatus] = useState<LevelUpgradeStatus | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    void loadStatus()
+      .then(setStatus)
+      .catch(() => {});
+  }, [loadStatus]);
+
+  if (!status || !status.eligible || !status.nextLevel) return null;
+
+  const next: Level = status.nextLevel;
+  const accent = LEVEL_ACCENT[next];
+  const go = async () => {
+    setBusy(true);
+    try {
+      const res = await startCheckout();
+      if ("url" in res) {
+        window.location.href = res.url;
+        return;
+      }
+      toast.error("تعذّر فتح صفحة الدفع، حاول مرة أخرى");
+    } catch {
+      toast.error("تعذّر فتح صفحة الدفع، حاول مرة أخرى");
+    }
+    setBusy(false);
+  };
+
+  return (
+    <div
+      style={{
+        marginTop: 22,
+        background: `linear-gradient(160deg, ${accent}14, rgba(123,53,255,0.06))`,
+        border: `1px solid ${accent}55`,
+        borderRadius: 18,
+        padding: 24,
+        textAlign: "center",
+      }}
+    >
+      <div style={{ fontSize: 40 }}>🚀</div>
+      <div style={{ color: "var(--text-primary)", fontWeight: 900, fontSize: 20, marginTop: 6 }}>
+        افتح {LEVEL_AR[next]} بـ ١٠ دولارات فقط
+      </div>
+      <p style={{ color: "var(--text-secondary)", fontSize: 13.5, lineHeight: 2, maxWidth: 520, margin: "10px auto 0" }}>
+        بدل دفع سعر المستوى كاملاً، تكمل رحلتك من {LEVEL_AR[level]} إلى {LEVEL_AR[next]} مقابل ١٠ دولارات لمرة واحدة
+        {status.tier === "course_ai" ? " — ومساعد كورسي الذكي يبقى معك في المستوى الجديد" : ""}
+      </p>
+      <button onClick={go} disabled={busy} style={{ ...btn(accent), opacity: busy ? 0.6 : 1 }}>
+        {busy ? "جاري التحويل..." : "افتح المستوى التالي — $10"}
+      </button>
+    </div>
+  );
+}
