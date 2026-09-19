@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Universal Links. Requires the matching apple-app-site-association file
+	     served from https://ai.portal.coursi.ai/.well-known/apple-app-site-association
+	     with the real Apple Team ID filled in.
+	     In Xcode: target App > Signing & Capabilities > Associated Domains. -->
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:ai.portal.coursi.ai</string>
+	</array>
+</dict>
+</plist>
