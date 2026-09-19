@@ -9,6 +9,7 @@ import {
   type Level,
 } from "@/lib/certificate";
 import { BADGE_NODE_LINKS, BADGE_NODE_POSITIONS, BadgeMedallion } from "@/components/badge-medallion";
+import { isNative, saveFile } from "@/lib/native";
 
 const arabicFont = "Cairo, 'Noto Sans Arabic', sans-serif";
 const wordmarkFont = "'Six Caps', Impact, sans-serif";
@@ -275,10 +276,7 @@ export default function CertificateCard({
     setBusy(true);
     try {
       const canvas = await build();
-      const link = document.createElement("a");
-      link.href = canvas.toDataURL("image/png");
-      link.download = `${certId}.png`;
-      link.click();
+      await saveFile({ fileName: `${certId}.png`, dataUrl: canvas.toDataURL("image/png"), title: `شهادة ${LEVEL_LABEL[level]}` });
       toast.success("تم تحميل الشهادة 🎉");
     } catch {
       toast.error("تعذّر إنشاء الشهادة، حاول مرة أخرى");
@@ -292,6 +290,13 @@ export default function CertificateCard({
     try {
       const canvas = await build();
       const imageUrl = canvas.toDataURL("image/png");
+      // Native shell: no popup windows or print dialog — save/share the
+      // full-resolution certificate image instead (Files / Photos / Print).
+      if (isNative()) {
+        await saveFile({ fileName: `${certId}.png`, dataUrl: imageUrl, title: `شهادة ${LEVEL_LABEL[level]}` });
+        toast.success("تم حفظ الشهادة 🎉");
+        return;
+      }
       const printWindow = window.open("", "_blank");
       if (!printWindow) {
         toast.error("افتح النوافذ المنبثقة لتحميل PDF");
