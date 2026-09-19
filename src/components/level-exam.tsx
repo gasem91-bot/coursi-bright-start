@@ -113,6 +113,7 @@ export default function LevelExam({
           examTotal={result?.total ?? state.certificate?.total ?? undefined}
           completedAt={state.certificate ? new Date(state.certificate.issuedAt) : new Date()}
         />
+        {level !== "advanced" && <NextLevelUpgrade level={level} />}
       </Wrap>
     );
   }
