@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { getExamState, submitExam } from "@/lib/exam.functions";
+import { createLevelUpgradeCheckout, getLevelUpgradeStatus, type LevelUpgradeStatus } from "@/lib/upgrade.functions";
 import {
   EXAM_INTRO,
   EXAM_PASS_PCT,
