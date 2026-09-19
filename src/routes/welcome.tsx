@@ -171,6 +171,12 @@ function WelcomePage() {
                 href="https://t.me/CoursiSupportBot"
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={(e) => {
+                  if (isNative()) {
+                    e.preventDefault();
+                    void openExternal("https://t.me/CoursiSupportBot");
+                  }
+                }}
                 style={{
                   background: "rgba(34,158,217,0.1)",
                   border: "1px solid rgba(34,158,217,0.3)",

@@ -7,6 +7,7 @@ import { checkAiAccess } from "@/lib/check-ai-access.functions";
 import coursiLogo from "@/assets/arabic-logo.png.asset.json";
 import ShaderBackground from "@/components/ui/shader-background";
 import { ThemeToggle, useTheme } from "@/lib/theme";
+import { isNative, openExternal } from "@/lib/native";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
@@ -407,6 +408,12 @@ function LoginPage() {
         href="https://t.me/CoursiSupportBot"
         target="_blank"
         rel="noopener noreferrer"
+        onClick={(e) => {
+          if (isNative()) {
+            e.preventDefault();
+            void openExternal("https://t.me/CoursiSupportBot");
+          }
+        }}
         className="admin-chat-btn"
         aria-label="تواصل مع الدعم عبر تيليجرام"
       >
