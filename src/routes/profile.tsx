@@ -1,11 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 import arabicLogo from "@/assets/arabic-logo.png.asset.json";
 import { ThemeToggle } from "@/lib/theme";
 import { useProfile } from "@/contexts/ProfileContext";
 import { BadgeMedallion } from "@/components/badge-medallion";
+import { getMyCertificates, type EarnedCertificate } from "@/lib/exam.functions";
+import { LEVEL_LABEL } from "@/lib/certificate";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -108,7 +110,9 @@ function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [progress, setProgress] = useState<Progress[]>([]);
+  const [certs, setCerts] = useState<EarnedCertificate[]>([]);
   const [userEmail, setUserEmail] = useState("");
+  const loadCerts = useServerFn(getMyCertificates);
 
   useEffect(() => {
     const run = async () => {
@@ -125,6 +129,11 @@ function ProfilePage() {
       ]);
       setSubscription(s as Subscription | null);
       setProgress((pr as Progress[]) || []);
+      try {
+        setCerts(await loadCerts());
+      } catch {
+        /* certificates are optional here */
+      }
       setLoading(false);
     };
     run();
@@ -137,7 +146,12 @@ function ProfilePage() {
 
   const completedChapters = progress.filter((p) => p.completed).length;
   const xp = completedChapters * 10;
-  const certificates: { name: string; date: string }[] = []; // none yet — placeholder card shows
+  const streakDays = profile?.streak_days ?? 0;
+  const certificates = certs.map((c) => ({
+    name: `شهادة ${LEVEL_LABEL[c.level]}`,
+    date: new Date(c.issuedAt).toLocaleDateString("ar-EG-u-nu-latn", { year: "numeric", month: "long", day: "numeric" }),
+    level: c.level,
+  }));
 
   const displayName = profile?.display_name?.trim() || (profile?.email || userEmail).split("@")[0];
   const initial = (displayName || "?").trim().charAt(0).toUpperCase();
@@ -168,7 +182,7 @@ function ProfilePage() {
   }
 
   const stats = [
-    { icon: "🔥", value: "0", label: "أيام / سلسلة التعلّم" },
+    { icon: "🔥", value: String(streakDays), label: "أيام / سلسلة التعلّم" },
     { icon: "⭐", value: String(xp), label: "نقطة / مجموع XP" },
     { icon: "📚", value: String(completedChapters), label: "فصل / مكتمل" },
     { icon: "🏅", value: String(certificates.length), label: "شهادة / مكتسبة" },
@@ -252,8 +266,8 @@ function ProfilePage() {
               أكمل أول مستوى لتحصل على شهادتك
             </div>
           ) : (
-            certificates.map((c, i) => (
-              <div key={i} style={{ background: "linear-gradient(135deg, rgba(251,191,36,0.06), rgba(123,53,192,0.04))", border: "1px solid rgba(251,191,36,0.2)", borderRadius: 14, padding: 18, display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+            certificates.map((c) => (
+              <div key={c.level} style={{ background: "linear-gradient(135deg, rgba(251,191,36,0.06), rgba(123,53,192,0.04))", border: "1px solid rgba(251,191,36,0.2)", borderRadius: 14, padding: 18, display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                   <span style={{ fontSize: 24 }}>🏆</span>
                   <div>
@@ -262,10 +276,10 @@ function ProfilePage() {
                   </div>
                 </div>
                 <button
-                  onClick={() => toast("التحميل قريباً")}
+                  onClick={() => navigate({ to: "/achievements" })}
                   style={{ background: "transparent", border: "1px solid", borderImage: "linear-gradient(135deg, #7B35C0, #40C8C8) 1", color: "var(--text-primary)", fontSize: 12, padding: "6px 14px", borderRadius: 999, cursor: "pointer", fontFamily: font, fontWeight: 600 }}
                 >
-                  زر تحميل
+                  عرض الشهادة
                 </button>
               </div>
             ))
