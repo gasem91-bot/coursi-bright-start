@@ -146,7 +146,12 @@ function ProfilePage() {
 
   const completedChapters = progress.filter((p) => p.completed).length;
   const xp = completedChapters * 10;
-  const certificates: { name: string; date: string }[] = []; // none yet — placeholder card shows
+  const streakDays = profile?.streak_days ?? 0;
+  const certificates = certs.map((c) => ({
+    name: `شهادة ${LEVEL_LABEL[c.level]}`,
+    date: new Date(c.issuedAt).toLocaleDateString("ar-EG-u-nu-latn", { year: "numeric", month: "long", day: "numeric" }),
+    level: c.level,
+  }));
 
   const displayName = profile?.display_name?.trim() || (profile?.email || userEmail).split("@")[0];
   const initial = (displayName || "?").trim().charAt(0).toUpperCase();
