@@ -1,11 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 import arabicLogo from "@/assets/arabic-logo.png.asset.json";
 import { ThemeToggle } from "@/lib/theme";
 import { useProfile } from "@/contexts/ProfileContext";
 import { BadgeMedallion } from "@/components/badge-medallion";
+import { getMyCertificates, type EarnedCertificate } from "@/lib/exam.functions";
+import { LEVEL_LABEL } from "@/lib/certificate";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -108,7 +110,9 @@ function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [progress, setProgress] = useState<Progress[]>([]);
+  const [certs, setCerts] = useState<EarnedCertificate[]>([]);
   const [userEmail, setUserEmail] = useState("");
+  const loadCerts = useServerFn(getMyCertificates);
 
   useEffect(() => {
     const run = async () => {
@@ -125,6 +129,11 @@ function ProfilePage() {
       ]);
       setSubscription(s as Subscription | null);
       setProgress((pr as Progress[]) || []);
+      try {
+        setCerts(await loadCerts());
+      } catch {
+        /* certificates are optional here */
+      }
       setLoading(false);
     };
     run();
