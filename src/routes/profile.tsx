@@ -182,7 +182,7 @@ function ProfilePage() {
   }
 
   const stats = [
-    { icon: "🔥", value: "0", label: "أيام / سلسلة التعلّم" },
+    { icon: "🔥", value: String(streakDays), label: "أيام / سلسلة التعلّم" },
     { icon: "⭐", value: String(xp), label: "نقطة / مجموع XP" },
     { icon: "📚", value: String(completedChapters), label: "فصل / مكتمل" },
     { icon: "🏅", value: String(certificates.length), label: "شهادة / مكتسبة" },
@@ -266,8 +266,8 @@ function ProfilePage() {
               أكمل أول مستوى لتحصل على شهادتك
             </div>
           ) : (
-            certificates.map((c, i) => (
-              <div key={i} style={{ background: "linear-gradient(135deg, rgba(251,191,36,0.06), rgba(123,53,192,0.04))", border: "1px solid rgba(251,191,36,0.2)", borderRadius: 14, padding: 18, display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+            certificates.map((c) => (
+              <div key={c.level} style={{ background: "linear-gradient(135deg, rgba(251,191,36,0.06), rgba(123,53,192,0.04))", border: "1px solid rgba(251,191,36,0.2)", borderRadius: 14, padding: 18, display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                   <span style={{ fontSize: 24 }}>🏆</span>
                   <div>
@@ -276,10 +276,10 @@ function ProfilePage() {
                   </div>
                 </div>
                 <button
-                  onClick={() => toast("التحميل قريباً")}
+                  onClick={() => navigate({ to: "/achievements" })}
                   style={{ background: "transparent", border: "1px solid", borderImage: "linear-gradient(135deg, #7B35C0, #40C8C8) 1", color: "var(--text-primary)", fontSize: 12, padding: "6px 14px", borderRadius: 999, cursor: "pointer", fontFamily: font, fontWeight: 600 }}
                 >
-                  زر تحميل
+                  عرض الشهادة
                 </button>
               </div>
             ))
