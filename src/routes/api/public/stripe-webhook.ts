@@ -3,7 +3,15 @@ import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 
 // $14 one-time AI tutor bot top-up (keep in sync with src/lib/upgrade.functions.ts)
-const AI_TOPUP_PRICE_ID = "price_1UH5mPHNdqnRfyCHMmSUiMiK";
+const AI_TOPUP_PRICE_ID = "price_1UHJcAHNdqnRfyCH72zIGsP3";
+// Retired top-up price — still honoured for any in-flight checkout.
+const AI_TOPUP_PRICE_ID_LEGACY = "price_1UH5mPHNdqnRfyCHMmSUiMiK";
+// $10 one-time next-level unlock (keep in sync with src/lib/upgrade.functions.ts)
+const LEVEL_UPGRADE_PRICE_ID = "price_1UHK4FHNdqnRfyCHouwRtUrx";
+const NEXT_LEVEL: Record<string, string | undefined> = {
+  beginner: "intermediate",
+  intermediate: "advanced",
+};
 
 // Real Stripe Price IDs → level + tier mapping
 const PRICE_MAP: Record<string, { level: string; tier: string }> = {
