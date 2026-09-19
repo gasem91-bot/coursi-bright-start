@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import arabicLogo from "@/assets/arabic-logo.png.asset.json";
 import { sendBrandedMagicLink } from "@/lib/magiclink-email.functions";
+import { isNative, openExternal } from "@/lib/native";
 
 export const Route = createFileRoute("/welcome")({
   head: () => ({

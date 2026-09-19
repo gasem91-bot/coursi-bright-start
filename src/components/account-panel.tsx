@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useTheme } from "@/lib/theme";
 import { useProfile } from "@/contexts/ProfileContext";
 import { toast } from "sonner";
+import { openExternal } from "@/lib/native";
 
 const font = "Cairo, 'Noto Sans Arabic', sans-serif";
 
