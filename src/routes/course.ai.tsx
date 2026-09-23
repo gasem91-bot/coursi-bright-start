@@ -407,18 +407,38 @@ function CourseAIPage() {
             </div>
           </div>
 
-          {course.chapters.map((ch, i) => {
+          {units.map((u) => {
+            const uUnlocked = unitUnlocked(u);
+            const uDone = unitDone(u);
+            return (
+              <div key={`unit-${u.index}`}>
+                <div
+                  style={{
+                    padding: "10px 16px",
+                    background: "rgba(123,53,255,0.07)",
+                    borderBottom: `1px solid ${BORDER}`,
+                    color: uDone ? CYAN : "var(--text-secondary)",
+                    fontSize: 11,
+                    fontWeight: 800,
+                    letterSpacing: 0.5,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                  }}
+                >
+                  <span>{u.title}</span>
+                  <span aria-hidden>{uDone ? "✓" : uUnlocked ? "" : "🔒"}</span>
+                </div>
+                {u.chapters.map((i) => {
+            const ch = course.chapters[i]!;
             const isActive = i === activeChapter;
             const isDone = completedIds.has(chapterId(level, i));
-            const previousChapterDone = i === 0 || completedIds.has(chapterId(level, i - 1));
-            const justUnlockedNextChapter = i === activeChapter + 1 && quizPassed;
-            const isLocked = !isActive && !isDone && !previousChapterDone && !justUnlockedNextChapter;
+            const isLocked = !isActive && !isDone && !uUnlocked;
             const status: "done" | "current" | "upcoming" = isDone ? "done" : isActive ? "current" : "upcoming";
             const handleClick = () => {
-              if (i < activeChapter || isDone) { goToChapter(i); return; }
               if (i === activeChapter) return;
               if (isLocked) {
-                toast("أكمل أسئلة هذا الفصل أولاً للمتابعة 🔒", { id: "chapter-locked", duration: 3000 });
+                toast("أكمل اختبار الوحدة السابقة للمتابعة 🔒", { id: "chapter-locked", duration: 3000 });
                 return;
               }
               goToChapter(i);
