@@ -491,6 +491,9 @@ function CourseAIPage() {
                 )}
               </div>
             );
+              })}
+              </div>
+            );
           })}
         </aside>
 
