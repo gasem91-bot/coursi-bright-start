@@ -568,17 +568,22 @@ function CourseAIPage() {
                 void sendCertEmail({ data: { level } }).catch(() => {});
               }}
             />
-          ) : activeTab === "content" ? (
+          ) : activeTab === "content" || !isUnitEnd ? (
             <ContentTab
               chapterIndex={activeChapter}
               chapterTitle={currentChapterTitle}
               chapterImage={currentChapterImage}
               chapterHtml={currentChapter?.content ?? ""}
-              onGoQuiz={() => setActiveTab("quiz")}
+              isUnitEnd={isUnitEnd}
+              unitTitle={currentUnit.title}
+              onGoQuiz={() => {
+                if (isUnitEnd) setActiveTab("quiz");
+                else goToChapter(activeChapter + 1);
+              }}
             />
           ) : (
             <QuizTab
-              chapterIndex={activeChapter}
+              unitTitle={currentUnit.title}
               questions={quizQuestions}
               currentQ={currentQ}
               answered={answered}
@@ -591,7 +596,7 @@ function CourseAIPage() {
               level={level}
 
               onAnswer={handleAnswer}
-              onNextChapter={() => goToChapter(activeChapter + 1)}
+              onNextChapter={() => goToChapter(Math.min(currentUnit.lastChapter + 1, total - 1))}
               onGoExam={() => setActiveTab("exam")}
               onRetry={() => {
                 if (quizTimerRef.current) {
