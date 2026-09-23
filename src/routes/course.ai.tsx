@@ -1141,7 +1141,7 @@ function ContentTab({
 }
 
 function QuizTab({
-  chapterIndex,
+  unitTitle,
   questions,
   currentQ,
   answered,
@@ -1157,7 +1157,7 @@ function QuizTab({
   onGoExam,
   onRetry,
 }: {
-  chapterIndex: number;
+  unitTitle: string;
   questions: QuizQuestion[];
   currentQ: number;
   answered: boolean;
@@ -1202,14 +1202,14 @@ function QuizTab({
         </div>
         <div style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: 22, textAlign: "center" }}>
           {passed
-            ? `أحسنت! اجتزت اختبار الفصل ${toAr(chapterIndex + 1)}`
-            : `لم تجتز اختبار الفصل ${toAr(chapterIndex + 1)} هذه المرة`}
+            ? `أحسنت! اجتزت اختبار ${unitTitle}`
+            : `لم تجتز اختبار ${unitTitle} هذه المرة`}
         </div>
         <div style={{ color: "var(--text-secondary)", textAlign: "center", marginTop: 8, marginBottom: 28 }}>
           {passed
             ? isLast
               ? "أنهيت جميع الفصول 🎉"
-              : "يمكنك الآن الانتقال إلى الفصل التالي"
+              : "يمكنك الآن الانتقال إلى الوحدة التالية"
             : `تحتاج إلى ${toAr(passScore)} إجابات صحيحة من ${toAr(totalQuestions)} للنجاح. أعد الاختبار للمتابعة`}
         </div>
 
@@ -1296,7 +1296,7 @@ function QuizTab({
               boxShadow: "0 0 24px rgba(123,53,255,0.3)",
             }}
           >
-            الفصل التالي ←
+            الوحدة التالية ←
           </button>
         )}
       </div>
