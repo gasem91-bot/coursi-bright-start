@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import coursiLogoAsset from "@/assets/arabic-logo.png.asset.json";
 const coursiLogo = coursiLogoAsset.url;
 import { COURSE_CONTENT, type QuizQuestion } from "@/lib/course-content";
+import { buildUnits, unitOf, unitQuiz, type CourseUnit } from "@/lib/course-units";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ThemeToggle } from "@/lib/theme";
 import { PortalNav } from "@/components/portal-nav";
