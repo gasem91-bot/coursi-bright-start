@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import coursiLogoAsset from "@/assets/arabic-logo.png.asset.json";
 const coursiLogo = coursiLogoAsset.url;
 import { COURSE_CONTENT, type QuizQuestion } from "@/lib/course-content";
+import { buildUnits, unitOf, unitQuiz, type CourseUnit } from "@/lib/course-units";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ThemeToggle } from "@/lib/theme";
 import { PortalNav } from "@/components/portal-nav";
@@ -133,11 +134,22 @@ function CourseAIPage() {
   );
   const pct = total ? Math.round((completedCount / total) * 100) : 0;
 
-  const isLast = activeChapter === total - 1;
+  const units = useMemo(() => buildUnits(total), [total]);
+  const currentUnit = useMemo(() => unitOf(units, activeChapter), [units, activeChapter]);
+  const isUnitEnd = activeChapter === currentUnit.lastChapter;
+  const isLast = currentUnit.index === units.length - 1;
+
+  const unitDone = (u: CourseUnit) => u.chapters.every((i) => completedIds.has(chapterId(level, i)));
+  const unitUnlocked = (u: CourseUnit) =>
+    u.index === 0 || unitDone(units[u.index - 1]!) || u.index === currentUnit.index;
+
   const currentChapter = course.chapters[activeChapter];
   const currentChapterTitle = currentChapter?.title ?? "";
   const currentChapterImage = currentChapter && "image" in currentChapter ? currentChapter.image : undefined;
-  const quizQuestions: QuizQuestion[] = currentChapter?.quiz ?? [];
+  const quizQuestions: QuizQuestion[] = useMemo(
+    () => unitQuiz(currentUnit, course.chapters),
+    [currentUnit, course.chapters],
+  );
   const quizPassed = Boolean(
     quizComplete &&
       finalResult &&
@@ -194,32 +206,34 @@ function CourseAIPage() {
   }, []);
 
 
+  // Passing a unit quiz completes every chapter in that unit.
   const markComplete = async () => {
     if (!userId) return;
-    const cid = chapterId(level, activeChapter);
-    const alreadyComplete = completedIds.has(cid);
+    const ids = currentUnit.chapters.map((i) => chapterId(level, i));
+    const newIds = ids.filter((cid) => !completedIds.has(cid));
     await supabase
       .from("course_progress")
       .upsert(
-        { user_id: userId, chapter_id: cid, completed: true },
+        ids.map((cid) => ({ user_id: userId, chapter_id: cid, completed: true })),
         { onConflict: "user_id,chapter_id" },
       );
-    if (!alreadyComplete) {
-      // Award 10 XP + chapter badge for first-time completion
+    if (newIds.length > 0) {
+      // Award 10 XP per newly completed chapter
+      const gained = newIds.length * 10;
       const { data: p } = await supabase
         .from("profiles")
         .select("xp_points")
         .eq("id", userId)
         .maybeSingle();
       const current = (p as { xp_points?: number } | null)?.xp_points ?? 0;
-      await supabase.from("profiles").update({ xp_points: current + 10 }).eq("id", userId);
-      toast.success(`🏅 وسام جديد: أتممت الفصل ${toAr(activeChapter + 1)} — +١٠ نقاط خبرة`);
+      await supabase.from("profiles").update({ xp_points: current + gained }).eq("id", userId);
+      toast.success(`🏅 وسام جديد: أتممت ${currentUnit.title} — +${toAr(gained)} نقاط خبرة`);
     }
     await fetchProgress(userId);
 
     // If this completes the whole level, send the certificate email (server-side, once).
     const nextIds = new Set(completedIds);
-    nextIds.add(cid);
+    ids.forEach((cid) => nextIds.add(cid));
     if (isLevelComplete(level, nextIds)) {
       void sendCertEmail({ data: { level } })
         .then((r) => {
@@ -393,18 +407,38 @@ function CourseAIPage() {
             </div>
           </div>
 
-          {course.chapters.map((ch, i) => {
+          {units.map((u) => {
+            const uUnlocked = unitUnlocked(u);
+            const uDone = unitDone(u);
+            return (
+              <div key={`unit-${u.index}`}>
+                <div
+                  style={{
+                    padding: "10px 16px",
+                    background: "rgba(123,53,255,0.07)",
+                    borderBottom: `1px solid ${BORDER}`,
+                    color: uDone ? CYAN : "var(--text-secondary)",
+                    fontSize: 11,
+                    fontWeight: 800,
+                    letterSpacing: 0.5,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                  }}
+                >
+                  <span>{u.title}</span>
+                  <span aria-hidden>{uDone ? "✓" : uUnlocked ? "" : "🔒"}</span>
+                </div>
+                {u.chapters.map((i) => {
+            const ch = course.chapters[i]!;
             const isActive = i === activeChapter;
             const isDone = completedIds.has(chapterId(level, i));
-            const previousChapterDone = i === 0 || completedIds.has(chapterId(level, i - 1));
-            const justUnlockedNextChapter = i === activeChapter + 1 && quizPassed;
-            const isLocked = !isActive && !isDone && !previousChapterDone && !justUnlockedNextChapter;
+            const isLocked = !isActive && !isDone && !uUnlocked;
             const status: "done" | "current" | "upcoming" = isDone ? "done" : isActive ? "current" : "upcoming";
             const handleClick = () => {
-              if (i < activeChapter || isDone) { goToChapter(i); return; }
               if (i === activeChapter) return;
               if (isLocked) {
-                toast("أكمل أسئلة هذا الفصل أولاً للمتابعة 🔒", { id: "chapter-locked", duration: 3000 });
+                toast("أكمل اختبار الوحدة السابقة للمتابعة 🔒", { id: "chapter-locked", duration: 3000 });
                 return;
               }
               goToChapter(i);
@@ -477,6 +511,9 @@ function CourseAIPage() {
                 )}
               </div>
             );
+              })}
+              </div>
+            );
           })}
         </aside>
 
@@ -496,8 +533,9 @@ function CourseAIPage() {
             }}
           >
             {(["content", "quiz", "exam"] as const).map((t) => {
+              if (t === "quiz" && !isUnitEnd) return null;
               const isActive = activeTab === t;
-              const label = t === "content" ? "📖 المحتوى" : t === "quiz" ? "✦ اختبار الفصل" : "🎓 الاختبار النهائي";
+              const label = t === "content" ? "📖 المحتوى" : t === "quiz" ? `✦ اختبار ${currentUnit.title}` : "🎓 الاختبار النهائي";
               return (
                 <button
                   key={t}
@@ -530,17 +568,22 @@ function CourseAIPage() {
                 void sendCertEmail({ data: { level } }).catch(() => {});
               }}
             />
-          ) : activeTab === "content" ? (
+          ) : activeTab === "content" || !isUnitEnd ? (
             <ContentTab
               chapterIndex={activeChapter}
               chapterTitle={currentChapterTitle}
               chapterImage={currentChapterImage}
               chapterHtml={currentChapter?.content ?? ""}
-              onGoQuiz={() => setActiveTab("quiz")}
+              isUnitEnd={isUnitEnd}
+              unitTitle={currentUnit.title}
+              onGoQuiz={() => {
+                if (isUnitEnd) setActiveTab("quiz");
+                else goToChapter(activeChapter + 1);
+              }}
             />
           ) : (
             <QuizTab
-              chapterIndex={activeChapter}
+              unitTitle={currentUnit.title}
               questions={quizQuestions}
               currentQ={currentQ}
               answered={answered}
@@ -553,7 +596,7 @@ function CourseAIPage() {
               level={level}
 
               onAnswer={handleAnswer}
-              onNextChapter={() => goToChapter(activeChapter + 1)}
+              onNextChapter={() => goToChapter(Math.min(currentUnit.lastChapter + 1, total - 1))}
               onGoExam={() => setActiveTab("exam")}
               onRetry={() => {
                 if (quizTimerRef.current) {
@@ -897,12 +940,16 @@ function ContentTab({
   chapterTitle,
   chapterImage,
   chapterHtml,
+  isUnitEnd,
+  unitTitle,
   onGoQuiz,
 }: {
   chapterIndex: number;
   chapterTitle: string;
   chapterImage?: string;
   chapterHtml: string;
+  isUnitEnd: boolean;
+  unitTitle: string;
   onGoQuiz: () => void;
 }) {
   const rootRef = useRef<HTMLDivElement | null>(null);
@@ -1051,14 +1098,14 @@ function ContentTab({
     <div style={{ padding: "28px 32px" }}>
       <style>{CONTENT_CSS}</style>
       <div style={{ color: "var(--text-muted)", fontSize: 11, letterSpacing: 2, marginBottom: 8 }}>
-        الفصل {toAr(chapterIndex + 1)}
+        {unitTitle} · الفصل {toAr(chapterIndex + 1)}
       </div>
       <h1 style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: 24, marginBottom: 12, fontFamily: font }}>
         {chapterTitle}
       </h1>
       <div style={{ display: "flex", gap: 16, color: "var(--text-secondary)", fontSize: 12, marginBottom: 12 }}>
         <span>📖 محتوى تفصيلي</span>
-        <span>✦ اختبار في النهاية</span>
+        <span>✦ اختبار في نهاية الوحدة</span>
         <span>🎯 مهمة عملية</span>
       </div>
 
@@ -1087,14 +1134,14 @@ function ContentTab({
           marginTop: 32,
         }}
       >
-        انتقل للاختبار ←
+        {isUnitEnd ? `انتقل لاختبار ${unitTitle} ←` : "الفصل التالي ←"}
       </button>
     </div>
   );
 }
 
 function QuizTab({
-  chapterIndex,
+  unitTitle,
   questions,
   currentQ,
   answered,
@@ -1110,7 +1157,7 @@ function QuizTab({
   onGoExam,
   onRetry,
 }: {
-  chapterIndex: number;
+  unitTitle: string;
   questions: QuizQuestion[];
   currentQ: number;
   answered: boolean;
@@ -1155,14 +1202,14 @@ function QuizTab({
         </div>
         <div style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: 22, textAlign: "center" }}>
           {passed
-            ? `أحسنت! اجتزت اختبار الفصل ${toAr(chapterIndex + 1)}`
-            : `لم تجتز اختبار الفصل ${toAr(chapterIndex + 1)} هذه المرة`}
+            ? `أحسنت! اجتزت اختبار ${unitTitle}`
+            : `لم تجتز اختبار ${unitTitle} هذه المرة`}
         </div>
         <div style={{ color: "var(--text-secondary)", textAlign: "center", marginTop: 8, marginBottom: 28 }}>
           {passed
             ? isLast
               ? "أنهيت جميع الفصول 🎉"
-              : "يمكنك الآن الانتقال إلى الفصل التالي"
+              : "يمكنك الآن الانتقال إلى الوحدة التالية"
             : `تحتاج إلى ${toAr(passScore)} إجابات صحيحة من ${toAr(totalQuestions)} للنجاح. أعد الاختبار للمتابعة`}
         </div>
 
@@ -1249,7 +1296,7 @@ function QuizTab({
               boxShadow: "0 0 24px rgba(123,53,255,0.3)",
             }}
           >
-            الفصل التالي ←
+            الوحدة التالية ←
           </button>
         )}
       </div>
@@ -1266,7 +1313,7 @@ function QuizTab({
   return (
     <div style={{ padding: "28px 32px" }}>
       <h2 style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: 22, fontFamily: font }}>
-        اختبار الفصل {toAr(chapterIndex + 1)}
+        اختبار {unitTitle}
       </h2>
       <div style={{ color: "var(--text-secondary)", fontSize: 12, marginTop: 4, marginBottom: 20 }}>
         {toAr(questions.length)} أسئلة · تظهر الإجابة الصحيحة فوراً
