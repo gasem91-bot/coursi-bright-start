@@ -1134,7 +1134,7 @@ function ContentTab({
           marginTop: 32,
         }}
       >
-        انتقل للاختبار ←
+        {isUnitEnd ? `انتقل لاختبار ${unitTitle} ←` : "الفصل التالي ←"}
       </button>
     </div>
   );
