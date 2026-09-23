@@ -396,7 +396,9 @@ function CourseAIPage() {
           {course.chapters.map((ch, i) => {
             const isActive = i === activeChapter;
             const isDone = completedIds.has(chapterId(level, i));
-            const isLocked = i > activeChapter && !isDone && !quizPassed;
+            const previousChapterDone = i === 0 || completedIds.has(chapterId(level, i - 1));
+            const justUnlockedNextChapter = i === activeChapter + 1 && quizPassed;
+            const isLocked = !isActive && !isDone && !previousChapterDone && !justUnlockedNextChapter;
             const status: "done" | "current" | "upcoming" = isDone ? "done" : isActive ? "current" : "upcoming";
             const handleClick = () => {
               if (i < activeChapter || isDone) { goToChapter(i); return; }
