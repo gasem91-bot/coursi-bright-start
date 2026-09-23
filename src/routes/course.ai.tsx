@@ -1098,14 +1098,14 @@ function ContentTab({
     <div style={{ padding: "28px 32px" }}>
       <style>{CONTENT_CSS}</style>
       <div style={{ color: "var(--text-muted)", fontSize: 11, letterSpacing: 2, marginBottom: 8 }}>
-        الفصل {toAr(chapterIndex + 1)}
+        {unitTitle} · الفصل {toAr(chapterIndex + 1)}
       </div>
       <h1 style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: 24, marginBottom: 12, fontFamily: font }}>
         {chapterTitle}
       </h1>
       <div style={{ display: "flex", gap: 16, color: "var(--text-secondary)", fontSize: 12, marginBottom: 12 }}>
         <span>📖 محتوى تفصيلي</span>
-        <span>✦ اختبار في النهاية</span>
+        <span>✦ اختبار في نهاية الوحدة</span>
         <span>🎯 مهمة عملية</span>
       </div>
 
