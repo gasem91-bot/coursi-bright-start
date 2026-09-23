@@ -940,12 +940,16 @@ function ContentTab({
   chapterTitle,
   chapterImage,
   chapterHtml,
+  isUnitEnd,
+  unitTitle,
   onGoQuiz,
 }: {
   chapterIndex: number;
   chapterTitle: string;
   chapterImage?: string;
   chapterHtml: string;
+  isUnitEnd: boolean;
+  unitTitle: string;
   onGoQuiz: () => void;
 }) {
   const rootRef = useRef<HTMLDivElement | null>(null);
