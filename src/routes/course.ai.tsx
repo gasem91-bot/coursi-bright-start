@@ -133,11 +133,22 @@ function CourseAIPage() {
   );
   const pct = total ? Math.round((completedCount / total) * 100) : 0;
 
-  const isLast = activeChapter === total - 1;
+  const units = useMemo(() => buildUnits(total), [total]);
+  const currentUnit = useMemo(() => unitOf(units, activeChapter), [units, activeChapter]);
+  const isUnitEnd = activeChapter === currentUnit.lastChapter;
+  const isLast = currentUnit.index === units.length - 1;
+
+  const unitDone = (u: CourseUnit) => u.chapters.every((i) => completedIds.has(chapterId(level, i)));
+  const unitUnlocked = (u: CourseUnit) =>
+    u.index === 0 || unitDone(units[u.index - 1]!) || u.index === currentUnit.index;
+
   const currentChapter = course.chapters[activeChapter];
   const currentChapterTitle = currentChapter?.title ?? "";
   const currentChapterImage = currentChapter && "image" in currentChapter ? currentChapter.image : undefined;
-  const quizQuestions: QuizQuestion[] = currentChapter?.quiz ?? [];
+  const quizQuestions: QuizQuestion[] = useMemo(
+    () => unitQuiz(currentUnit, course.chapters),
+    [currentUnit, course.chapters],
+  );
   const quizPassed = Boolean(
     quizComplete &&
       finalResult &&
