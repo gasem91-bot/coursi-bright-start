@@ -39,6 +39,8 @@ const pad2 = (n: number) => String(n).padStart(2, "0");
 const chapterId = (level: Level, idx: number) => `ai-${level}-${pad2(idx + 1)}`;
 
 const ARABIC_LETTERS = ["أ", "ب", "ج", "د"];
+const CHAPTER_QUIZ_PASS_PCT = 70;
+const QUIZ_FEEDBACK_DELAY_MS = 6500;
 
 function CourseAIPage() {
   const navigate = useNavigate();
@@ -136,6 +138,12 @@ function CourseAIPage() {
   const currentChapterTitle = currentChapter?.title ?? "";
   const currentChapterImage = currentChapter && "image" in currentChapter ? currentChapter.image : undefined;
   const quizQuestions: QuizQuestion[] = currentChapter?.quiz ?? [];
+  const quizPassed = Boolean(
+    quizComplete &&
+      finalResult &&
+      finalResult.total > 0 &&
+      finalResult.score >= Math.ceil((CHAPTER_QUIZ_PASS_PCT / 100) * finalResult.total),
+  );
 
   const goToChapter = (i: number) => {
     if (quizTimerRef.current) {
@@ -176,7 +184,7 @@ function CourseAIPage() {
         setFinalResult({ score: nextScore, total: totalQs });
         setQuizComplete(true);
       }
-    }, 3500);
+    }, QUIZ_FEEDBACK_DELAY_MS);
   };
 
   useEffect(() => {
@@ -223,11 +231,11 @@ function CourseAIPage() {
 
 
   useEffect(() => {
-    if (quizComplete) {
+    if (quizPassed) {
       void markComplete();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [quizComplete]);
+  }, [quizPassed]);
 
   const sendChat = () => {
     const text = chatInput.trim();
@@ -388,7 +396,7 @@ function CourseAIPage() {
           {course.chapters.map((ch, i) => {
             const isActive = i === activeChapter;
             const isDone = completedIds.has(chapterId(level, i));
-            const isLocked = i > activeChapter && !isDone && !quizComplete;
+            const isLocked = i > activeChapter && !isDone && !quizPassed;
             const status: "done" | "current" | "upcoming" = isDone ? "done" : isActive ? "current" : "upcoming";
             const handleClick = () => {
               if (i < activeChapter || isDone) { goToChapter(i); return; }
@@ -545,6 +553,18 @@ function CourseAIPage() {
               onAnswer={handleAnswer}
               onNextChapter={() => goToChapter(activeChapter + 1)}
               onGoExam={() => setActiveTab("exam")}
+              onRetry={() => {
+                if (quizTimerRef.current) {
+                  clearTimeout(quizTimerRef.current);
+                  quizTimerRef.current = null;
+                }
+                setCurrentQ(0);
+                setAnswered(false);
+                setSelectedAnswer(null);
+                setQuizComplete(false);
+                setScore(0);
+                setFinalResult(null);
+              }}
             />
           )}
         </main>
@@ -1086,6 +1106,7 @@ function QuizTab({
   onAnswer,
   onNextChapter,
   onGoExam,
+  onRetry,
 }: {
   chapterIndex: number;
   questions: QuizQuestion[];
@@ -1101,9 +1122,12 @@ function QuizTab({
   onAnswer: (i: number) => void;
   onNextChapter: () => void;
   onGoExam: () => void;
+  onRetry: () => void;
 }) {
 
   if (quizComplete) {
+    const passScore = Math.ceil((CHAPTER_QUIZ_PASS_PCT / 100) * totalQuestions);
+    const passed = totalQuestions > 0 && score >= passScore;
     return (
       <div style={{ padding: "28px 32px" }}>
         <div
@@ -1111,13 +1135,15 @@ function QuizTab({
             width: 120,
             height: 120,
             borderRadius: "50%",
-            background: "linear-gradient(135deg,#7B35FF,#00D4C8)",
+            background: passed
+              ? "linear-gradient(135deg,#7B35FF,#00D4C8)"
+              : "linear-gradient(135deg,#8F3545,#C5545E)",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
             margin: "0 auto 24px",
-            boxShadow: "0 0 40px rgba(123,53,255,0.4)",
+            boxShadow: passed ? "0 0 40px rgba(123,53,255,0.4)" : "0 0 40px rgba(197,84,94,0.28)",
           }}
         >
           <div style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: 36, lineHeight: 1 }}>{toAr(score)}</div>
@@ -1126,13 +1152,38 @@ function QuizTab({
           </div>
         </div>
         <div style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: 22, textAlign: "center" }}>
-          أحسنت! أكملت اختبار الفصل {toAr(chapterIndex + 1)}
+          {passed
+            ? `أحسنت! اجتزت اختبار الفصل ${toAr(chapterIndex + 1)}`
+            : `لم تجتز اختبار الفصل ${toAr(chapterIndex + 1)} هذه المرة`}
         </div>
         <div style={{ color: "var(--text-secondary)", textAlign: "center", marginTop: 8, marginBottom: 28 }}>
-          {isLast ? "أنهيت جميع الفصول 🎉" : "انتقلت بنجاح للفصل التالي"}
+          {passed
+            ? isLast
+              ? "أنهيت جميع الفصول 🎉"
+              : "يمكنك الآن الانتقال إلى الفصل التالي"
+            : `تحتاج إلى ${toAr(passScore)} إجابات صحيحة من ${toAr(totalQuestions)} للنجاح. أعد الاختبار للمتابعة`}
         </div>
 
-        {isLast ? (
+        {!passed ? (
+          <button
+            onClick={onRetry}
+            style={{
+              background: "linear-gradient(135deg,#7B35FF,#00D4C8)",
+              color: "var(--text-primary)",
+              fontSize: 15,
+              fontWeight: 700,
+              padding: 16,
+              borderRadius: 50,
+              border: "none",
+              width: "100%",
+              cursor: "pointer",
+              fontFamily: font,
+              boxShadow: "0 0 24px rgba(123,53,255,0.3)",
+            }}
+          >
+            أعد الاختبار ↻
+          </button>
+        ) : isLast ? (
           <div
             style={{
               margin: 24,
@@ -1317,7 +1368,14 @@ function QuizTab({
             lineHeight: 1.7,
           }}
         >
-          {q.feedback}
+          {selectedAnswer === correct ? (
+            q.feedback
+          ) : (
+            <>
+              <strong style={{ color: "#E58A94" }}>إجابة غير صحيحة.</strong>{" "}
+              الإجابة الصحيحة هي «{q.options[correct]}». {q.feedback}
+            </>
+          )}
         </div>
       )}
     </div>
