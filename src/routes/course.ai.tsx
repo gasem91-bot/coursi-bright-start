@@ -206,32 +206,34 @@ function CourseAIPage() {
   }, []);
 
 
+  // Passing a unit quiz completes every chapter in that unit.
   const markComplete = async () => {
     if (!userId) return;
-    const cid = chapterId(level, activeChapter);
-    const alreadyComplete = completedIds.has(cid);
+    const ids = currentUnit.chapters.map((i) => chapterId(level, i));
+    const newIds = ids.filter((cid) => !completedIds.has(cid));
     await supabase
       .from("course_progress")
       .upsert(
-        { user_id: userId, chapter_id: cid, completed: true },
+        ids.map((cid) => ({ user_id: userId, chapter_id: cid, completed: true })),
         { onConflict: "user_id,chapter_id" },
       );
-    if (!alreadyComplete) {
-      // Award 10 XP + chapter badge for first-time completion
+    if (newIds.length > 0) {
+      // Award 10 XP per newly completed chapter
+      const gained = newIds.length * 10;
       const { data: p } = await supabase
         .from("profiles")
         .select("xp_points")
         .eq("id", userId)
         .maybeSingle();
       const current = (p as { xp_points?: number } | null)?.xp_points ?? 0;
-      await supabase.from("profiles").update({ xp_points: current + 10 }).eq("id", userId);
-      toast.success(`🏅 وسام جديد: أتممت الفصل ${toAr(activeChapter + 1)} — +١٠ نقاط خبرة`);
+      await supabase.from("profiles").update({ xp_points: current + gained }).eq("id", userId);
+      toast.success(`🏅 وسام جديد: أتممت ${currentUnit.title} — +${toAr(gained)} نقاط خبرة`);
     }
     await fetchProgress(userId);
 
     // If this completes the whole level, send the certificate email (server-side, once).
     const nextIds = new Set(completedIds);
-    nextIds.add(cid);
+    ids.forEach((cid) => nextIds.add(cid));
     if (isLevelComplete(level, nextIds)) {
       void sendCertEmail({ data: { level } })
         .then((r) => {
