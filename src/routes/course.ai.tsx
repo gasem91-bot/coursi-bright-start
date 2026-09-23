@@ -1313,7 +1313,7 @@ function QuizTab({
   return (
     <div style={{ padding: "28px 32px" }}>
       <h2 style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: 22, fontFamily: font }}>
-        اختبار الفصل {toAr(chapterIndex + 1)}
+        اختبار {unitTitle}
       </h2>
       <div style={{ color: "var(--text-secondary)", fontSize: 12, marginTop: 4, marginBottom: 20 }}>
         {toAr(questions.length)} أسئلة · تظهر الإجابة الصحيحة فوراً
