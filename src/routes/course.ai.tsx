@@ -533,8 +533,9 @@ function CourseAIPage() {
             }}
           >
             {(["content", "quiz", "exam"] as const).map((t) => {
+              if (t === "quiz" && !isUnitEnd) return null;
               const isActive = activeTab === t;
-              const label = t === "content" ? "📖 المحتوى" : t === "quiz" ? "✦ اختبار الفصل" : "🎓 الاختبار النهائي";
+              const label = t === "content" ? "📖 المحتوى" : t === "quiz" ? `✦ اختبار ${currentUnit.title}` : "🎓 الاختبار النهائي";
               return (
                 <button
                   key={t}
