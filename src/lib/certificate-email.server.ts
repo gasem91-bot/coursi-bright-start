@@ -35,6 +35,6 @@ export function buildCertificateHtml(params: {
 </div>`;
   return emailShell({
     body,
-    footerReason: "تلقّيت هذا البريد لأنك أكملت مستوى في COURS! على coursi.ai",
+    footerReason: "تلقّيت هذا البريد لأنك أكملت مستوى في كورسي على coursi.ai",
   });
 }

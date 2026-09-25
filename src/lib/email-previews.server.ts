@@ -18,6 +18,8 @@ export async function buildEmailPreviews(): Promise<EmailPreview[]> {
   const { CATEGORY_LABEL } = await import("./support");
   const { buildResetHtml, RESET_SUBJECT } = await import("./reset-email.server");
   const { buildMagicLinkHtml, MAGICLINK_SUBJECT } = await import("./magiclink-email.server");
+  const { buildLevelUpgradeHtml, LEVEL_UPGRADE_SUBJECT } = await import("./level-upgrade-email.server");
+  const { buildAiUpgradeHtml, AI_UPGRADE_SUBJECT } = await import("./ai-upgrade-email.server");
 
   const dateText = arabicDate(new Date());
   const ticket = {
@@ -91,6 +93,22 @@ export async function buildEmailPreviews(): Promise<EmailPreview[]> {
         dateText,
         link: "https://ai.portal.coursi.ai/achievements",
       }),
+    },
+    {
+      key: "level-upgrade",
+      label: "فتح مستوى جديد (دفعة الترقية)",
+      to: "student@example.com",
+      from: "كورسي <support@coursi.ai>",
+      subject: LEVEL_UPGRADE_SUBJECT,
+      html: buildLevelUpgradeHtml("advanced", "course_ai"),
+    },
+    {
+      key: "ai-upgrade",
+      label: "تفعيل مساعد الذكاء الاصطناعي",
+      to: "student@example.com",
+      from: "كورسي <support@coursi.ai>",
+      subject: AI_UPGRADE_SUBJECT,
+      html: buildAiUpgradeHtml(),
     },
   ];
 }

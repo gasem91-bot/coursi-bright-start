@@ -213,7 +213,7 @@ function WelcomePage() {
               لا تتعلّم فقط. تطوّر.
             </p>
             <p style={{ fontSize: 10, color: "#1A1A1A", marginTop: 8 }}>
-              © 2025 COURS! · coursi.ai
+              © 2026 كورسي · coursi.ai
             </p>
           </div>
         </div>

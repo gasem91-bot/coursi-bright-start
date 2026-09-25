@@ -34,7 +34,7 @@ export function buildTicketUserHtml(t: TicketEmailData): string {
 </div>`;
   return emailShell({
     body,
-    footerReason: "تلقّيت هذا البريد لأنك أرسلت طلب دعم في COURS! على coursi.ai",
+    footerReason: "تلقّيت هذا البريد لأنك أرسلت طلب دعم في كورسي على coursi.ai",
   });
 }
 
@@ -54,6 +54,6 @@ export function buildTicketSupportHtml(t: TicketEmailData): string {
   return emailShell({
     body,
     headerSubtitle: "تذكرة دعم جديدة",
-    footerReason: "إشعار داخلي لفريق دعم COURS!",
+    footerReason: "إشعار داخلي لفريق دعم كورسي",
   });
 }
