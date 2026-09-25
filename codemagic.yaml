@@ -1,0 +1,105 @@
+workflows:
+  # ---------------------------------------------------------------------
+  # ANDROID — quick debug build, no signing required.
+  # Produces a sideloadable .apk you can install on a real phone right away
+  # to test the app before worrying about Play Store signing.
+  # ---------------------------------------------------------------------
+  android-debug:
+    name: COURSI Android (debug, unsigned)
+    max_build_duration: 30
+    instance_type: linux_x2
+    environment:
+      node: 20
+      groups: []
+    scripts:
+      - name: Install dependencies
+        script: npm install
+      - name: Sync Capacitor Android project
+        script: npx cap sync android
+      - name: Build debug APK
+        script: |
+          cd android
+          ./gradlew assembleDebug
+    artifacts:
+      - android/app/build/outputs/**/*.apk
+    publishing:
+      email:
+        recipients:
+          - info.coursi.ai@gmail.com
+
+  # ---------------------------------------------------------------------
+  # ANDROID — signed release build (AAB) for Google Play Console upload.
+  # Requires an Android keystore added in Codemagic:
+  #   Codemagic app settings → Code signing → Android code signing
+  #   (Codemagic can generate a fresh keystore for you if you don't have one)
+  # ---------------------------------------------------------------------
+  android-release:
+    name: COURSI Android (release, signed)
+    max_build_duration: 30
+    instance_type: linux_x2
+    environment:
+      node: 20
+      android_signing:
+        - coursi_android_keystore   # create this reference in Codemagic UI
+      groups:
+        - google_play               # holds GCLOUD_SERVICE_ACCOUNT_CREDENTIALS if you want auto-upload
+    scripts:
+      - name: Install dependencies
+        script: npm install
+      - name: Sync Capacitor Android project
+        script: npx cap sync android
+      - name: Build signed AAB
+        script: |
+          cd android
+          ./gradlew bundleRelease
+    artifacts:
+      - android/app/build/outputs/**/*.aab
+    publishing:
+      email:
+        recipients:
+          - info.coursi.ai@gmail.com
+      # Uncomment once a Play Console service account JSON is added as
+      # GCLOUD_SERVICE_ACCOUNT_CREDENTIALS in the "google_play" group above:
+      # google_play:
+      #   credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+      #   track: internal
+      #   package_name: ai.coursi.app
+
+  # ---------------------------------------------------------------------
+  # iOS — signed release build (.ipa) for TestFlight / App Store Connect.
+  # Requires, in Codemagic app settings → Code signing → iOS code signing:
+  #   - An App Store Connect API key (Issuer ID, Key ID, .p8 file)
+  #   - Codemagic can then auto-create/manage certificates + provisioning
+  #     profiles for Team ID G9SD3C4288 / bundle id ai.coursi.app
+  # ---------------------------------------------------------------------
+  ios-release:
+    name: COURSI iOS (release, signed)
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    environment:
+      node: 20
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: ai.coursi.app
+      groups:
+        - app_store_connect   # holds the ASC API key set up in Codemagic UI
+    scripts:
+      - name: Install dependencies
+        script: npm install
+      - name: Sync Capacitor iOS project
+        script: npx cap sync ios
+      - name: Set up code signing
+        script: |
+          xcode-project use-profiles
+      - name: Install CocoaPods
+        script: |
+          find . -name "Podfile" -maxdepth 3
+          cd ios/App && pod install
+      - name: Build .ipa
+        script: |
+          xcode-project build-ipa \
+            --workspace ios/App/App.xcworkspace \
+            --scheme App
+    artifacts:
+      - build/ios/ipa/*.ipa
+      -
