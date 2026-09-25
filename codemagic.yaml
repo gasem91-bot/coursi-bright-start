@@ -107,6 +107,8 @@ workflows:
       email:
         recipients:
           - info.coursi.ai@gmail.com
-      app_store_connect:
-        auth: integration   # uses the ASC API key configured in Codemagic
-        submit_to_testflight: true
+      # app_store_connect publishing re-enable once the "App Store Connect" integration
+      # is created in Codemagic Team settings -> Integrations, then add:
+      # app_store_connect:
+      #   auth: integration
+      #   submit_to_testflight: true
