@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import PortalHeader from "@/components/portal-nav";
 import { Button } from "@/components/ui/button";
-import { getEmailPreviews, sendTestEmails } from "@/lib/email-preview.functions";
+import { getEmailPreviews, sendTestEmails, type EmailPreview } from "@/lib/email-preview.functions";
 
 export const Route = createFileRoute("/admin/emails")({
   head: () => ({
@@ -36,14 +36,29 @@ function AdminEmailsPage() {
   const [sending, setSending] = useState(false);
   const [sendMsg, setSendMsg] = useState("");
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ["admin-email-previews"],
     queryFn: () => fetchPreviews(),
     staleTime: 5 * 60 * 1000,
+    retry: 1,
   });
 
-  const previews = data && data.ok ? data.previews : [];
-  const current = previews[active];
+  const result = data as
+    | { ok: boolean; previews?: unknown; reason?: string; message?: string }
+    | null
+    | undefined;
+  const previews: EmailPreview[] =
+    result && result.ok && Array.isArray(result.previews) ? (result.previews as EmailPreview[]) : [];
+  const current = previews[Math.min(active, Math.max(previews.length - 1, 0))];
+
+  let statusMsg: string | null = null;
+  if (!isLoading && !current) {
+    if (isError) statusMsg = `تعذّر تحميل المعاينات${error instanceof Error ? ` — ${error.message}` : ""}`;
+    else if (result && !result.ok && result.reason === "forbidden") statusMsg = "هذه الصفحة مخصّصة للمشرفين فقط.";
+    else if (result && !result.ok && result.reason === "error")
+      statusMsg = `حدث خطأ أثناء إنشاء المعاينات${result.message ? ` — ${result.message}` : ""}`;
+    else statusMsg = "لم تصل أي معاينات من الخادم. أعد تحميل الصفحة أو سجّل الدخول من جديد.";
+  }
 
   const handleSend = async (key?: string) => {
     setSending(true);
@@ -80,8 +95,7 @@ function AdminEmailsPage() {
         </p>
 
         {isLoading && <p style={{ color: "var(--text-secondary)" }}>جاري التحميل…</p>}
-        {isError && <p style={{ color: "#ff6b6b" }}>تعذّر تحميل المعاينات.</p>}
-        {data && !data.ok && (
+        {statusMsg && (
           <div
             style={{
               border: "1px solid rgba(255,107,107,0.3)",
@@ -91,7 +105,7 @@ function AdminEmailsPage() {
               color: "var(--text-primary)",
             }}
           >
-            هذه الصفحة مخصّصة للمشرفين فقط.
+            {statusMsg}
           </div>
         )}
 
