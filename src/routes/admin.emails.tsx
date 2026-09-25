@@ -3,7 +3,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import PortalHeader from "@/components/portal-nav";
-import { getEmailPreviews } from "@/lib/email-preview.functions";
+import { Button } from "@/components/ui/button";
+import { getEmailPreviews, sendTestEmails } from "@/lib/email-preview.functions";
 
 export const Route = createFileRoute("/admin/emails")({
   head: () => ({
@@ -30,7 +31,10 @@ const font = "Cairo, 'Noto Sans Arabic', sans-serif";
 
 function AdminEmailsPage() {
   const fetchPreviews = useServerFn(getEmailPreviews);
+  const sendEmails = useServerFn(sendTestEmails);
   const [active, setActive] = useState(0);
+  const [sending, setSending] = useState(false);
+  const [sendMsg, setSendMsg] = useState("");
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["admin-email-previews"],
@@ -40,6 +44,29 @@ function AdminEmailsPage() {
 
   const previews = data && data.ok ? data.previews : [];
   const current = previews[active];
+
+  const handleSend = async (key?: string) => {
+    setSending(true);
+    setSendMsg("");
+    try {
+      const result = await sendEmails({ data: { key } });
+      if (!result.ok) {
+        const messages = {
+          no_email: "لا يوجد بريد إلكتروني في حساب المشرف",
+          forbidden: "هذه الصفحة مخصّصة للمشرفين فقط",
+          misconfigured: "خدمة إرسال البريد غير مهيأة",
+        };
+        setSendMsg(messages[result.reason]);
+      } else {
+        const failed = result.failed.length > 0 ? ` — تعذّر: ${result.failed.join(", ")}` : "";
+        setSendMsg(`تم إرسال ${result.sent.length} رسالة تجريبية إلى ${result.to}${failed}`);
+      }
+    } catch {
+      setSendMsg("تعذّر إرسال الرسائل التجريبية");
+    } finally {
+      setSending(false);
+    }
+  };
 
   return (
     <div style={{ minHeight: "100vh", background: "var(--bg-primary)", fontFamily: font }} dir="rtl">
@@ -117,6 +144,20 @@ function AdminEmailsPage() {
               <div>
                 <b style={{ color: "var(--text-primary)" }}>إلى:</b> {current.to}
               </div>
+            </div>
+
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
+              <Button disabled={sending} onClick={() => void handleSend(current.key)}>
+                {sending ? "جاري الإرسال…" : "أرسل هذه الرسالة لبريدي"}
+              </Button>
+              <Button variant="outline" disabled={sending} onClick={() => void handleSend()}>
+                {sending ? "جاري الإرسال…" : "أرسل كل الرسائل لبريدي"}
+              </Button>
+              {sendMsg && (
+                <p style={{ width: "100%", margin: 0, color: "var(--text-secondary)", fontSize: 13 }}>
+                  {sendMsg}
+                </p>
+              )}
             </div>
 
             <iframe

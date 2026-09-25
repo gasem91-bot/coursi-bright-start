@@ -1,6 +1,9 @@
 // Shared branded email shell used by ALL COURS! emails
 // (welcome, certificate, support ticket confirmation & notification).
 
+// The only way to write the brand in email text.
+export const BRAND_AR = "كورسي";
+
 export const LOGO_URL =
   "https://ai.portal.coursi.ai/__l5e/assets-v1/4e70392d-96cd-4490-86e4-4e562039be12/coursi-logo.png";
 
@@ -48,16 +51,17 @@ body{font-family:'Noto Sans Arabic',Arial,sans-serif;background:#0A0A0A;color:#F
 .fcopy{font-size:11px;color:#7C7C88;line-height:1.85;}
 `;
 
-export function emailHeader(subtitle = "كورسي · coursi.ai"): string {
+export function emailHeader(subtitle = `${BRAND_AR} · coursi.ai`): string {
   return `<div class="hdr">
-  <img src="${LOGO_URL}" alt="COURS!" width="170" class="logo-img" />
+  <img src="${LOGO_URL}" alt="${BRAND_AR}" width="170" class="logo-img" />
   <div class="hdr-sub">${subtitle}</div>
 </div>`;
 }
 
 export function emailFooter(reasonLine: string): string {
+  reasonLine = reasonLine.replace(/COURS!|COURSI(?![\w.-])/g, BRAND_AR);
   return `<div class="footer">
-  <img src="${LOGO_URL}" alt="COURS!" width="96" class="footer-logo" />
+  <img src="${LOGO_URL}" alt="${BRAND_AR}" width="96" class="footer-logo" />
   <div class="footer-tag">لا تتعلّم فقط. تطوّر.</div>
   <div class="srow">
     <a href="https://www.youtube.com/@COURSI_AI" class="sbtn"><span style="color:#FF7A7A;">YouTube</span></a>
@@ -74,7 +78,7 @@ export function emailFooter(reasonLine: string): string {
   </div>
   <div class="fcopy">
     ${reasonLine}<br>
-    © 2026 COURS! · coursi.ai · جميع الحقوق محفوظة
+    © 2026 ${BRAND_AR} · coursi.ai · جميع الحقوق محفوظة
   </div>
 </div>`;
 }

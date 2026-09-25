@@ -75,6 +75,6 @@ export function buildWelcomeHtml(
 
   return emailShell({
     body,
-    footerReason: "تلقّيت هذا البريد لأنك اشتركت في COURS! على coursi.ai",
+    footerReason: "تلقّيت هذا البريد لأنك اشتركت في كورسي على coursi.ai",
   });
 }

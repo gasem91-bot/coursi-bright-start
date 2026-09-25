@@ -30,6 +30,6 @@ export function buildMagicLinkHtml(params: { link: string; email: string }): str
   return emailShell({
     body,
     headerSubtitle: "رابط الدخول السريع",
-    footerReason: "تلقّيت هذا البريد لأن أحدهم طلب رابط دخول لحسابك في COURS!",
+    footerReason: "تلقّيت هذا البريد لأن أحدهم طلب رابط دخول لحسابك في كورسي",
   });
 }

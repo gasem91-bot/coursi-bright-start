@@ -30,6 +30,6 @@ export function buildResetHtml(params: { link: string; email: string }): string 
   return emailShell({
     body,
     headerSubtitle: "إعادة تعيين كلمة المرور",
-    footerReason: "تلقّيت هذا البريد لأن أحدهم طلب إعادة تعيين كلمة المرور لحسابك في COURS!",
+    footerReason: "تلقّيت هذا البريد لأن أحدهم طلب إعادة تعيين كلمة المرور لحسابك في كورسي",
   });
 }
