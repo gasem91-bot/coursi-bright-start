@@ -9,7 +9,7 @@ workflows:
     max_build_duration: 30
     instance_type: linux_x2
     environment:
-      node: 20
+      node: 22
       groups: []
     scripts:
       - name: Install dependencies
@@ -38,7 +38,7 @@ workflows:
     max_build_duration: 30
     instance_type: linux_x2
     environment:
-      node: 20
+      node: 22
       android_signing:
         - coursi_android_keystore   # create this reference in Codemagic UI
       groups:
@@ -77,7 +77,7 @@ workflows:
     max_build_duration: 60
     instance_type: mac_mini_m2
     environment:
-      node: 20
+      node: 22
       ios_signing:
         distribution_type: app_store
         bundle_identifier: ai.coursi.app
