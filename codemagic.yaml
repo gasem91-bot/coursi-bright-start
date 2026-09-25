@@ -8,9 +8,10 @@ workflows:
     name: COURSI Android (debug, unsigned)
     max_build_duration: 30
     instance_type: linux_x2
-    environment:
-      node: 22
-      groups: []
+   environment:
+     node: 22
+     java: 21
+     groups: []
     scripts:
       - name: Install dependencies
         script: npm install
@@ -37,9 +38,10 @@ workflows:
     name: COURSI Android (release, signed)
     max_build_duration: 30
     instance_type: linux_x2
-    environment:
-      node: 22
-      android_signing:
+       environment:
+     node: 22
+     java: 21
+     android_signing:
         - coursi_android_keystore   # create this reference in Codemagic UI
       groups:
         - google_play               # holds GCLOUD_SERVICE_ACCOUNT_CREDENTIALS if you want auto-upload
