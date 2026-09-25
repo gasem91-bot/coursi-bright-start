@@ -102,4 +102,11 @@ workflows:
             --scheme App
     artifacts:
       - build/ios/ipa/*.ipa
-      -
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      email:
+        recipients:
+          - info.coursi.ai@gmail.com
+      app_store_connect:
+        auth: integration   # uses the ASC API key configured in Codemagic
+        submit_to_testflight: true
