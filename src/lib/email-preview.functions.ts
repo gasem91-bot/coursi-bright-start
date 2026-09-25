@@ -7,24 +7,32 @@ export type { EmailPreview };
 
 export type EmailPreviewResult =
   | { ok: true; previews: EmailPreview[] }
-  | { ok: false; reason: "forbidden" };
+  | { ok: false; reason: "forbidden" | "empty" | "error"; message?: string };
 
-export const getEmailPreviews = createServerFn({ method: "GET" })
+// POST so no edge/browser cache can ever serve a stale or empty GET response.
+export const getEmailPreviews = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<EmailPreviewResult> => {
-    const { isAdminEmail } = await import("./admin-allowlist.server");
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    try {
+      const { isAdminEmail } = await import("./admin-allowlist.server");
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    const { data: profile } = await supabaseAdmin
-      .from("profiles")
-      .select("email")
-      .eq("id", context.userId)
-      .maybeSingle();
+      const { data: profile } = await supabaseAdmin
+        .from("profiles")
+        .select("email")
+        .eq("id", context.userId)
+        .maybeSingle();
 
-    if (!isAdminEmail(profile?.email)) return { ok: false, reason: "forbidden" };
+      if (!isAdminEmail(profile?.email)) return { ok: false, reason: "forbidden" };
 
-    const { buildEmailPreviews } = await import("./email-previews.server");
-    return { ok: true, previews: await buildEmailPreviews() };
+      const { buildEmailPreviews } = await import("./email-previews.server");
+      const previews = await buildEmailPreviews();
+      if (!Array.isArray(previews) || previews.length === 0) return { ok: false, reason: "empty" };
+      return { ok: true, previews };
+    } catch (err) {
+      console.error("[getEmailPreviews] failed", err);
+      return { ok: false, reason: "error", message: err instanceof Error ? err.message : String(err) };
+    }
   });
 
 export type SendTestEmailsResult =
