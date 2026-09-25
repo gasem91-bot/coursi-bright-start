@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import PortalHeader from "@/components/portal-nav";
 import { Button } from "@/components/ui/button";
-import { getEmailPreviews, sendTestEmails } from "@/lib/email-preview.functions";
+import { getEmailPreviews, sendTestEmails, type EmailPreview } from "@/lib/email-preview.functions";
 
 export const Route = createFileRoute("/admin/emails")({
   head: () => ({
@@ -95,8 +95,7 @@ function AdminEmailsPage() {
         </p>
 
         {isLoading && <p style={{ color: "var(--text-secondary)" }}>جاري التحميل…</p>}
-        {isError && <p style={{ color: "#ff6b6b" }}>تعذّر تحميل المعاينات.</p>}
-        {data && !data.ok && (
+        {statusMsg && (
           <div
             style={{
               border: "1px solid rgba(255,107,107,0.3)",
@@ -106,7 +105,7 @@ function AdminEmailsPage() {
               color: "var(--text-primary)",
             }}
           >
-            هذه الصفحة مخصّصة للمشرفين فقط.
+            {statusMsg}
           </div>
         )}
 
