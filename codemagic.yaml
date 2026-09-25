@@ -76,6 +76,9 @@ workflows:
   # The "integrations.app_store_connect" key below must match the name of
   # the API key as connected in Codemagic (Personal Account settings ->
   # Integrations -> Developer Portal), currently named "Codemagic CI".
+  # This project uses Capacitor's Swift Package Manager integration for iOS
+  # plugins (ios/App/CapApp-SPM) instead of CocoaPods, so there is no
+  # Podfile and no .xcworkspace — build directly against the .xcodeproj.
   # ---------------------------------------------------------------------
   ios-release:
     name: COURSI iOS (release, signed)
@@ -98,14 +101,10 @@ workflows:
       - name: Set up code signing
         script: |
           xcode-project use-profiles
-      - name: Install CocoaPods
-        script: |
-          find . -name "Podfile" -maxdepth 3
-          cd ios/App && pod install
       - name: Build .ipa
         script: |
           xcode-project build-ipa \
-            --workspace ios/App/App.xcworkspace \
+            --project ios/App/App.xcodeproj \
             --scheme App
     artifacts:
       - build/ios/ipa/*.ipa
