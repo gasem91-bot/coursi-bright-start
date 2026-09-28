@@ -79,6 +79,7 @@ workflows:
   # This project uses Capacitor's Swift Package Manager integration for iOS
   # plugins (ios/App/CapApp-SPM) instead of CocoaPods, so there is no
   # Podfile and no .xcworkspace — build directly against the .xcodeproj.
+  # Auto-publishes straight to TestFlight (internal testing) after build.
   # ---------------------------------------------------------------------
   ios-release:
     name: COURSI iOS (release, signed)
@@ -113,8 +114,6 @@ workflows:
       email:
         recipients:
           - info.coursi.ai@gmail.com
-      # app_store_connect publishing re-enable once the "App Store Connect" integration
-      # is created in Codemagic Team settings -> Integrations, then add:
-      # app_store_connect:
-      #   auth: integration
-      #   submit_to_testflight: true
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
