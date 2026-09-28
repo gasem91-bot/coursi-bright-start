@@ -30,7 +30,7 @@ export function buildCertificateHtml(params: {
   <a href="${link}" class="btn">حمّل شهادتك ←</a>
   <p class="cta-note">
     افتح صفحة الإنجازات في البوابة وحمّل الشهادة بصيغة PDF أو صورة<br>
-    <span style="color:#2A2A2A;">إذا لم يفتح الرابط، انسخه وضعه في متصفحك</span>
+    <span style="color:#A2A2B0;">إذا لم يفتح الرابط، انسخه وضعه في متصفحك</span>
   </p>
 </div>`;
   return emailShell({

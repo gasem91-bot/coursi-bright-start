@@ -56,7 +56,7 @@ export function buildWelcomeHtml(
   <a href="${loginLink}" class="btn">ادخل لكورسك الآن ←</a>
   <p class="cta-note">
     الرابط صالح لمدة ٤٨ ساعة · لا تحتاج كلمة مرور في المرة الأولى<br>
-    <span style="color:#2A2A2A;">إذا لم يفتح الرابط، انسخه وضعه في متصفحك</span>
+    <span style="color:#A2A2B0;">إذا لم يفتح الرابط، انسخه وضعه في متصفحك</span>
   </p>
 </div>
 <div class="card" dir="rtl" style="direction:rtl;text-align:right;">
