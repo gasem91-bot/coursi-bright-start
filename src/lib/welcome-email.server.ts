@@ -1,6 +1,7 @@
 // Branded welcome / purchase-confirmation email — uses the shared COURS! email shell.
 
 import { emailShell } from "./email-shell.server";
+import { AI_TUTOR_BOT_LINK } from "./ai-upgrade-email.server";
 
 export const WELCOME_SUBJECT = "مرحباً بك في كورسي! 🎉 كورسك جاهز";
 
