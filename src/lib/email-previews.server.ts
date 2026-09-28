@@ -20,6 +20,8 @@ export async function buildEmailPreviews(): Promise<EmailPreview[]> {
   const { buildMagicLinkHtml, MAGICLINK_SUBJECT } = await import("./magiclink-email.server");
   const { buildLevelUpgradeHtml, LEVEL_UPGRADE_SUBJECT } = await import("./level-upgrade-email.server");
   const { buildAiUpgradeHtml, AI_UPGRADE_SUBJECT } = await import("./ai-upgrade-email.server");
+  const { buildUpgradeNudgeHtml, UPGRADE_NUDGE_SUBJECT } = await import("./upgrade-nudge-email.server");
+  const { buildReferralInviteHtml, REFERRAL_INVITE_SUBJECT } = await import("./referral-invite-email.server");
 
   const dateText = arabicDate(new Date());
   const ticket = {
@@ -109,6 +111,22 @@ export async function buildEmailPreviews(): Promise<EmailPreview[]> {
       from: "كورسي <support@coursi.ai>",
       subject: AI_UPGRADE_SUBJECT,
       html: buildAiUpgradeHtml(),
+    },
+    {
+      key: "upgrade-nudge",
+      label: "تنبيه قرب إنهاء المستوى (تسويقي، غير مفعّل بعد)",
+      to: "student@example.com",
+      from: "كورسي <info@coursi.ai>",
+      subject: UPGRADE_NUDGE_SUBJECT,
+      html: buildUpgradeNudgeHtml({ userName: "قاسم", currentLevel: "beginner", remainingChapters: 2 }),
+    },
+    {
+      key: "referral-invite",
+      label: "دعوة برنامج الإحالة (تسويقي، غير مفعّل بعد)",
+      to: "student@example.com",
+      from: "كورسي <info@coursi.ai>",
+      subject: REFERRAL_INVITE_SUBJECT,
+      html: buildReferralInviteHtml({ userName: "قاسم", referralLink: "https://ai.portal.coursi.ai/?ref=SAMPLE123" }),
     },
   ];
 }
