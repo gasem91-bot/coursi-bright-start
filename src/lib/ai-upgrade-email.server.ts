@@ -7,11 +7,11 @@ export const AI_TUTOR_BOT_LINK = "https://t.me/CoursiAI_bot";
 export function buildAiUpgradeHtml(botLink: string = AI_TUTOR_BOT_LINK): string {
   const body = `
 <div style="padding:8px 4px;text-align:right">
-  <h2 style="margin:0 0 14px;font-size:22px;color:#0f172a">تم تفعيل مساعد الذكاء الاصطناعي</h2>
-  <p style="margin:0 0 14px;font-size:15px;line-height:1.9;color:#1e293b">
+  <h2 style="margin:0 0 14px;font-size:22px;color:#FFFFFF">تم تفعيل مساعد الذكاء الاصطناعي</h2>
+  <p style="margin:0 0 14px;font-size:15px;line-height:1.9;color:#D2D2DC">
     شكراً لك، تمت إضافة مساعد كورسي الذكي إلى حسابك بنجاح
   </p>
-  <p style="margin:0 0 18px;font-size:15px;line-height:1.9;color:#1e293b">
+  <p style="margin:0 0 18px;font-size:15px;line-height:1.9;color:#D2D2DC">
     اضغط الزر أدناه لبدء المحادثة مع المساعد على تيليجرام، ثم أرسل بريدك الإلكتروني نفسه المسجل لدينا ليتعرّف عليك
   </p>
   <p style="margin:0 0 18px;text-align:right">
@@ -19,8 +19,8 @@ export function buildAiUpgradeHtml(botLink: string = AI_TUTOR_BOT_LINK): string 
       افتح مساعد كورسي الذكي
     </a>
   </p>
-  <p style="margin:0;font-size:13px;line-height:1.9;color:#475569">
-    أو انسخ هذا الرابط: <span style="color:#0f172a">${botLink}</span>
+  <p style="margin:0;font-size:13px;line-height:1.9;color:#A2A2B0">
+    أو انسخ هذا الرابط: <span style="color:#7FE3E3;unicode-bidi:plaintext">${botLink}</span>
   </p>
 </div>`;
   return emailShell({

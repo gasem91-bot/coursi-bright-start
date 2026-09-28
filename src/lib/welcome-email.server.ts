@@ -1,6 +1,7 @@
 // Branded welcome / purchase-confirmation email — uses the shared COURS! email shell.
 
 import { emailShell } from "./email-shell.server";
+import { AI_TUTOR_BOT_LINK } from "./ai-upgrade-email.server";
 
 export const WELCOME_SUBJECT = "مرحباً بك في كورسي! 🎉 كورسك جاهز";
 
@@ -33,7 +34,7 @@ export function buildWelcomeHtml(
   const levelArabic = LEVEL_ARABIC[level] || LEVEL_ARABIC.beginner;
   const tierText =
     tier === "course_ai"
-      ? "<strong>باقة الكورس + مساعد AI</strong> — مساعد ذكي يجاوب على أسئلتك داخل كل درس"
+      ? `<strong>باقة الكورس + مساعد AI</strong> — مساعد ذكي يجاوب على أسئلتك داخل كل درس<br><a href="${AI_TUTOR_BOT_LINK}" style="color:#7FE3E3;font-weight:700;">افتح مساعد كورسي الذكي على تيليجرام ←</a>`
       : "<strong>باقة الكورس</strong> — وصول كامل لجميع فصول مستواك";
 
   const body = `<div class="hero">
@@ -60,11 +61,11 @@ export function buildWelcomeHtml(
 </div>
 <div class="card" dir="rtl" style="direction:rtl;text-align:right;">
   <div class="card-label">✦ بيانات حسابك</div>
-  <div style="direction:rtl;text-align:right;line-height:2;">
+  <div style="direction:rtl;text-align:right;line-height:2;color:#D2D2DC;">
     اسم المستخدم (بريد الدخول):<br>
-    <strong style="unicode-bidi:plaintext;">${userEmail ?? "بريدك الإلكتروني المستخدم في الدفع"}</strong>
+    <strong style="unicode-bidi:plaintext;color:#FFFFFF;">${userEmail ?? "بريدك الإلكتروني المستخدم في الدفع"}</strong>
   </div>
-  <div style="direction:rtl;text-align:right;margin-top:12px;line-height:2;">
+  <div style="direction:rtl;text-align:right;margin-top:12px;line-height:2;color:#A2A2B0;">
     حسابك محمي بكلمة مرور خاصة بك. تقدر تدخل مباشرة بالرابط أعلاه بدون كلمة مرور،
     وإذا رغبت بالدخول بكلمة مرور أو نسيتها، اضغط الزر التالي لتعيين كلمة مرور جديدة
   </div>
