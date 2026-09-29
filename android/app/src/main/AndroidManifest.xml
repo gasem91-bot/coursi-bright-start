@@ -50,4 +50,9 @@
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Required on Android 13+ (API 33) to show push notifications; the
+         runtime prompt is requested by PushNotificationHandler on first
+         launch via @capacitor/push-notifications. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 </manifest>
