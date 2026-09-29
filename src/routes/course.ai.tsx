@@ -12,7 +12,8 @@ import LevelExam from "@/components/level-exam";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { isLevelComplete } from "@/lib/certificate";
-import { sendCertificateEmail } from "@/lib/certificate-email.functions";
+import { triggerUpgradeNudge } from "@/lib/level-task.functions";
+import { createLevelUpgradeCheckout } from "@/lib/upgrade.functions";
 
 
 export const Route = createFileRoute("/course/ai")({
@@ -41,12 +42,14 @@ const chapterId = (level: Level, idx: number) => `ai-${level}-${pad2(idx + 1)}`;
 
 const ARABIC_LETTERS = ["أ", "ب", "ج", "د"];
 const CHAPTER_QUIZ_PASS_PCT = 70;
-const QUIZ_FEEDBACK_DELAY_MS = 6500;
+const QUIZ_FEEDBACK_DELAY_MS = 3500;
+const NEXT_LEVEL_AR: Record<string, string> = { beginner: "المستوى المتوسط", intermediate: "المستوى المتقدم" };
 
 function CourseAIPage() {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const sendCertEmail = useServerFn(sendCertificateEmail);
+  const nudgeFn = useServerFn(triggerUpgradeNudge);
+  const upgradeCheckout = useServerFn(createLevelUpgradeCheckout);
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -66,6 +69,9 @@ function CourseAIPage() {
   const [quizComplete, setQuizComplete] = useState(false);
   const [score, setScore] = useState(0);
   const [finalResult, setFinalResult] = useState<{ score: number; total: number } | null>(null);
+  const [wrongPicks, setWrongPicks] = useState<number[]>([]);
+  const [nudgeOpen, setNudgeOpen] = useState(false);
+  const [nudgeBusy, setNudgeBusy] = useState(false);
   const quizTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [chatOpen, setChatOpen] = useState(false);
@@ -150,12 +156,8 @@ function CourseAIPage() {
     () => unitQuiz(currentUnit, course.chapters),
     [currentUnit, course.chapters],
   );
-  const quizPassed = Boolean(
-    quizComplete &&
-      finalResult &&
-      finalResult.total > 0 &&
-      finalResult.score >= Math.ceil((CHAPTER_QUIZ_PASS_PCT / 100) * finalResult.total),
-  );
+  // Every question must be answered correctly (retries allowed) to pass the unit quiz.
+  const quizPassed = Boolean(quizComplete && finalResult && finalResult.total > 0);
 
   const goToChapter = (i: number) => {
     if (quizTimerRef.current) {
@@ -170,29 +172,35 @@ function CourseAIPage() {
     setQuizComplete(false);
     setScore(0);
     setFinalResult(null);
+    setWrongPicks([]);
     setSidebarOpen(false);
     contentScrollRef.current?.scrollTo({ top: 0 });
   };
 
   const handleAnswer = (idx: number) => {
-    if (answered || !quizQuestions[currentQ]) return;
+    if (answered || !quizQuestions[currentQ] || wrongPicks.includes(idx)) return;
     const correct = quizQuestions[currentQ].correct;
-    const isCorrect = idx === correct;
-    setAnswered(true);
     setSelectedAnswer(idx);
-    const nextScore = score + (isCorrect ? 1 : 0);
-    if (isCorrect) setScore(nextScore);
+    if (idx !== correct) {
+      // Wrong: stay on this question until the right option is picked.
+      setWrongPicks((w) => [...w, idx]);
+      return;
+    }
+    setAnswered(true);
+    const firstTry = wrongPicks.length === 0;
+    const nextScore = score + (firstTry ? 1 : 0);
+    setScore(nextScore);
     const totalQs = quizQuestions.length;
     const isLastQ = currentQ >= totalQs - 1;
     if (quizTimerRef.current) clearTimeout(quizTimerRef.current);
     quizTimerRef.current = setTimeout(() => {
       quizTimerRef.current = null;
+      setWrongPicks([]);
       if (!isLastQ) {
         setCurrentQ((q) => q + 1);
         setAnswered(false);
         setSelectedAnswer(null);
       } else {
-        // Snapshot the result so the summary never depends on later state resets
         setFinalResult({ score: nextScore, total: totalQs });
         setQuizComplete(true);
       }
@@ -231,18 +239,39 @@ function CourseAIPage() {
     }
     await fetchProgress(userId);
 
-    // If this completes the whole level, send the certificate email (server-side, once).
+    // All units passed → final stage. Nudge the $10 next-level upgrade (popup + one-time email).
     const nextIds = new Set(completedIds);
     ids.forEach((cid) => nextIds.add(cid));
-    if (isLevelComplete(level, nextIds)) {
-      void sendCertEmail({ data: { level } })
-        .then((r) => {
-          if (r?.sent) toast.success("🏆 شهادتك جاهزة — أرسلنا لك رابط التحميل على بريدك");
-        })
-        .catch(() => {});
+    if (isLevelComplete(level, nextIds) && level !== "advanced") {
+      setNudgeOpen(true);
+      void nudgeFn({ data: { level } }).catch(() => {});
     }
   };
 
+  // Deep link from the nudge email (?upgrade=1), or returning to a finished level.
+  useEffect(() => {
+    if (loading || level === "advanced") return;
+    const fromEmail = typeof window !== "undefined" && new URLSearchParams(window.location.search).get("upgrade") === "1";
+    const done = completedCount >= total && total > 0;
+    if (fromEmail) setNudgeOpen(true);
+    if (done) void nudgeFn({ data: { level } }).catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, level]);
+
+  const goUpgrade = async () => {
+    setNudgeBusy(true);
+    try {
+      const r = await upgradeCheckout();
+      if ("url" in r) {
+        window.location.href = r.url;
+        return;
+      }
+      toast.error("تعذّر فتح صفحة الدفع، حاول مرة أخرى");
+    } catch {
+      toast.error("تعذّر فتح صفحة الدفع، حاول مرة أخرى");
+    }
+    setNudgeBusy(false);
+  };
 
   useEffect(() => {
     if (quizPassed) {
@@ -565,7 +594,7 @@ function CourseAIPage() {
               userId={userId ?? ""}
               userName={userName}
               onPassed={() => {
-                void sendCertEmail({ data: { level } }).catch(() => {});
+                if (userId) void fetchProgress(userId);
               }}
             />
           ) : activeTab === "content" || !isUnitEnd ? (
@@ -588,6 +617,7 @@ function CourseAIPage() {
               currentQ={currentQ}
               answered={answered}
               selectedAnswer={selectedAnswer}
+              wrongPicks={wrongPicks}
               quizComplete={quizComplete}
               score={finalResult ? finalResult.score : score}
               totalQuestions={finalResult ? finalResult.total : quizQuestions.length}
@@ -609,11 +639,51 @@ function CourseAIPage() {
                 setQuizComplete(false);
                 setScore(0);
                 setFinalResult(null);
+                setWrongPicks([]);
               }}
             />
           )}
         </main>
       </div>
+
+      {nudgeOpen && level !== "advanced" && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          onClick={() => setNudgeOpen(false)}
+          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}
+        >
+          <div
+            className="coursi-content"
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxWidth: 440, width: "100%", fontFamily: font, direction: "rtl" }}
+          >
+            <div className="info-box" style={{ textAlign: "center", background: "var(--bg-secondary)" }}>
+              <div style={{ fontSize: 44 }}>🔥</div>
+              <h3 style={{ marginTop: 6 }}>أنت على بعد خطوة من إنهاء المستوى</h3>
+              <p>
+                افتح {NEXT_LEVEL_AR[level]} الآن بـ <strong>10$ فقط</strong> بدل السعر الكامل — يبقى بانتظارك في حسابك لتبدأه بعد
+                الاختبار النهائي والمهمة العملية
+              </p>
+              <button
+                onClick={goUpgrade}
+                disabled={nudgeBusy}
+                style={{ background: "linear-gradient(135deg,#7B35FF,#00D4C8)", color: "#fff", border: "none", borderRadius: 40, padding: "12px 26px", fontWeight: 800, fontFamily: font, cursor: "pointer", opacity: nudgeBusy ? 0.6 : 1 }}
+              >
+                {nudgeBusy ? "جاري التحويل..." : `افتح ${NEXT_LEVEL_AR[level]} — $10 ←`}
+              </button>
+              <div>
+                <button
+                  onClick={() => setNudgeOpen(false)}
+                  style={{ background: "none", border: "none", color: "var(--text-muted)", marginTop: 10, cursor: "pointer", fontFamily: font }}
+                >
+                  لاحقاً
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* AI Assistant */}
       {tier === "course_ai" && (
@@ -1146,6 +1216,7 @@ function QuizTab({
   currentQ,
   answered,
   selectedAnswer,
+  wrongPicks,
   quizComplete,
   score,
   totalQuestions,
@@ -1162,6 +1233,7 @@ function QuizTab({
   currentQ: number;
   answered: boolean;
   selectedAnswer: number | null;
+  wrongPicks: number[];
   quizComplete: boolean;
   score: number;
   totalQuestions: number;
@@ -1175,8 +1247,8 @@ function QuizTab({
 }) {
 
   if (quizComplete) {
-    const passScore = Math.ceil((CHAPTER_QUIZ_PASS_PCT / 100) * totalQuestions);
-    const passed = totalQuestions > 0 && score >= passScore;
+    const passScore = totalQuestions;
+    const passed = totalQuestions > 0;
     return (
       <div style={{ padding: "28px 32px" }}>
         <div
@@ -1256,7 +1328,7 @@ function QuizTab({
                 margin: "0 auto 28px",
               }}
             >
-              بقيت خطوة واحدة: الاختبار النهائي — ١٥ سؤالاً تغطي المستوى بالكامل. باجتيازه تحصل على شهادة{" "}
+              بقيت المرحلة الأخيرة: الاختبار النهائي (١٥ سؤالاً) ثم مهمة عملية يراجعها مساعد كورسي الذكي. باجتيازهما تحصل على شهادة{" "}
               {level === "beginner" ? "المستوى المبتدئ" : level === "intermediate" ? "المستوى المتوسط" : "المستوى المتقدم"}{" "}
               وتُسجَّل في حسابك بشكل دائم
             </div>
@@ -1316,7 +1388,7 @@ function QuizTab({
         اختبار {unitTitle}
       </h2>
       <div style={{ color: "var(--text-secondary)", fontSize: 12, marginTop: 4, marginBottom: 20 }}>
-        {toAr(questions.length)} أسئلة · تظهر الإجابة الصحيحة فوراً
+        {toAr(questions.length)} أسئلة · أجب إجابة صحيحة على كل سؤال للمتابعة
       </div>
 
       <div style={{ height: 3, background: "var(--border)", borderRadius: 2, overflow: "hidden", marginBottom: 24 }}>
@@ -1339,14 +1411,14 @@ function QuizTab({
 
       {q.options.map((opt, i) => {
         const isCorrect = i === correct;
-        const isPicked = selectedAnswer === i;
+        const isPicked = wrongPicks.includes(i);
         let borderColor = "var(--border)";
         let bg = "var(--bg-secondary)";
         let circleBg = "var(--border)";
         let circleColor = "var(--text-muted)";
 
-        if (answered) {
-          if (isCorrect) {
+        {
+          if (answered && isCorrect) {
             borderColor = "#00D4C8";
             bg = "rgba(0,212,200,0.07)";
             circleBg = "#00D4C8";
@@ -1362,7 +1434,7 @@ function QuizTab({
         return (
           <button
             key={i}
-            disabled={answered}
+            disabled={answered || isPicked}
             onClick={() => onAnswer(i)}
             style={{
               background: bg,
@@ -1372,7 +1444,7 @@ function QuizTab({
               display: "flex",
               alignItems: "center",
               gap: 12,
-              cursor: answered ? "default" : "pointer",
+              cursor: answered || isPicked ? "default" : "pointer",
               width: "100%",
               marginBottom: 10,
               fontFamily: font,
@@ -1404,25 +1476,28 @@ function QuizTab({
         );
       })}
 
-      {answered && (
+      {(answered || wrongPicks.length > 0) && (
         <div
+          aria-live="polite"
           style={{
             marginTop: 18,
             padding: "14px 18px",
-            background: selectedAnswer === correct ? "rgba(0,212,200,0.08)" : "rgba(197,84,94,0.08)",
-            border: `1px solid ${selectedAnswer === correct ? "#00D4C8" : "#C5545E"}`,
+            background: answered ? "rgba(0,212,200,0.08)" : "rgba(197,84,94,0.08)",
+            border: `1px solid ${answered ? "#00D4C8" : "#C5545E"}`,
             borderRadius: 10,
             color: "#DDD",
             fontSize: 14,
             lineHeight: 1.7,
           }}
         >
-          {selectedAnswer === correct ? (
-            q.feedback
+          {answered ? (
+            <>
+              <strong style={{ color: "#00D4C8" }}>✓ إجابة صحيحة!</strong> {q.feedback}
+            </>
           ) : (
             <>
-              <strong style={{ color: "#E58A94" }}>إجابة غير صحيحة.</strong>{" "}
-              الإجابة الصحيحة هي «{q.options[correct]}». {q.feedback}
+              <strong style={{ color: "#E58A94" }}>✕ ليس تماماً — هذه الإجابة غير صحيحة.</strong>{" "}
+              فكّر مرة أخرى واختر إجابة أخرى للمتابعة
             </>
           )}
         </div>
