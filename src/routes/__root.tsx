@@ -19,6 +19,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ProfileProvider } from "@/contexts/ProfileContext";
 import DeepLinkHandler from "@/components/deep-link-handler";
+import PushNotificationHandler from "@/components/push-notification-handler";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
@@ -85,6 +86,7 @@ function RootComponent() {
         <ProfileProvider>
           <StreakRunner />
           <DeepLinkHandler />
+          <PushNotificationHandler />
           <ToastDismissOnNavigate />
           <MobileTopbar />
           <Outlet />
