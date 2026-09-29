@@ -125,6 +125,33 @@ export type Database = {
         }
         Relationships: []
       }
+      level_ratings: {
+        Row: {
+          comment: string | null
+          created_at: string
+          id: string
+          level: string
+          rating: number
+          user_id: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          level: string
+          rating: number
+          user_id: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          level?: string
+          rating?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           country_flag: string | null
@@ -263,6 +290,66 @@ export type Database = {
           status?: string
           updated_at?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      task_submissions: {
+        Row: {
+          ai_feedback: string | null
+          created_at: string
+          file_path: string | null
+          id: string
+          kind: string
+          level: string
+          link_url: string | null
+          note: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          ai_feedback?: string | null
+          created_at?: string
+          file_path?: string | null
+          id?: string
+          kind: string
+          level: string
+          link_url?: string | null
+          note?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          ai_feedback?: string | null
+          created_at?: string
+          file_path?: string | null
+          id?: string
+          kind?: string
+          level?: string
+          link_url?: string | null
+          note?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      upgrade_nudges: {
+        Row: {
+          id: string
+          level: string
+          sent_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          level: string
+          sent_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          level?: string
+          sent_at?: string
+          user_id?: string
         }
         Relationships: []
       }
