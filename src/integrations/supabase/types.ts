@@ -95,6 +95,30 @@ export type Database = {
         }
         Relationships: []
       }
+      device_tokens: {
+        Row: {
+          id: string
+          platform: string
+          token: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          platform: string
+          token: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          platform?: string
+          token?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       exam_attempts: {
         Row: {
           created_at: string

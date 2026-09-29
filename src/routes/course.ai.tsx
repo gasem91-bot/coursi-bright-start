@@ -41,7 +41,6 @@ const pad2 = (n: number) => String(n).padStart(2, "0");
 const chapterId = (level: Level, idx: number) => `ai-${level}-${pad2(idx + 1)}`;
 
 const ARABIC_LETTERS = ["أ", "ب", "ج", "د"];
-const CHAPTER_QUIZ_PASS_PCT = 70;
 const QUIZ_FEEDBACK_DELAY_MS = 3500;
 const NEXT_LEVEL_AR: Record<string, string> = { beginner: "المستوى المتوسط", intermediate: "المستوى المتقدم" };
 
@@ -1215,7 +1214,7 @@ function QuizTab({
   questions,
   currentQ,
   answered,
-  selectedAnswer,
+  selectedAnswer: _selectedAnswer,
   wrongPicks,
   quizComplete,
   score,
