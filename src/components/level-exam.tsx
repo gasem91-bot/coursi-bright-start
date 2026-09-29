@@ -13,6 +13,7 @@ import {
 } from "@/lib/exam";
 import { LEVEL_ACCENT } from "@/lib/certificate";
 import CertificateCard from "@/components/certificate-card";
+import { LevelRating, TaskSubmission } from "@/components/level-final-stage";
 
 const font = "Cairo, 'Noto Sans Arabic', sans-serif";
 const AR_NUM = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"];
@@ -74,8 +75,29 @@ export default function LevelExam({
 
   const questions = state.questions;
 
-  // Already passed → certificate
-  if (state.passed || result?.passed) {
+  // Exam passed but practical task not yet approved → task stage
+  if ((state.passed || result?.passed) && !state.certificate) {
+    return (
+      <Wrap>
+        <Header level={level} />
+        <Notice icon="✅" title="اجتزت الاختبار النهائي — بقيت المهمة العملية">
+          الشهادة تُمنح بعد اجتياز الاختبار وقبول مهمتك العملية معاً. أرسل مهمتك الآن ليراجعها مساعد كورسي الذكي
+        </Notice>
+        <TaskSubmission
+          level={level}
+          task={state.task}
+          onReviewed={() => {
+            void refresh();
+            onPassed?.();
+          }}
+        />
+        {level !== "advanced" && <NextLevelUpgrade level={level} />}
+      </Wrap>
+    );
+  }
+
+  // Level complete → certificate
+  if (state.certificate) {
     return (
       <Wrap>
         <Header level={level} />
@@ -91,7 +113,7 @@ export default function LevelExam({
         >
           <div style={{ fontSize: 54 }}>🏆</div>
           <div style={{ color: "var(--text-primary)", fontWeight: 900, fontSize: 22, marginTop: 6 }}>
-            مبروك! اجتزت الاختبار النهائي
+            مبروك! أنهيت المستوى بنجاح
           </div>
           <div style={{ color: "var(--text-secondary)", fontSize: 13, marginTop: 8 }}>
             نتيجتك:{" "}
@@ -114,6 +136,7 @@ export default function LevelExam({
           examTotal={result?.total ?? state.certificate?.total ?? undefined}
           completedAt={state.certificate ? new Date(state.certificate.issuedAt) : new Date()}
         />
+        {!state.rated && userId && <LevelRating level={level} userId={userId} />}
         {level !== "advanced" && <NextLevelUpgrade level={level} />}
       </Wrap>
     );
@@ -204,7 +227,7 @@ export default function LevelExam({
             <li>نسبة النجاح {toAr(EXAM_PASS_PCT)}٪ (أي {toAr(state.passScore)} إجابات صحيحة على الأقل)</li>
             <li>لن تُعرض الإجابة الصحيحة عند الخطأ — فقط صح أو خطأ</li>
             <li>عند عدم النجاح تستطيع إعادة الاختبار بعد ٢٤ ساعة</li>
-            <li>عند النجاح تُمنح شهادة هذا المستوى وتُسجَّل في حسابك</li>
+            <li>بعد النجاح ترسل مهمة عملية يراجعها مساعد كورسي الذكي، وعند قبولها تُمنح شهادة المستوى</li>
           </ul>
           {state.attempts > 0 && (
             <p style={{ color: "var(--text-muted)", fontSize: 12 }}>
@@ -241,8 +264,7 @@ export default function LevelExam({
       setResult(r);
       setStarted(false);
       if (r.ok && r.passed) {
-        toast.success("🏆 مبروك! اجتزت الاختبار النهائي");
-        onPassed?.();
+        toast.success(r.levelCompleted ? "🏆 مبروك! أنهيت المستوى" : "✅ اجتزت الاختبار — بقيت المهمة العملية");
       } else if (r.reason === "cooldown") {
         toast.error("إعادة المحاولة غير متاحة الآن");
       }
