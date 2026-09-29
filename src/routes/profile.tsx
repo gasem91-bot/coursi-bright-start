@@ -145,7 +145,7 @@ function ProfilePage() {
   };
 
   const completedChapters = progress.filter((p) => p.completed).length;
-  const xp = completedChapters * 10;
+  const xp = (profile as { xp_points?: number } | null)?.xp_points ?? completedChapters * 10;
   const streakDays = profile?.streak_days ?? 0;
   const certificates = certs.map((c) => ({
     name: `شهادة ${LEVEL_LABEL[c.level]}`,

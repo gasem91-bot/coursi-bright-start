@@ -21,7 +21,7 @@ export const getExamState = createServerFn({ method: "POST" })
     const { EXAM_BANK } = await import("./exam-bank.server");
     const { isLevelComplete } = await import("./certificate");
 
-    const [{ data: progress }, { data: attempts }, { data: cert }] = await Promise.all([
+    const [{ data: progress }, { data: attempts }, { data: cert }, { data: taskRows }, { data: rating }] = await Promise.all([
       supabaseAdmin
         .from("course_progress")
         .select("chapter_id")
@@ -39,7 +39,22 @@ export const getExamState = createServerFn({ method: "POST" })
         .eq("user_id", userId)
         .eq("level", level)
         .maybeSingle(),
+      supabaseAdmin
+        .from("task_submissions")
+        .select("status, ai_feedback, created_at")
+        .eq("user_id", userId)
+        .eq("level", level)
+        .order("created_at", { ascending: false })
+        .limit(10),
+      supabaseAdmin
+        .from("level_ratings")
+        .select("id")
+        .eq("user_id", userId)
+        .eq("level", level)
+        .maybeSingle(),
     ]);
+    const tasks = taskRows ?? [];
+    const taskRow = tasks.find((t) => t.status === "approved") ?? tasks[0] ?? null;
 
     const completedIds = new Set((progress ?? []).map((r) => r.chapter_id));
     const rows = attempts ?? [];
@@ -72,6 +87,14 @@ export const getExamState = createServerFn({ method: "POST" })
           }
         : null,
       lockedUntil,
+      task: taskRow
+        ? {
+            status: taskRow.status as "pending" | "approved" | "rejected",
+            feedback: taskRow.ai_feedback,
+            createdAt: taskRow.created_at,
+          }
+        : null,
+      rated: !!rating,
     };
   });
 
@@ -91,7 +114,7 @@ export const submitExam = createServerFn({ method: "POST" })
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { EXAM_BANK } = await import("./exam-bank.server");
-    const { isLevelComplete, certificateId } = await import("./certificate");
+    const { isLevelComplete } = await import("./certificate");
 
     const questions = EXAM_BANK[level];
 
@@ -129,18 +152,16 @@ export const submitExam = createServerFn({ method: "POST" })
       .insert({ user_id: userId, level, score, total, passed });
 
     let certId: string | undefined;
+    let levelCompleted = false;
     if (passed) {
-      certId = certificateId(userId, level);
-      const { error } = await supabaseAdmin
-        .from("certificates")
-        .upsert(
-          { user_id: userId, level, certificate_id: certId, score, total },
-          { onConflict: "user_id,level" },
-        );
-      if (error) console.error("[exam] certificate insert failed:", error);
+      // Certificate is issued only once the practical task is also approved.
+      const { tryCompleteLevel } = await import("./level-completion.server");
+      const r = await tryCompleteLevel(userId, level);
+      levelCompleted = r.completed;
+      certId = r.certificateId;
     }
 
-    return { ok: true, score, total, passed, results, certificateId: certId };
+    return { ok: true, score, total, passed, results, certificateId: certId, levelCompleted };
   });
 
 export interface EarnedCertificate {

@@ -48,6 +48,10 @@ export interface ExamState {
   passed: boolean;
   certificate: { certificateId: string; issuedAt: string; score: number; total: number } | null;
   lockedUntil: string | null; // ISO — 24h cooldown after a failed attempt
+  /** Latest practical-task submission for this level. */
+  task: { status: "pending" | "approved" | "rejected"; feedback: string | null; createdAt: string } | null;
+  /** Rating already given at level completion. */
+  rated: boolean;
 }
 
 export interface ExamSubmitResult {
@@ -60,4 +64,6 @@ export interface ExamSubmitResult {
   /** Per-question right/wrong only — never the correct option. */
   results?: { id: string; correct: boolean }[];
   certificateId?: string;
+  /** True when exam + approved task together completed the level. */
+  levelCompleted?: boolean;
 }
