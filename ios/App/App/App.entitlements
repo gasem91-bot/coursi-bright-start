@@ -10,5 +10,10 @@
 	<array>
 		<string>applinks:ai.portal.coursi.ai</string>
 	</array>
+
+	<!-- Push Notifications. "production" matches the App Store distribution
+	     provisioning profile used by the Codemagic release workflow. -->
+	<key>aps-environment</key>
+	<string>production</string>
 </dict>
 </plist>
