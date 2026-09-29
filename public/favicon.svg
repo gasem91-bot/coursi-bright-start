@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64"><defs><linearGradient id="coursMark" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#763693"/><stop offset="1" stop-color="#5CAEC2"/></linearGradient></defs><rect width="64" height="64" rx="14" fill="#060410"/><polygon points="29.317,8 34.683,8 32.895,48.845 31.106,48.845" fill="url(#coursMark)"/><rect x="30.211" y="51.528" width="3.578" height="4.472" fill="url(#coursMark)"/></svg>
+python3 - <<'PY'
+from pathlib import Path
+import cairosvg
+from PIL import Image
+import io
+
+root = Path('.')
+svg = (root / 'public/favicon.svg').read_bytes()
+
+def render(size, target):
+    png = cairosvg.svg2png(bytestring=svg, output_width=size, output_height=size)
+    Image.open(io.BytesIO(png)).convert('RGB').save(target, format='PNG', optimize=True)
+
+# Browser and installable-web-app assets, all rasterized from the exact SVG.
+for size, path in [
+    (180, 'public/apple-touch-icon.png'),
+    (192, 'public/icon-192.png'),
+    (512, 'public/icon-512.png'),
+    (512, 'public/app-icon-512.png'),
+    (1024, 'ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png'),
+]:
+    render(size, root / path)
+
+# Multi-resolution favicon.ico from the same exact SVG.
+frames=[]
+for size in (16, 32, 48, 64):
+    png=cairosvg.svg2png(bytestring=svg, output_width=size, output_height=size)
+    frames.append(Image.open(io.BytesIO(png)).convert('RGBA'))
+frames[-1].save(root / 'public/favicon.ico', format='ICO', sizes=[(16,16),(32,32),(48,48),(64,64)], append_images=frames[:-1])
+
+# Android legacy launcher bitmaps at platform-standard sizes.
+densities={'mdpi':48,'hdpi':72,'xhdpi':96,'xxhdpi':144,'xxxhdpi':192,'ldpi':36}
+for density,size in densities.items():
+    folder=root / f'android/app/src/main/res/mipmap-{density}'
+    for name in ('ic_launcher.png','ic_launcher_round.png'):
+        render(size, folder / name)
+
+# Adaptive icon layers: exact dark field plus the exact mark geometry on transparency.
+layer_svg=b'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64"><defs><linearGradient id="coursMark" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#763693"/><stop offset="1" stop-color="#5CAEC2"/></linearGradient></defs><polygon points="29.317,8 34.683,8 32.895,48.845 31.106,48.845" fill="url(#coursMark)"/><rect x="30.211" y="51.528" width="3.578" height="4.472" fill="url(#coursMark)"/></svg>'''
+for density,size in densities.items():
+    folder=root / f'android/app/src/main/res/mipmap-{density}'
+    bg=Image.new('RGB',(size,size),'#060410')
+    bg.save(folder/'ic_launcher_background.png',format='PNG',optimize=True)
+    fg=cairosvg.svg2png(bytestring=layer_svg,output_width=size,output_height=size)
+    Image.open(io.BytesIO(fg)).save(folder/'ic_launcher_foreground.png',format='PNG',optimize=True)
+PY
+rm -f public/favicon.png
+file public/favicon.svg public/favicon.ico public/apple-touch-icon.png public/icon-192.png public/icon-512.png ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png
