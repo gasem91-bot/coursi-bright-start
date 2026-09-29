@@ -1,9 +1,8 @@
 // Marketing nudge email — sent to a student who is close to finishing their
 // current level but hasn't yet, encouraging them to lock in the existing $10
 // next-level unlock (see src/lib/upgrade.functions.ts: LEVEL_UPGRADE_PRICE_ID)
-// before they finish. This template only builds the HTML; the trigger
-// (detecting "nearly finished" from course_progress and actually sending it,
-// e.g. on a schedule) is not wired up yet — see cours-next-actions memory.
+// before they finish. Sent once per level by triggerUpgradeNudge
+// (level-task.functions.ts) when the student passes the level's last unit quiz.
 
 import { emailShell } from "./email-shell.server";
 
@@ -34,7 +33,7 @@ export function buildUpgradeNudgeHtml(params: {
 
   const body = `<div class="hero">
   <div class="badge">🔥 على بعد خطوات قليلة</div>
-  <h1>${greeting}<br><span>باقي ${remainingChapters} ${remainingChapters === 1 ? "فصل" : "فصول"} فقط على إنهاء ${levelName}</span></h1>
+  <h1>${greeting}<br><span>${remainingChapters > 0 ? `باقي ${remainingChapters} ${remainingChapters === 1 ? "فصل" : "فصول"} فقط على إنهاء ${levelName}` : `باقي خطوة أخيرة على إنهاء ${levelName}: الاختبار النهائي والمهمة العملية`}</span></h1>
   <div class="hero-sub">
     <p>إنجاز رائع! وقبل ما تخلص، عندنا عرض خاص لك<br>
     افتح ${nextLevelName} الآن بسعر مخفّض، بدل ما تدفع السعر الكامل لاحقاً</p>
