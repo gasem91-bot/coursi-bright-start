@@ -56,12 +56,12 @@ async function renderCertificate(data: CertificateData): Promise<HTMLCanvasEleme
 
   context.direction = "ltr";
   context.font = `600 31px ${arabicFont}`;
-  context.fillText(arabicDate(data.date), 828, 1392, 430);
+  context.fillText(arabicDate(data.date), 828, 1342, 430);
 
   context.textAlign = "left";
   context.fillStyle = "#686269";
   context.font = "500 23px Arial, sans-serif";
-  context.fillText(data.certId, 260, 1594);
+  context.fillText(data.certId, 260, 1538);
   return canvas;
 }
 
@@ -177,8 +177,8 @@ function CertificatePreview({ level, userName, certId, date }: CertificateData) 
     >
       <img src={CERTIFICATE_TEMPLATE[level]} alt="" draggable={false} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "fill", display: "block" }} />
       <div dir="rtl" style={{ position: "absolute", top: "47.2%", left: "24%", right: "24%", color: ink, fontFamily: arabicFont, fontSize: "4.25cqw", fontWeight: 900, lineHeight: 1.2, textAlign: "center", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{userName}</div>
-      <div dir="ltr" style={{ position: "absolute", left: "25.2%", width: "20.5%", top: "78.5%", color: ink, fontFamily: arabicFont, fontSize: "1.72cqw", fontWeight: 600, textAlign: "center" }}>{arabicDate(date)}</div>
-      <div dir="ltr" style={{ position: "absolute", left: "11.1%", bottom: "8.1%", color: "#686269", fontFamily: "Arial, sans-serif", fontSize: "1.15cqw", fontWeight: 500 }}>{certId}</div>
+      <div dir="ltr" style={{ position: "absolute", left: "25.2%", width: "20.5%", top: "75.5%", color: ink, fontFamily: arabicFont, fontSize: "1.72cqw", fontWeight: 600, textAlign: "center" }}>{arabicDate(date)}</div>
+      <div dir="ltr" style={{ position: "absolute", left: "11.1%", bottom: "11.2%", color: "#686269", fontFamily: "Arial, sans-serif", fontSize: "1.15cqw", fontWeight: 500 }}>{certId}</div>
     </div>
   );
 }
