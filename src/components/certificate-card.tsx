@@ -8,11 +8,10 @@ import {
   LEVEL_STATEMENT,
   type Level,
 } from "@/lib/certificate";
-import { BADGE_NODE_LINKS, BADGE_NODE_POSITIONS, BadgeMedallion } from "@/components/badge-medallion";
+import { CERTIFICATE_TEMPLATE } from "@/lib/certificate-assets";
 import { isNative, saveFile } from "@/lib/native";
 
 const arabicFont = "Cairo, 'Noto Sans Arabic', sans-serif";
-const wordmarkFont = "'Six Caps', Impact, sans-serif";
 const paper = "#FAF9F4";
 const ink = "#242127";
 
@@ -23,224 +22,47 @@ export interface CertificateData {
   certId: string;
 }
 
-function drawPolygon(
-  ctx: CanvasRenderingContext2D,
-  points: Array<[number, number]>,
-  stroke: string,
-  width: number,
-  fill?: string,
-) {
-  ctx.beginPath();
-  points.forEach(([x, y], index) => (index === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y)));
-  ctx.closePath();
-  if (fill) {
-    ctx.fillStyle = fill;
-    ctx.fill();
-  }
-  ctx.strokeStyle = stroke;
-  ctx.lineWidth = width;
-  ctx.stroke();
-}
-
-function drawFrame(ctx: CanvasRenderingContext2D, accent: string, width: number, height: number) {
-  const outer = [[54, 54], [width - 54, 54], [width - 54, height - 54], [54, height - 54]] as Array<[number, number]>;
-  drawPolygon(ctx, outer, accent, 12);
-
-  const cut = 46;
-  const inset = 82;
-  const inner = [
-    [inset + cut, inset], [width - inset - cut, inset], [width - inset, inset + cut],
-    [width - inset, height - inset - cut], [width - inset - cut, height - inset],
-    [inset + cut, height - inset], [inset, height - inset - cut], [inset, inset + cut],
-  ] as Array<[number, number]>;
-  drawPolygon(ctx, inner, accent, 3);
-
-  ctx.save();
-  ctx.globalAlpha = 0.42;
-  ctx.strokeStyle = accent;
-  ctx.lineWidth = 1;
-  for (let offset = 96; offset <= 116; offset += 5) {
-    ctx.strokeRect(offset, offset, width - offset * 2, height - offset * 2);
-  }
-  ctx.restore();
-
-  const corner = 82;
-  const depth = 105;
-  const corners: Array<Array<[number, number]>> = [
-    [[54, 54], [54 + depth, 54], [54 + depth - corner, 82], [82, 82], [82, 54 + depth - corner]],
-    [[width - 54, 54], [width - 54 - depth, 54], [width - 54 - depth + corner, 82], [width - 82, 82], [width - 82, 54 + depth - corner]],
-    [[54, height - 54], [54 + depth, height - 54], [54 + depth - corner, height - 82], [82, height - 82], [82, height - 54 - depth + corner]],
-    [[width - 54, height - 54], [width - 54 - depth, height - 54], [width - 54 - depth + corner, height - 82], [width - 82, height - 82], [width - 82, height - 54 - depth + corner]],
-  ];
-  corners.forEach((points) => drawPolygon(ctx, points, accent, 2, `${accent}24`));
-}
-
-function drawMedallion(ctx: CanvasRenderingContext2D, level: Level, cx: number, cy: number, radius: number) {
-  const accent = LEVEL_ACCENT[level];
-  ctx.save();
-  ctx.shadowColor = `${accent}70`;
-  ctx.shadowBlur = 28;
-  const gradient = ctx.createRadialGradient(cx - radius * 0.28, cy - radius * 0.3, 4, cx, cy, radius);
-  gradient.addColorStop(0, "#FFFFFF");
-  gradient.addColorStop(0.18, accent);
-  gradient.addColorStop(1, "#28212E");
-  ctx.fillStyle = gradient;
-  ctx.beginPath();
-  ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.restore();
-
-  for (const scale of [0.88, 0.74]) {
-    ctx.strokeStyle = scale === 0.88 ? paper : accent;
-    ctx.globalAlpha = scale === 0.88 ? 0.65 : 1;
-    ctx.lineWidth = scale === 0.88 ? 3 : 2;
-    ctx.beginPath();
-    ctx.arc(cx, cy, radius * scale, 0, Math.PI * 2);
-    ctx.stroke();
-  }
-  ctx.globalAlpha = 1;
-
-  const nodeScale = radius / 68;
-  const positions = BADGE_NODE_POSITIONS[level].map(([x, y]) => [cx + x * nodeScale, cy + y * nodeScale] as [number, number]);
-  ctx.strokeStyle = paper;
-  ctx.lineWidth = 4 * nodeScale;
-  BADGE_NODE_LINKS[level].forEach(([from, to]) => {
-    const start = positions[from];
-    const end = positions[to];
-    if (!start || !end) return;
-    ctx.beginPath();
-    ctx.moveTo(start[0], start[1]);
-    ctx.lineTo(end[0], end[1]);
-    ctx.stroke();
+function loadImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error("Certificate template failed to load"));
+    image.src = src;
   });
-  positions.forEach(([x, y]) => {
-    const node = ctx.createRadialGradient(x - 3, y - 4, 1, x, y, 10 * nodeScale);
-    node.addColorStop(0, "#FFFFFF");
-    node.addColorStop(0.35, paper);
-    node.addColorStop(1, accent);
-    ctx.fillStyle = node;
-    ctx.beginPath();
-    ctx.arc(x, y, 10 * nodeScale, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = "#2B2430";
-    ctx.lineWidth = 2;
-    ctx.stroke();
-  });
-}
-
-function drawAuthenticatedStamp(ctx: CanvasRenderingContext2D, accent: string, cx: number, cy: number) {
-  ctx.save();
-  ctx.translate(cx, cy);
-  ctx.strokeStyle = accent;
-  ctx.fillStyle = accent;
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.arc(0, 0, 62, 0, Math.PI * 2);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.arc(0, 0, 49, 0, Math.PI * 2);
-  ctx.stroke();
-  ctx.textAlign = "center";
-  ctx.direction = "ltr";
-  ctx.font = `22px ${wordmarkFont}`;
-  ctx.fillText("AUTHENTICATED", 0, -40);
-  ctx.font = `52px ${wordmarkFont}`;
-  ctx.fillText("COURS!", 0, 17);
-  ctx.font = `16px ${wordmarkFont}`;
-  ctx.fillText("COURSI.AI", 0, 42);
-  ctx.restore();
 }
 
 async function renderCertificate(data: CertificateData): Promise<HTMLCanvasElement> {
-  const width = 1600;
-  const height = 1131;
+  const width = 2336;
+  const height = 1744;
   const canvas = document.createElement("canvas");
   canvas.width = width;
   canvas.height = height;
   const context = canvas.getContext("2d");
   if (!context) throw new Error("Canvas is unavailable");
 
-  try {
-    await Promise.all([
-      document.fonts.load("400 100px 'Six Caps'"),
-      document.fonts.load("900 64px Cairo"),
-      document.fonts.load("600 28px Cairo"),
-      document.fonts.ready,
-    ]);
-  } catch {
-    // Browser font loading is best-effort; fallbacks preserve the export.
-  }
+  const [template] = await Promise.all([
+    loadImage(CERTIFICATE_TEMPLATE[data.level]),
+    document.fonts.load("900 74px Cairo").catch(() => []),
+    document.fonts.load("600 30px Cairo").catch(() => []),
+    document.fonts.ready.catch(() => undefined),
+  ]);
 
-  const accent = LEVEL_ACCENT[data.level];
-  context.fillStyle = paper;
-  context.fillRect(0, 0, width, height);
-  drawFrame(context, accent, width, height);
-
+  context.drawImage(template, 0, 0, width, height);
   context.textAlign = "center";
-  context.direction = "ltr";
-  context.fillStyle = ink;
-  context.font = `400 96px ${wordmarkFont}`;
-  context.fillText("COURS!", width / 2, 190);
-  context.font = `500 19px Arial, sans-serif`;
-  context.fillStyle = accent;
-  context.fillText("ARTIFICIAL INTELLIGENCE", width / 2, 220);
-
-  drawMedallion(context, data.level, width / 2, 320, 82);
-
   context.direction = "rtl";
   context.fillStyle = ink;
-  context.font = `700 48px ${arabicFont}`;
-  context.fillText("شهادة إتمام", width / 2, 452);
-  context.font = `900 66px ${arabicFont}`;
-  context.fillText(data.userName, width / 2, 550);
-  context.strokeStyle = accent;
-  context.lineWidth = 2;
-  context.beginPath();
-  context.moveTo(width / 2 - 370, 575);
-  context.lineTo(width / 2 + 370, 575);
-  context.stroke();
+  context.font = `900 76px ${arabicFont}`;
+  context.fillText(data.userName, width / 2, 905, 1120);
 
-  context.fillStyle = accent;
-  context.font = `700 28px ${arabicFont}`;
-  context.fillText(`${LEVEL_LABEL[data.level]} - الذكاء الاصطناعي`, width / 2, 628);
-  context.fillStyle = ink;
-  context.font = `600 27px ${arabicFont}`;
-  context.fillText(LEVEL_STATEMENT[data.level], width / 2, 695);
-
-  const metaY = 855;
-  context.strokeStyle = `${accent}A8`;
-  context.lineWidth = 2;
-  context.beginPath();
-  context.moveTo(250, metaY);
-  context.lineTo(585, metaY);
-  context.moveTo(1015, metaY);
-  context.lineTo(1350, metaY);
-  context.stroke();
-  context.fillStyle = ink;
   context.direction = "ltr";
-  context.font = `600 25px ${arabicFont}`;
-  context.fillText(arabicDate(data.date), 417, metaY - 16);
-  context.fillText("Date Issued", 417, metaY + 34);
-  context.font = `600 25px Arial, sans-serif`;
-  context.fillText("Founder and CEO", 1182, metaY + 20);
+  context.font = `600 31px ${arabicFont}`;
+  context.fillText(arabicDate(data.date), 828, 1392, 430);
 
-  context.fillStyle = "#686269";
-  context.font = `500 18px Arial, sans-serif`;
   context.textAlign = "left";
-  context.fillText(data.certId, 130, height - 105);
-  drawAuthenticatedStamp(context, accent, width - 178, height - 160);
+  context.fillStyle = "#686269";
+  context.font = "500 23px Arial, sans-serif";
+  context.fillText(data.certId, 260, 1594);
   return canvas;
-}
-
-function AuthenticatedStamp({ accent }: { accent: string }) {
-  return (
-    <div style={{ width: 74, height: 74, border: `2px solid ${accent}`, borderRadius: "50%", display: "grid", placeItems: "center", color: accent, position: "relative", fontFamily: wordmarkFont, lineHeight: 1 }}>
-      <div style={{ position: "absolute", inset: 6, border: `1px solid ${accent}`, borderRadius: "50%" }} />
-      <span style={{ position: "absolute", top: 9, fontSize: 9, letterSpacing: 1 }}>AUTHENTICATED</span>
-      <strong style={{ fontSize: 26, fontWeight: 400 }}>COURS!</strong>
-      <span style={{ position: "absolute", bottom: 9, fontSize: 8, letterSpacing: 1 }}>COURSI.AI</span>
-    </div>
-  );
 }
 
 export default function CertificateCard({
@@ -290,8 +112,6 @@ export default function CertificateCard({
     try {
       const canvas = await build();
       const imageUrl = canvas.toDataURL("image/png");
-      // Native shell: no popup windows or print dialog — save/share the
-      // full-resolution certificate image instead (Files / Photos / Print).
       if (isNative()) {
         await saveFile({ fileName: `${certId}.png`, dataUrl: imageUrl, title: `شهادة ${LEVEL_LABEL[level]}` });
         toast.success("تم حفظ الشهادة 🎉");
@@ -349,39 +169,16 @@ export default function CertificateCard({
 }
 
 function CertificatePreview({ level, userName, certId, date }: CertificateData) {
-  const accent = LEVEL_ACCENT[level];
   return (
-    <div style={{ background: paper, color: ink, aspectRatio: "1.414 / 1", textAlign: "center", direction: "rtl", position: "relative", isolation: "isolate", containerType: "inline-size" }}>
-      <div style={{ position: "absolute", inset: 12, border: `4px solid ${accent}`, pointerEvents: "none" }} />
-      <div style={{ position: "absolute", inset: 22, border: `1px solid ${accent}`, opacity: 0.7, pointerEvents: "none", clipPath: "polygon(5% 0,95% 0,100% 8%,100% 92%,95% 100%,5% 100%,0 92%,0 8%)" }} />
-      <div style={{ position: "absolute", inset: 28, border: `1px double ${accent}`, opacity: 0.32, pointerEvents: "none" }} />
-
-      <div style={{ position: "absolute", top: "6%", left: 0, right: 0, zIndex: 1 }}>
-        <div dir="ltr" style={{ fontFamily: wordmarkFont, fontSize: "9cqw", lineHeight: 0.82, letterSpacing: 1 }}>COURS!</div>
-        <div dir="ltr" style={{ color: accent, fontFamily: "Arial, sans-serif", fontSize: "1cqw", letterSpacing: 2, marginTop: "0.7cqw" }}>ARTIFICIAL INTELLIGENCE</div>
-      </div>
-
-      <BadgeMedallion level={level} size="15cqw" style={{ position: "absolute", left: "42.5%", top: "21%", zIndex: 1 }} />
-
-      <div style={{ position: "absolute", top: "44%", left: "8%", right: "8%", zIndex: 1 }}>
-        <div style={{ fontSize: "3.5cqw", fontWeight: 700 }}>{"شهادة إتمام"}</div>
-        <div style={{ fontSize: "5.4cqw", fontWeight: 900, lineHeight: 1.3, maxWidth: "80%", margin: "0.2cqw auto 0", borderBottom: `1px solid ${accent}` }}>{userName}</div>
-        <div style={{ color: accent, fontSize: "1.8cqw", fontWeight: 700, marginTop: "0.7cqw" }}>{LEVEL_LABEL[level]} - الذكاء الاصطناعي</div>
-        <div style={{ fontSize: "1.55cqw", fontWeight: 600, marginTop: "1.25cqw", whiteSpace: "nowrap" }}>{LEVEL_STATEMENT[level]}</div>
-      </div>
-
-      <div dir="ltr" style={{ position: "absolute", left: "11%", right: "11%", bottom: "10%", zIndex: 1, display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12cqw" }}>
-        <div style={{ borderTop: `1px solid ${accent}`, paddingTop: "0.5cqw" }}>
-          <div style={{ fontFamily: arabicFont, fontSize: "1.35cqw", fontWeight: 600 }}>{arabicDate(date)}</div>
-          <div style={{ fontFamily: "Arial, sans-serif", fontSize: "1.1cqw", marginTop: "0.2cqw" }}>Date Issued</div>
-        </div>
-        <div style={{ borderTop: `1px solid ${accent}`, paddingTop: "1.6cqw" }}>
-          <div style={{ fontFamily: "Arial, sans-serif", fontSize: "1.1cqw" }}>Founder and CEO</div>
-        </div>
-      </div>
-
-      <div dir="ltr" style={{ position: "absolute", left: "4.5%", bottom: "3.7%", color: "#686269", fontFamily: "Arial, sans-serif", fontSize: "1cqw" }}>{certId}</div>
-      <div style={{ position: "absolute", right: "4.5%", bottom: "2.5%", width: "8cqw", height: "8cqw", transformOrigin: "bottom right" }}><div style={{ transform: "scale(calc(8cqw / 74px))", transformOrigin: "top left" }}><AuthenticatedStamp accent={accent} /></div></div>
+    <div
+      role="img"
+      aria-label={`شهادة ${LEVEL_LABEL[level]} باسم ${userName}. ${LEVEL_STATEMENT[level]}`}
+      style={{ aspectRatio: "2336 / 1744", position: "relative", overflow: "hidden", containerType: "inline-size", background: paper }}
+    >
+      <img src={CERTIFICATE_TEMPLATE[level]} alt="" draggable={false} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "fill", display: "block" }} />
+      <div dir="rtl" style={{ position: "absolute", top: "47.2%", left: "24%", right: "24%", color: ink, fontFamily: arabicFont, fontSize: "4.25cqw", fontWeight: 900, lineHeight: 1.2, textAlign: "center", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{userName}</div>
+      <div dir="ltr" style={{ position: "absolute", left: "25.2%", width: "20.5%", top: "78.5%", color: ink, fontFamily: arabicFont, fontSize: "1.72cqw", fontWeight: 600, textAlign: "center" }}>{arabicDate(date)}</div>
+      <div dir="ltr" style={{ position: "absolute", left: "11.1%", bottom: "8.1%", color: "#686269", fontFamily: "Arial, sans-serif", fontSize: "1.15cqw", fontWeight: 500 }}>{certId}</div>
     </div>
   );
 }

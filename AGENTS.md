@@ -1,0 +1,1 @@
+- Keep finalized certificate and badge artwork centralized in `certificate-assets.ts` so previews, exports, and all placements use the same immutable managed assets.
