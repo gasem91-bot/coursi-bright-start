@@ -48,6 +48,17 @@ function LoginPage() {
 
   const passwordRef = useRef<HTMLInputElement>(null);
 
+  // Already signed in (persisted session)? Skip the login form.
+  // Keep ?reset=1 deep links on the form so password resets still work.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("reset") === "1") return;
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) window.location.replace("/dashboard");
+    });
+  }, []);
+
+
   // Deep-link from the payment-confirmation email: /login?reset=1
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
