@@ -3,18 +3,6 @@ import { useId, type CSSProperties } from "react";
 import { LEVEL_LABEL, type Level } from "@/lib/certificate";
 import { BADGE_IMAGE } from "@/lib/certificate-assets";
 
-export const BADGE_NODE_POSITIONS: Record<Level, Array<[number, number]>> = {
-  beginner: [[0, 0]],
-  intermediate: [[0, -20], [-23, 17], [23, 17]],
-  advanced: [[0, -27], [-27, -7], [27, -7], [-19, 25], [19, 25], [0, 5]],
-};
-
-export const BADGE_NODE_LINKS: Record<Level, Array<[number, number]>> = {
-  beginner: [],
-  intermediate: [[0, 1], [0, 2], [1, 2]],
-  advanced: [[0, 1], [0, 2], [1, 5], [2, 5], [1, 3], [2, 4], [3, 5], [4, 5], [3, 4]],
-};
-
 interface BadgeMedallionProps {
   level: Level;
   locked?: boolean;
@@ -43,6 +31,7 @@ export function BadgeMedallion({ level, locked = false, size = 96, className, st
         alt=""
         aria-hidden="true"
         draggable={false}
+        data-medallion-artwork={`glossy-3d-${level}`}
         style={{ width: "100%", height: "100%", display: "block", objectFit: "contain", filter: locked ? "grayscale(1) saturate(0)" : undefined, opacity: locked ? 0.62 : 1 }}
       />
       {locked && (
