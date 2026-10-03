@@ -1000,6 +1000,7 @@ const CONTENT_CSS = `
 .coursi-content .versus-note { color:#CFC8DE; font-size:13px; line-height:1.8; margin-top:14px; background:rgba(0,212,200,0.06); border-right:3px solid ${CYAN}; border-radius:10px; padding:12px 14px; }
 .chapter-visual { width:100%; margin:18px 0 24px; padding:1px; border-radius:15px; overflow:hidden; background:linear-gradient(135deg, rgba(123,53,255,.68), rgba(0,212,200,.52)); box-shadow:0 14px 36px rgba(123,53,255,.14), 0 0 22px rgba(0,212,200,.07); }
 .chapter-visual img { display:block; width:100%; height:auto; aspect-ratio:1344/752; object-fit:cover; border-radius:14px; background:${BG_SOFT}; }
+.chapter-visual img.chapter-tutorial-gif { aspect-ratio:auto; object-fit:contain; }
 `;
 
 
@@ -1180,7 +1181,13 @@ function ContentTab({
 
       {chapterImage && (
         <figure className="chapter-visual">
-          <img src={chapterImage} alt={`رسم توضيحي للفصل: ${chapterTitle}`} />
+          <img
+            key={`${chapterIndex}-${chapterImage}`}
+            src={chapterImage}
+            alt={`شرح متحرك للفصل: ${chapterTitle}`}
+            className={chapterImage.includes(".gif") ? "chapter-tutorial-gif" : undefined}
+            data-playback={chapterImage.includes(".gif") ? "continuous-loop" : undefined}
+          />
         </figure>
       )}
 

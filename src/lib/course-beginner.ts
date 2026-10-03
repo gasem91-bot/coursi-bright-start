@@ -4,10 +4,12 @@
 // and styled via the global .coursi-content rules in course.ai.tsx.
 
 import type { QuizQuestion } from "./course-content-types";
+import { BEGINNER_TUTORIAL_GIFS } from "./course-tutorial-assets";
 
 export interface BeginnerChapter {
   id: number;
   title: string;
+  image?: string;
   content: string;
   quiz: QuizQuestion[];
 }
@@ -364,6 +366,7 @@ ${exercise("من الفئات الست، اختر فئتين تعتقد أنهم
   {
     id: 2,
     title: "ChatGPT من الصفر حتى الاحتراف",
+    image: BEGINNER_TUTORIAL_GIFS[2],
     content: `
 ${intro("ChatGPT هي البوابة الأولى للذكاء الاصطناعي. في هذا الفصل لن نكتفي بمعرفة كيفية الدخول، بل ستتعلم كيف تستخدمه باحترافية وتحصل منه على نتائج حقيقية.")}
 ${learn([
@@ -612,6 +615,7 @@ ${exercise("اكتب طلباً ضعيفاً لـChatGPT، ثم طوّره با�
   {
     id: 4,
     title: "الذكاء الاصطناعي والصور — من الكلمات إلى التصميم",
+    image: BEGINNER_TUTORIAL_GIFS[4],
     content: `
 ${intro("في هذا الفصل ستتعلم كيف تتحول كلماتك إلى صور احترافية في ثوانٍ، وكيف تختار الأداة المناسبة لكل احتياج.")}
 ${learn([
@@ -1045,6 +1049,7 @@ ${exercise("اكتب قائمة بخمس مهام متكررة في عملك أ�
   {
     id: 8,
     title: "بناء موقعك الإلكتروني مع الذكاء الاصطناعي — في أقل من ساعة",
+    image: BEGINNER_TUTORIAL_GIFS[8],
     content: `
 ${intro("قبل سنوات، بناء موقع إلكتروني كان يحتاج مبرمجاً ومصمماً وأسابيع من العمل. اليوم، بجملة واحدة يمكنك الحصول على موقع كامل يعمل فعلاً.")}
 ${learn([
