@@ -4,6 +4,7 @@ import type { QuizQuestion } from "./course-content-types";
 import intermediateCh08Asset from "@/assets/intermediate-ch08.png.asset.json";
 import intermediateCh09Asset from "@/assets/intermediate-ch09.png.asset.json";
 import intermediateCh10Asset from "@/assets/intermediate-ch10.png.asset.json";
+import { INTERMEDIATE_TUTORIAL_GIFS } from "./course-tutorial-assets";
 
 export interface IntermediateChapter {
   id: number;
@@ -199,6 +200,7 @@ ${checklist("قائمة التطبيق العملي", [
   {
     id: 2,
     title: "أتمتة المهام اليومية بالذكاء الاصطناعي",
+    image: INTERMEDIATE_TUTORIAL_GIFS[2],
     content: `
 ${intro("الأتمتة تعني توفير ساعات من وقتك أسبوعياً. عندما تحدث كل المهام المتكررة تلقائياً، تتحرر لتركز على ما يهم فعلاً.")}
 ${learn([
@@ -273,6 +275,7 @@ ${checklist("قائمة التطبيق العملي", [
   {
     id: 3,
     title: "بناء روبوت محادثة لعملك",
+    image: INTERMEDIATE_TUTORIAL_GIFS[3],
     content: `
 ${intro("روبوت محادثة يعمل ٢٤ ساعة نيابةً عنك، يرد على عملائك بلحظتها، ويُضاعف مبيعاتك بدون توظيف. اليوم بناؤه ممكن في ساعات.")}
 ${learn([
