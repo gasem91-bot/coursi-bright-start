@@ -239,7 +239,7 @@ export function LevelRating({ level, userId }: { level: Level; userId: string })
     <div className="coursi-content" style={{ marginTop: 18 }}>
       <div className="info-box" style={{ textAlign: "center" }}>
         <h3 style={{ marginTop: 0 }}>كيف كانت تجربتك في هذا المستوى؟</h3>
-        <div style={{ display: "flex", gap: 6, justifyContent: "center", direction: "ltr", margin: "8px 0 12px" }}>
+        <div style={{ display: "flex", gap: 6, justifyContent: "center", direction: "rtl", margin: "8px 0 12px" }}>
           {[1, 2, 3, 4, 5].map((n) => (
             <button
               key={n}
