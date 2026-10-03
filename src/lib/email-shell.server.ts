@@ -1,11 +1,15 @@
-// Shared branded email shell used by ALL COURS! emails
+// Shared branded email shell used by every كورسي email.
 // (welcome, certificate, support ticket confirmation & notification).
 
 // The only way to write the brand in email text.
 export const BRAND_AR = "كورسي";
 
 export const LOGO_URL =
-  "https://ai.portal.coursi.ai/__l5e/assets-v1/4e70392d-96cd-4490-86e4-4e562039be12/coursi-logo.png";
+  "https://ai.portal.coursi.ai/__l5e/assets-v1/4e70392d-96cd-4490-86e4-4e562039be12/coursi-logo.png?v=arabic-wordmark-20261003";
+
+function useArabicBrand(value: string): string {
+  return value.replace(/COURS!|COURSI(?![\w.-])/g, BRAND_AR);
+}
 
 export const EMAIL_STYLES = `
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;600;700;900&display=swap');
@@ -54,12 +58,12 @@ body{font-family:'Noto Sans Arabic',Arial,sans-serif;background:#0A0A0A;color:#F
 export function emailHeader(subtitle = `${BRAND_AR} · coursi.ai`): string {
   return `<div class="hdr">
   <img src="${LOGO_URL}" alt="${BRAND_AR}" width="170" class="logo-img" />
-  <div class="hdr-sub">${subtitle}</div>
+  <div class="hdr-sub">${useArabicBrand(subtitle)}</div>
 </div>`;
 }
 
 export function emailFooter(reasonLine: string): string {
-  reasonLine = reasonLine.replace(/COURS!|COURSI(?![\w.-])/g, BRAND_AR);
+  reasonLine = useArabicBrand(reasonLine);
   return `<div class="footer">
   <img src="${LOGO_URL}" alt="${BRAND_AR}" width="96" class="footer-logo" />
   <div class="footer-tag">لا تتعلّم فقط. تطوّر.</div>
@@ -88,6 +92,7 @@ export function emailShell(params: {
   headerSubtitle?: string;
   footerReason: string;
 }): string {
+  const body = useArabicBrand(params.body);
   return `<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -98,7 +103,7 @@ export function emailShell(params: {
 <body>
 <div class="wrap"><div class="box">
 ${emailHeader(params.headerSubtitle)}
-${params.body}
+${body}
 ${emailFooter(params.footerReason)}
 </div></div>
 </body>

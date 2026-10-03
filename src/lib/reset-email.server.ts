@@ -1,4 +1,4 @@
-// Branded password-reset email — uses the shared COURS! email shell.
+// Branded password-reset email — uses the shared كورسي email shell.
 
 import { emailShell } from "./email-shell.server";
 
