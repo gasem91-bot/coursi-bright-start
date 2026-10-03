@@ -1,1 +1,2 @@
 - Keep finalized certificate and badge artwork centralized in `certificate-assets.ts` so previews, exports, and all placements use the same immutable managed assets.
+- Keep security-patched transitive build dependencies pinned through package-manager overrides until their parent frameworks adopt fixed minimum versions, because forced framework internals are less stable than compatible resolutions.
