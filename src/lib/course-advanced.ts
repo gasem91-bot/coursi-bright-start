@@ -6,6 +6,7 @@ import advancedCh09Asset from "@/assets/advanced-ch09.png.asset.json";
 import advancedCh10Asset from "@/assets/advanced-ch10.png.asset.json";
 import advancedCh11Asset from "@/assets/advanced-ch11.png.asset.json";
 import advancedCh12Asset from "@/assets/advanced-ch12.png.asset.json";
+import { ADVANCED_TUTORIAL_GIFS } from "./course-tutorial-assets";
 
 export interface AdvancedChapter {
   id: number;
@@ -118,6 +119,7 @@ ${exercise("ارسم على ورقة منظومة متكاملة لعملك: م�
   {
     id: 1,
     title: "بناء منتج ذكاء اصطناعي من الصفر",
+    image: ADVANCED_TUTORIAL_GIFS[1],
     content: `
 ${intro("قبل بناء أي منتج، تحقق من وجود طلب حقيقي عليه. في هذا الفصل ستتعلم منهجية التحقق السريع ثم البناء الفعلي.")}
 ${learn([
@@ -159,6 +161,7 @@ ${exercise("اكتب صفحة هبوط من فقرة واحدة تصف منتج�
   {
     id: 2,
     title: "الاستدعاء الخارجي للنماذج عبر الواجهة البرمجية",
+    image: ADVANCED_TUTORIAL_GIFS[2],
     content: `
 ${intro("الواجهة البرمجية (API) هي الطريقة التي يتحدث فيها برنامج مع برنامج آخر. تستخدمها لإضافة قدرات الذكاء الاصطناعي لأي تطبيق تبنيه.")}
 ${learn([
@@ -346,7 +349,7 @@ ${exercise("اختر نموذج التسعير الأنسب لمنتجك: اشت
   {
     id: 7,
     title: "البرمجة بمساعدة الذكاء الاصطناعي — من الفكرة إلى كود يعمل",
-    image: advancedCh08Asset.url,
+    image: ADVANCED_TUTORIAL_GIFS[7],
     content: `
 ${intro("هنا يبدأ التحوّل الحقيقي: من استخدام الأدوات الجاهزة إلى بناء برامجك أنت. لن تحتاج شهادة في علوم الحاسب، لكنك تحتاج طريقة منظّمة في الحوار مع النموذج وقدرة على قراءة الكود بما يكفي للحكم عليه.")}
 ${learn([
