@@ -61,6 +61,7 @@ function CourseAIPage() {
 
 
   const [activeChapter, setActiveChapter] = useState(0);
+  const [ratingTrigger, setRatingTrigger] = useState<{ finished: number; seq: number }>({ finished: 0, seq: 0 });
   const [activeTab, setActiveTab] = useState<"content" | "quiz" | "exam">("content");
 
   const [currentQ, setCurrentQ] = useState(0);
@@ -164,6 +165,8 @@ function CourseAIPage() {
       clearTimeout(quizTimerRef.current);
       quizTimerRef.current = null;
     }
+    // Moving forward one chapter = finished chapter (i) → in-course rating trigger.
+    if (i === activeChapter + 1) setRatingTrigger((t) => ({ finished: i, seq: t.seq + 1 }));
     setActiveChapter(i);
     setActiveTab("content");
     setCurrentQ(0);
@@ -592,7 +595,7 @@ function CourseAIPage() {
             <RatingPopup
               level={level}
               userId={userId}
-              completedCount={[...completedIds].filter((id) => id.startsWith(`ai-${level}-`)).length}
+              trigger={ratingTrigger}
             />
           )}
           {activeTab === "exam" ? (
