@@ -205,13 +205,21 @@ export function TaskSubmission({
   );
 }
 
-const RATING_MILESTONES = [3, 8] as const;
-const shownKey = (userId: string, level: Level) => `coursi-rating-popup:${userId}:${level}`;
+// Show after finishing chapter 3, then every 2 chapters (5, 7, 9, 11) until rated; never after 12.
+const RATING_CHAPTERS = [3, 5, 7, 9, 11];
+const shownKey = (userId: string, level: Level) => `coursi-rating-popup-last:${userId}:${level}`;
 
-export function RatingPopup({ level, userId, completedCount }: { level: Level; userId: string; completedCount: number }) {
+export function RatingPopup({
+  level,
+  userId,
+  trigger,
+}: {
+  level: Level;
+  userId: string;
+  trigger: { finished: number; seq: number };
+}) {
   const [rated, setRated] = useState<boolean | null>(null);
   const [open, setOpen] = useState(false);
-  const [usedThisVisit, setUsedThisVisit] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -231,20 +239,15 @@ export function RatingPopup({ level, userId, completedCount }: { level: Level; u
   }, [userId, level]);
 
   useEffect(() => {
-    if (rated !== false || usedThisVisit || open) return;
-    let shown: number[] = [];
-    try {
-      shown = JSON.parse(localStorage.getItem(shownKey(userId, level)) ?? "[]");
-    } catch {
-      shown = [];
-    }
-    const reached = RATING_MILESTONES.filter((m) => completedCount >= m && !shown.includes(m));
-    if (!reached.length) return;
-    const next = [...shown, ...reached];
-    localStorage.setItem(shownKey(userId, level), JSON.stringify(next));
-    setUsedThisVisit(true);
+    if (!trigger.seq || rated !== false || open) return;
+    const finished = trigger.finished;
+    if (!RATING_CHAPTERS.includes(finished)) return;
+    const last = Number(localStorage.getItem(shownKey(userId, level)) ?? "0") || 0;
+    if (finished <= last) return;
+    localStorage.setItem(shownKey(userId, level), String(finished));
     setOpen(true);
-  }, [rated, completedCount, usedThisVisit, open, userId, level]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [trigger.seq]);
 
   useEffect(() => {
     if (!open) return;
