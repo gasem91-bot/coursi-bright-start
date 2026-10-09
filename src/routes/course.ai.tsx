@@ -595,7 +595,7 @@ function CourseAIPage() {
             <RatingPopup
               level={level}
               userId={userId}
-              completedCount={[...completedIds].filter((id) => id.startsWith(`ai-${level}-`)).length}
+              trigger={ratingTrigger}
             />
           )}
           {activeTab === "exam" ? (
