@@ -107,6 +107,56 @@ async function sendInternalSaleNotification(
   }
 }
 
+// Records promo code / amount / currency / purchase time on the buyer's
+// active subscription row. Purely informational — never affects access.
+async function recordPurchaseDetails(
+  stripe: Stripe,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  admin: any,
+  session: Stripe.Checkout.Session,
+  userId: string,
+) {
+  try {
+    let promo: string | null = null;
+    try {
+      const full = await stripe.checkout.sessions.retrieve(session.id, {
+        expand: ["total_details.breakdown.discounts.discount.promotion_code"],
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const discounts = ((full.total_details as any)?.breakdown?.discounts ?? []) as any[];
+      for (const d of discounts) {
+        const pc = d?.discount?.promotion_code;
+        const code = typeof pc === "object" && pc ? pc.code : null;
+        const coupon = d?.discount?.coupon?.name || d?.discount?.coupon?.id || null;
+        promo = code || coupon || promo;
+        if (promo) break;
+      }
+    } catch (e) {
+      console.error("[stripe-webhook] promo lookup failed:", e);
+    }
+    const { data: row } = await admin
+      .from("subscriptions")
+      .select("id")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (!row?.id) return;
+    const { error } = await admin
+      .from("subscriptions")
+      .update({
+        promo_code: promo,
+        amount_paid_cents: session.amount_total ?? 0,
+        currency: session.currency?.toUpperCase() || "USD",
+        purchased_at: new Date((session.created ?? Math.floor(Date.now() / 1000)) * 1000).toISOString(),
+      })
+      .eq("id", row.id);
+    if (error) console.error("[stripe-webhook] purchase details update error:", error);
+  } catch (e) {
+    console.error("[stripe-webhook] recordPurchaseDetails error:", e);
+  }
+}
+
 export const Route = createFileRoute("/api/public/stripe-webhook")({
   server: {
     handlers: {
@@ -203,6 +253,7 @@ export const Route = createFileRoute("/api/public/stripe-webhook")({
               { onConflict: "user_id" },
             );
             if (subErr) console.error("[stripe-webhook] level upgrade subscription error:", subErr);
+            await recordPurchaseDetails(stripe, admin, session, userId);
 
             const { buildLevelUpgradeHtml, LEVEL_UPGRADE_SUBJECT } = await import(
               "@/lib/level-upgrade-email.server"
@@ -279,6 +330,7 @@ export const Route = createFileRoute("/api/public/stripe-webhook")({
               { onConflict: "user_id" },
             );
             if (upErr) console.error("[stripe-webhook] top-up upsert error:", upErr);
+            await recordPurchaseDetails(stripe, admin, session, userId);
 
             const { buildAiUpgradeHtml, AI_UPGRADE_SUBJECT, AI_TUTOR_BOT_LINK } = await import(
               "@/lib/ai-upgrade-email.server"
@@ -370,6 +422,7 @@ export const Route = createFileRoute("/api/public/stripe-webhook")({
             { onConflict: "user_id" },
           );
           if (subErr) console.error("[stripe-webhook] subscription upsert error:", subErr);
+          await recordPurchaseDetails(stripe, admin, session, userId);
 
           // 4. Generate magic link
           const { data: linkData } = await admin.auth.admin.generateLink({
