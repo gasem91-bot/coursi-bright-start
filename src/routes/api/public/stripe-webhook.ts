@@ -20,7 +20,7 @@ async function sendWelcomeEmail(
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: "كورسي <info@coursi.ai>",
+      from: "كورسي <support@coursi.ai>",
       to: [email],
       subject: WELCOME_SUBJECT,
       html,

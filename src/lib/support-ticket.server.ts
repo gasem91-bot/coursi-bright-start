@@ -73,7 +73,7 @@ export async function createTicket(
 
   const resendApiKey = process.env["RESEND_API_KEY"];
   if (resendApiKey) {
-    const send = async (to: string, subject: string, html: string, replyTo?: string) => {
+    const send = async (to: string, subject: string, html: string, replyTo: string = "support@coursi.ai") => {
       try {
         const res = await fetch("https://api.resend.com/emails", {
           method: "POST",
@@ -82,7 +82,7 @@ export async function createTicket(
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            from: "دعم كورسي <info@coursi.ai>",
+            from: "دعم كورسي <support@coursi.ai>",
             to: [to],
             subject,
             html,
@@ -101,7 +101,7 @@ export async function createTicket(
       "support@coursi.ai",
       `🆕 تذكرة دعم جديدة ${ref}${channelTag} — ${payload.categoryLabel}`,
       buildTicketSupportHtml(payload),
-      email,
+      "support@coursi.ai",
     );
   } else {
     console.error("[support] RESEND_API_KEY missing — emails skipped");

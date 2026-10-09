@@ -35,7 +35,7 @@ export const sendBrandedPasswordReset = createServerFn({ method: "POST" })
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from: "كورسي <info@coursi.ai>",
+          from: "كورسي <support@coursi.ai>",
           to: [email],
           subject: RESET_SUBJECT,
           html: buildResetHtml({ link: link.properties.action_link, email }),
