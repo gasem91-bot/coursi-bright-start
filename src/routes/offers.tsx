@@ -95,10 +95,9 @@ function OffersPage() {
         <div style={{ background: "linear-gradient(160deg, rgba(123,53,192,0.10), rgba(64,200,200,0.05))", border: "1px solid rgba(123,53,192,0.3)", borderRadius: 16, padding: 22, marginBottom: 14, boxShadow: "0 0 30px rgba(123,53,192,0.1)" }}>
           <span style={{ display: "inline-block", background: "linear-gradient(135deg, #7B35C0, #40C8C8)", color: "white", padding: "4px 14px", borderRadius: 30, fontSize: 11, fontWeight: 700 }}>✦ خاص بك</span>
           <h3 style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: 18, marginTop: 12 }}>{upgradeTitle}</h3>
-          <p style={{ color: "var(--text-secondary)", fontSize: 13, marginTop: 6 }}>وفّر ١٥٪ كمكافأة لإتمامك المستوى الحالي</p>
           {level !== "advanced" && (
             <button onClick={() => toast.info("صفحة الدفع قيد التطوير")} style={{ marginTop: 14, background: "linear-gradient(135deg, #7B35C0, #40C8C8)", color: "white", border: "none", padding: "12px 22px", borderRadius: 50, fontFamily: font, fontWeight: 700, cursor: "pointer", boxShadow: "0 0 20px rgba(123,53,192,0.3)" }}>
-              ترقَّ الآن بخصم ١٥٪ ←
+              ترقَّ الآن ←
             </button>
           )}
         </div>
