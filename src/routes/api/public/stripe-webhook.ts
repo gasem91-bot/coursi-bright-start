@@ -2,26 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 
-// $14 one-time AI tutor bot top-up (keep in sync with src/lib/upgrade.functions.ts)
-const AI_TOPUP_PRICE_ID = "price_1UHJcAHNdqnRfyCH72zIGsP3";
-// Retired top-up price — still honoured for any in-flight checkout.
-const AI_TOPUP_PRICE_ID_LEGACY = "price_1UH5mPHNdqnRfyCHMmSUiMiK";
-// $10 one-time next-level unlock (keep in sync with src/lib/upgrade.functions.ts)
-const LEVEL_UPGRADE_PRICE_ID = "price_1UHK4FHNdqnRfyCHouwRtUrx";
-const NEXT_LEVEL: Record<string, string | undefined> = {
-  beginner: "intermediate",
-  intermediate: "advanced",
-};
-
-// Real Stripe Price IDs → level + tier mapping
-const PRICE_MAP: Record<string, { level: string; tier: string }> = {
-  "price_1Ts2H2HNdqnRfyCHpMVU9XNH": { level: "beginner", tier: "course" },
-  "price_1Ts2H6HNdqnRfyCHBKNFey1T": { level: "beginner", tier: "course_ai" },
-  "price_1Ts2H4HNdqnRfyCHY1GhNcSD": { level: "intermediate", tier: "course" },
-  "price_1Ts2H2HNdqnRfyCHROQqDS9c": { level: "intermediate", tier: "course_ai" },
-  "price_1Ts2H6HNdqnRfyCHwBAvcaAH": { level: "advanced", tier: "course" },
-  "price_1Ts2H2HNdqnRfyCH7YX3CJ6G": { level: "advanced", tier: "course_ai" },
-};
+import { fulfillCheckout } from "@/lib/stripe-fulfillment.server";
 
 async function sendWelcomeEmail(
   email: string,
@@ -107,54 +88,24 @@ async function sendInternalSaleNotification(
   }
 }
 
-// Records promo code / amount / currency / purchase time on the buyer's
-// active subscription row. Purely informational — never affects access.
-async function recordPurchaseDetails(
-  stripe: Stripe,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  admin: any,
-  session: Stripe.Checkout.Session,
-  userId: string,
-) {
+// Promo/coupon code used on the checkout (e.g. LTO10), or null.
+async function lookupPromoCode(stripe: Stripe, sessionId: string): Promise<string | null> {
   try {
-    let promo: string | null = null;
-    try {
-      const full = await stripe.checkout.sessions.retrieve(session.id, {
-        expand: ["total_details.breakdown.discounts.discount.promotion_code"],
-      });
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const discounts = ((full.total_details as any)?.breakdown?.discounts ?? []) as any[];
-      for (const d of discounts) {
-        const pc = d?.discount?.promotion_code;
-        const code = typeof pc === "object" && pc ? pc.code : null;
-        const coupon = d?.discount?.coupon?.name || d?.discount?.coupon?.id || null;
-        promo = code || coupon || promo;
-        if (promo) break;
-      }
-    } catch (e) {
-      console.error("[stripe-webhook] promo lookup failed:", e);
+    const full = await stripe.checkout.sessions.retrieve(sessionId, {
+      expand: ["total_details.breakdown.discounts.discount.promotion_code"],
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const discounts = ((full.total_details as any)?.breakdown?.discounts ?? []) as any[];
+    for (const d of discounts) {
+      const pc = d?.discount?.promotion_code;
+      const code = typeof pc === "object" && pc ? pc.code : null;
+      const promo = code || d?.discount?.coupon?.name || d?.discount?.coupon?.id || null;
+      if (promo) return promo;
     }
-    const { data: row } = await admin
-      .from("subscriptions")
-      .select("id")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    if (!row?.id) return;
-    const { error } = await admin
-      .from("subscriptions")
-      .update({
-        promo_code: promo,
-        amount_paid_cents: session.amount_total ?? 0,
-        currency: session.currency?.toUpperCase() || "USD",
-        purchased_at: new Date((session.created ?? Math.floor(Date.now() / 1000)) * 1000).toISOString(),
-      })
-      .eq("id", row.id);
-    if (error) console.error("[stripe-webhook] purchase details update error:", error);
   } catch (e) {
-    console.error("[stripe-webhook] recordPurchaseDetails error:", e);
+    console.error("[stripe-webhook] promo lookup failed:", e);
   }
+  return null;
 }
 
 export const Route = createFileRoute("/api/public/stripe-webhook")({
@@ -200,61 +151,34 @@ export const Route = createFileRoute("/api/public/stripe-webhook")({
 
         const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
         const priceId = lineItems.data[0]?.price?.id || "";
-        const { level, tier } = PRICE_MAP[priceId] || { level: "beginner", tier: "course" };
-
         const admin = createClient(supabaseUrl, supabaseServiceRoleKey, {
           auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
         });
+        const amount = session.amount_total ? session.amount_total / 100 : 0;
+        const currency = session.currency?.toUpperCase() || "USD";
+        const name = session.customer_details?.name || "";
+        const mode = session.mode || "payment";
 
-        // --- $10 next-level unlock (keeps the buyer's existing tier) ---
-        if (priceId === LEVEL_UPGRADE_PRICE_ID || session.metadata?.upgrade === "level_upgrade") {
-          try {
-            const userId =
-              session.metadata?.user_id ||
-              session.client_reference_id ||
-              (await admin.from("profiles").select("id").ilike("email", email).maybeSingle()).data?.id;
-            if (!userId) throw new Error("no user id for level upgrade");
+        try {
+          const result = await fulfillCheckout(admin, {
+            sessionId: session.id,
+            email,
+            priceId,
+            metadata: (session.metadata ?? {}) as Record<string, string | undefined>,
+            clientReferenceId: session.client_reference_id ?? null,
+            amountTotal: session.amount_total ?? null,
+            currency: session.currency ?? null,
+            createdUnix: session.created ?? null,
+            promoCode: await lookupPromoCode(stripe, session.id),
+          });
 
-            const { data: prof } = await admin
-              .from("profiles")
-              .select("level")
-              .eq("id", userId)
-              .maybeSingle();
-            const fromLevel = session.metadata?.from_level || (prof?.level as string) || "beginner";
-            const toLevel = session.metadata?.to_level || NEXT_LEVEL[fromLevel];
-            if (!toLevel) throw new Error("no target level for level upgrade");
+          if (result.kind === "duplicate") {
+            console.log(`[stripe-webhook] session ${session.id} already processed — skipped`);
+            return Response.json({ received: true, duplicate: true });
+          }
 
-            const { data: subs } = await admin
-              .from("subscriptions")
-              .select("tier")
-              .eq("user_id", userId)
-              .eq("status", "active");
-            const tiers = (subs ?? []).map((s) => s.tier as string);
-            const keptTier =
-              session.metadata?.tier || (tiers.includes("course_ai") ? "course_ai" : "course");
-
-            const { error: profErr } = await admin
-              .from("profiles")
-              .update({ level: toLevel })
-              .eq("id", userId);
-            if (profErr) console.error("[stripe-webhook] level upgrade profile error:", profErr);
-
-            const { error: subErr } = await admin.from("subscriptions").upsert(
-              {
-                user_id: userId,
-                level: toLevel,
-                tier: keptTier,
-                segment: "ai",
-                status: "active",
-                stripe_session_id: session.id,
-                amount: session.amount_total ? session.amount_total / 100 : 0,
-                currency: session.currency?.toUpperCase() || "USD",
-              },
-              { onConflict: "user_id" },
-            );
-            if (subErr) console.error("[stripe-webhook] level upgrade subscription error:", subErr);
-            await recordPurchaseDetails(stripe, admin, session, userId);
-
+          if (result.kind === "level_upgrade") {
+            const { fromLevel, toLevel, keptTier } = result;
             const { buildLevelUpgradeHtml, LEVEL_UPGRADE_SUBJECT } = await import(
               "@/lib/level-upgrade-email.server"
             );
@@ -274,64 +198,15 @@ export const Route = createFileRoute("/api/public/stripe-webhook")({
             if (!mailRes.ok) {
               console.error("[stripe-webhook] level upgrade email error:", mailRes.status, await mailRes.text());
             }
-
             await sendInternalSaleNotification(
-              {
-                email,
-                name: session.customer_details?.name || "",
-                level: `${fromLevel} → ${toLevel}`,
-                tier: `${keptTier} (level upgrade)`,
-                amount: session.amount_total ? session.amount_total / 100 : 0,
-                currency: session.currency?.toUpperCase() || "USD",
-                sessionId: session.id,
-                mode: session.mode || "payment",
-              },
+              { email, name, level: `${fromLevel} → ${toLevel}`, tier: `${keptTier} (level upgrade)`, amount, currency, sessionId: session.id, mode },
               resendApiKey,
             );
-
             console.log(`[stripe-webhook] level upgrade ${fromLevel}→${toLevel} for ${email}`);
             return Response.json({ success: true, upgrade: "level_upgrade" });
-          } catch (err) {
-            console.error("[stripe-webhook] level upgrade error:", err);
-            return new Response(JSON.stringify({ error: String(err) }), {
-              status: 500,
-              headers: { "Content-Type": "application/json" },
-            });
           }
-        }
 
-        // --- AI tutor bot top-up (existing course buyer adding the assistant) ---
-        if (
-          priceId === AI_TOPUP_PRICE_ID ||
-          priceId === AI_TOPUP_PRICE_ID_LEGACY ||
-          session.metadata?.upgrade === "course_ai_topup"
-        ) {
-          try {
-            const userId =
-              session.metadata?.user_id ||
-              session.client_reference_id ||
-              (
-                await admin.from("profiles").select("id").ilike("email", email).maybeSingle()
-              ).data?.id;
-            if (!userId) throw new Error("no user id for top-up");
-
-            const topupLevel = session.metadata?.level || "beginner";
-            const { error: upErr } = await admin.from("subscriptions").upsert(
-              {
-                user_id: userId,
-                level: topupLevel,
-                tier: "course_ai",
-                segment: "ai",
-                status: "active",
-                stripe_session_id: session.id,
-                amount: session.amount_total ? session.amount_total / 100 : 0,
-                currency: session.currency?.toUpperCase() || "USD",
-              },
-              { onConflict: "user_id" },
-            );
-            if (upErr) console.error("[stripe-webhook] top-up upsert error:", upErr);
-            await recordPurchaseDetails(stripe, admin, session, userId);
-
+          if (result.kind === "topup") {
             const { buildAiUpgradeHtml, AI_UPGRADE_SUBJECT, AI_TUTOR_BOT_LINK } = await import(
               "@/lib/ai-upgrade-email.server"
             );
@@ -351,80 +226,15 @@ export const Route = createFileRoute("/api/public/stripe-webhook")({
             if (!res.ok) {
               console.error("[stripe-webhook] top-up email error:", res.status, await res.text());
             }
-
             await sendInternalSaleNotification(
-              {
-                email,
-                name: session.customer_details?.name || "",
-                level: topupLevel,
-                tier: "course_ai (top-up)",
-                amount: session.amount_total ? session.amount_total / 100 : 0,
-                currency: session.currency?.toUpperCase() || "USD",
-                sessionId: session.id,
-                mode: session.mode || "payment",
-              },
+              { email, name, level: result.level, tier: "course_ai (top-up)", amount, currency, sessionId: session.id, mode },
               resendApiKey,
             );
-
             console.log(`[stripe-webhook] AI top-up completed for ${email}`);
             return Response.json({ success: true, upgrade: "course_ai_topup" });
-          } catch (err) {
-            console.error("[stripe-webhook] top-up processing error:", err);
-            return new Response(JSON.stringify({ error: String(err) }), {
-              status: 500,
-              headers: { "Content-Type": "application/json" },
-            });
           }
-        }
 
-        try {
-          // 1. Find or create auth user in the OWN Supabase project
-          let userId: string | undefined;
-          const { data: existing } = await admin.auth.admin.listUsers();
-          const found = existing?.users?.find((u) => u.email?.toLowerCase() === email.toLowerCase());
-          if (found) {
-            userId = found.id;
-          } else {
-            const { data: created, error: createErr } = await admin.auth.admin.createUser({
-              email,
-              email_confirm: true,
-              user_metadata: { level, tier, segment: "ai" },
-            });
-            if (createErr) throw createErr;
-            userId = created.user?.id;
-          }
-          if (!userId) throw new Error("no user id");
-
-          // 2. Upsert profile
-          const { error: profileErr } = await admin.from("profiles").upsert(
-            {
-              id: userId,
-              email,
-              level,
-              segment: "ai",
-            },
-            { onConflict: "id" },
-          );
-          if (profileErr) console.error("[stripe-webhook] profile upsert error:", profileErr);
-
-          // 3. Upsert subscription
-          const { error: subErr } = await admin.from("subscriptions").upsert(
-            {
-              user_id: userId,
-              level,
-              tier,
-              segment: "ai",
-              status: "active",
-              stripe_session_id: session.id,
-              amount: session.amount_total ? session.amount_total / 100 : 0,
-              currency: session.currency?.toUpperCase() || "USD",
-            },
-            { onConflict: "user_id" },
-          );
-          if (subErr) console.error("[stripe-webhook] subscription upsert error:", subErr);
-          await recordPurchaseDetails(stripe, admin, session, userId);
-
-          // 4. Generate magic link
+          const { level, tier } = result;
           const { data: linkData } = await admin.auth.admin.generateLink({
             type: "magiclink",
             email,
@@ -432,25 +242,11 @@ export const Route = createFileRoute("/api/public/stripe-webhook")({
           });
           const loginLink =
             linkData?.properties?.action_link || "https://ai.portal.coursi.ai/login";
-
-          // 5. Send welcome email
           await sendWelcomeEmail(email, level, tier, loginLink, resendApiKey);
-
-          // 6. Internal notification to the team
           await sendInternalSaleNotification(
-            {
-              email,
-              name: session.customer_details?.name || "",
-              level,
-              tier,
-              amount: session.amount_total ? session.amount_total / 100 : 0,
-              currency: session.currency?.toUpperCase() || "USD",
-              sessionId: session.id,
-              mode: session.mode || "payment",
-            },
+            { email, name, level, tier, amount, currency, sessionId: session.id, mode },
             resendApiKey,
           );
-
           console.log(`[stripe-webhook] onboarded ${email} — ${level} ${tier}`);
           return Response.json({ success: true });
         } catch (err) {
