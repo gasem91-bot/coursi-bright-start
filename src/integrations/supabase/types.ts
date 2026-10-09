@@ -251,6 +251,27 @@ export type Database = {
         }
         Relationships: []
       }
+      stripe_processed_sessions: {
+        Row: {
+          kind: string | null
+          processed_at: string
+          session_id: string
+          user_id: string | null
+        }
+        Insert: {
+          kind?: string | null
+          processed_at?: string
+          session_id: string
+          user_id?: string | null
+        }
+        Update: {
+          kind?: string | null
+          processed_at?: string
+          session_id?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           amount: number
