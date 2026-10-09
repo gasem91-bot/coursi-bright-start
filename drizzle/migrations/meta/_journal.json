@@ -22,6 +22,13 @@
       "when": 1791574052917,
       "tag": "0002_admin_data_center_avatars_promo",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791576020952,
+      "tag": "0003_stripe_processed_sessions",
+      "breakpoints": true
     }
   ]
 }
