@@ -5,6 +5,7 @@ import { useTheme } from "@/lib/theme";
 import { useProfile } from "@/contexts/ProfileContext";
 import { toast } from "sonner";
 import { openExternal } from "@/lib/native";
+import { AvatarSvg, AVATAR_IDS, DEFAULT_AVATAR_ID } from "@/lib/avatars";
 
 const font = "Cairo, 'Noto Sans Arabic', sans-serif";
 
@@ -83,7 +84,6 @@ export default function AccountPanel() {
   if (!open) return null;
 
   const name = profile?.display_name || profile?.email?.split("@")[0] || "طالب كورسي";
-  const firstLetter = (name[0] ?? "ك").toUpperCase();
   const memberSince = profile?.created_at
     ? new Date(profile.created_at).toLocaleDateString("ar-EG", { month: "long", year: "numeric" })
     : "";
@@ -110,9 +110,7 @@ export default function AccountPanel() {
 
         {/* User Info */}
         <div style={{ margin: 16, background: "linear-gradient(160deg, rgba(123,53,192,0.08), rgba(64,200,200,0.05))", border: "1px solid rgba(123,53,192,0.2)", borderRadius: 14, padding: 18, textAlign: "center" }}>
-          <div style={{ width: 56, height: 56, borderRadius: "50%", background: "linear-gradient(135deg, #7B35C0, #40C8C8)", color: "white", display: "inline-flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 22 }}>
-            {firstLetter}
-          </div>
+          <div style={{ display: "inline-flex" }}><AvatarSvg id={profile?.avatar_id} size={64} /></div>
           <div style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: 16, marginTop: 8 }}>{name}</div>
           {profile?.nationality_flag && (
             <div style={{ color: "var(--text-secondary)", fontSize: 13, marginTop: 2 }}>{profile.nationality_flag} {profile.nationality_name}</div>
@@ -129,6 +127,43 @@ export default function AccountPanel() {
         {/* Settings */}
         <div style={{ padding: "0 16px" }}>
           <SectionLabel>✦ إعدادات الحساب</SectionLabel>
+
+          <PanelItem id="panel-section-avatar" icon="🙂" label="الصورة الرمزية" open={expanded === "avatar"} onClick={() => toggleItem("avatar")}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, padding: "4px 0" }} role="radiogroup" aria-label="اختر صورتك الرمزية">
+              {AVATAR_IDS.map((aid) => {
+                const selected = (profile?.avatar_id ?? DEFAULT_AVATAR_ID) === aid;
+                return (
+                  <button
+                    key={aid}
+                    type="button"
+                    role="radio"
+                    aria-checked={selected}
+                    aria-label={`صورة رمزية ${aid.slice(1)}`}
+                    onClick={async () => {
+                      const { error } = await updateProfile({ avatar_id: aid });
+                      if (error) toast.error("تعذّر الحفظ");
+                      else toast.success("تم تحديث الصورة الرمزية ✓");
+                    }}
+                    style={{ background: "transparent", border: selected ? "3px solid #40C8C8" : "3px solid transparent", borderRadius: "50%", padding: 2, cursor: "pointer", display: "flex", justifyContent: "center" }}
+                  >
+                    <AvatarSvg id={aid} size={52} />
+                  </button>
+                );
+              })}
+            </div>
+          </PanelItem>
+
+          <PanelItem id="panel-section-personal" icon="📇" label="البيانات الشخصية (اختياري)" open={expanded === "personal"} onClick={() => toggleItem("personal")}>
+            <PersonalForm
+              fullName={profile?.full_name ?? ""}
+              mobile={profile?.mobile ?? ""}
+              onSave={async (v) => {
+                const { error } = await updateProfile({ full_name: v.fullName || null, mobile: v.mobile || null });
+                if (error) toast.error("تعذّر الحفظ");
+                else toast.success("تم الحفظ ✓");
+              }}
+            />
+          </PanelItem>
 
           <PanelItem id="panel-section-name" icon="✏️" label="تغيير الاسم المعروض" open={expanded === "name"} onClick={() => toggleItem("name")}>
             <DisplayNameForm
@@ -352,6 +387,26 @@ function EmailForm() {
     <>
       <input className="panel-input" type="email" placeholder="البريد الجديد" value={email} onChange={(e) => setEmail(e.target.value)} />
       <button onClick={save} style={ctaButtonStyle}>إرسال</button>
+    </>
+  );
+}
+
+function PersonalForm({ fullName, mobile, onSave }: { fullName: string; mobile: string; onSave: (v: { fullName: string; mobile: string }) => Promise<void> }) {
+  const [n, setN] = useState(fullName);
+  const [m, setM] = useState(mobile);
+  const [saving, setSaving] = useState(false);
+  useEffect(() => { setN(fullName); setM(mobile); }, [fullName, mobile]);
+  const save = async () => {
+    const cleanMobile = m.replace(/[^\d+]/g, "").slice(0, 20);
+    setSaving(true);
+    await onSave({ fullName: n.trim().slice(0, 120), mobile: cleanMobile });
+    setSaving(false);
+  };
+  return (
+    <>
+      <input className="panel-input" placeholder="الاسم الكامل" value={n} maxLength={120} onChange={(e) => setN(e.target.value)} />
+      <input className="panel-input" type="tel" dir="ltr" placeholder="+971 50 000 0000" value={m} maxLength={20} onChange={(e) => setM(e.target.value)} />
+      <button onClick={save} disabled={saving} style={ctaButtonStyle}>{saving ? "جاري الحفظ..." : "حفظ"}</button>
     </>
   );
 }

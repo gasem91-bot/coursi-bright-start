@@ -178,14 +178,18 @@ export type Database = {
       }
       profiles: {
         Row: {
+          avatar_id: string | null
           country_flag: string | null
           country_name: string | null
           created_at: string
           display_name: string | null
           email: string | null
+          full_name: string | null
           id: string
           last_active_date: string | null
           level: Database["public"]["Enums"]["user_level"]
+          mobile: string | null
+          nationality: string | null
           nationality_code: string | null
           nationality_flag: string | null
           nationality_name: string | null
@@ -198,14 +202,18 @@ export type Database = {
           xp_points: number
         }
         Insert: {
+          avatar_id?: string | null
           country_flag?: string | null
           country_name?: string | null
           created_at?: string
           display_name?: string | null
           email?: string | null
+          full_name?: string | null
           id: string
           last_active_date?: string | null
           level?: Database["public"]["Enums"]["user_level"]
+          mobile?: string | null
+          nationality?: string | null
           nationality_code?: string | null
           nationality_flag?: string | null
           nationality_name?: string | null
@@ -218,14 +226,18 @@ export type Database = {
           xp_points?: number
         }
         Update: {
+          avatar_id?: string | null
           country_flag?: string | null
           country_name?: string | null
           created_at?: string
           display_name?: string | null
           email?: string | null
+          full_name?: string | null
           id?: string
           last_active_date?: string | null
           level?: Database["public"]["Enums"]["user_level"]
+          mobile?: string | null
+          nationality?: string | null
           nationality_code?: string | null
           nationality_flag?: string | null
           nationality_name?: string | null
@@ -242,10 +254,13 @@ export type Database = {
       subscriptions: {
         Row: {
           amount: number
+          amount_paid_cents: number | null
           cancelled_at: string | null
           created_at: string
           currency: string
           id: string
+          promo_code: string | null
+          purchased_at: string | null
           status: string
           stripe_session_id: string | null
           tier: Database["public"]["Enums"]["subscription_tier"]
@@ -254,10 +269,13 @@ export type Database = {
         }
         Insert: {
           amount?: number
+          amount_paid_cents?: number | null
           cancelled_at?: string | null
           created_at?: string
           currency?: string
           id?: string
+          promo_code?: string | null
+          purchased_at?: string | null
           status?: string
           stripe_session_id?: string | null
           tier?: Database["public"]["Enums"]["subscription_tier"]
@@ -266,10 +284,13 @@ export type Database = {
         }
         Update: {
           amount?: number
+          amount_paid_cents?: number | null
           cancelled_at?: string | null
           created_at?: string
           currency?: string
           id?: string
+          promo_code?: string | null
+          purchased_at?: string | null
           status?: string
           stripe_session_id?: string | null
           tier?: Database["public"]["Enums"]["subscription_tier"]
@@ -377,14 +398,39 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
+      app_role: "admin" | "user"
       subscription_tier: "course" | "course_ai"
       user_level: "beginner" | "intermediate" | "advanced"
     }
@@ -514,6 +560,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      app_role: ["admin", "user"],
       subscription_tier: ["course", "course_ai"],
       user_level: ["beginner", "intermediate", "advanced"],
     },

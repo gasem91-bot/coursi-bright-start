@@ -15,6 +15,13 @@
       "when": 1790673190314,
       "tag": "0001_device_tokens",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791574052917,
+      "tag": "0002_admin_data_center_avatars_promo",
+      "breakpoints": true
     }
   ]
 }
