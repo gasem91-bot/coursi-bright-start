@@ -1,7 +1,7 @@
 // Server-only admin allowlist. Override with the ADMIN_EMAILS env var
 // (comma-separated) without touching code.
 
-const FALLBACK = ["qasimalrijjal@gmail.com", "info@coursi.ai", "support@coursi.ai"];
+const FALLBACK = ["qasimalrijjal@gmail.com", "support@coursi.ai", "support@coursi.ai"];
 
 export function adminEmails(): string[] {
   const raw = process.env["ADMIN_EMAILS"];

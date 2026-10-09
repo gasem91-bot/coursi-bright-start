@@ -83,7 +83,7 @@ function LoginPage() {
       return "ليس لديك اشتراك نشط في كورس الذكاء الاصطناعي. للاشتراك: coursi.ai/ai";
     }
     // not_registered or any unexpected shape → block
-    return "غير مسجّل — هذا البريد الإلكتروني غير مسجّل في كورسي. تواصل مع الدعم على info@coursi.ai";
+    return "غير مسجّل — هذا البريد الإلكتروني غير مسجّل في كورسي. تواصل مع الدعم على support@coursi.ai";
   };
 
   const handleLogin = async () => {

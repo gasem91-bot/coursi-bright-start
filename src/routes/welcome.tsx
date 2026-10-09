@@ -192,7 +192,7 @@ function WelcomePage() {
                 تيليجرام 💬
               </a>
               <a
-                href="mailto:info@coursi.ai"
+                href="mailto:support@coursi.ai"
                 style={{
                   background: "rgba(123,53,192,0.1)",
                   border: "1px solid rgba(123,53,192,0.3)",

@@ -26,5 +26,5 @@ CREATE POLICY "Admins read all progress" ON public.course_progress FOR SELECT TO
 
 INSERT INTO public.user_roles (user_id, role)
 SELECT id, 'admin'::public.app_role FROM auth.users
-WHERE lower(email) IN ('qasimalrijjal@gmail.com','info@coursi.ai','support@coursi.ai')
+WHERE lower(email) IN ('qasimalrijjal@gmail.com','support@coursi.ai','support@coursi.ai')
 ON CONFLICT DO NOTHING;

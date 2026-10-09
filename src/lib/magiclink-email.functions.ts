@@ -42,7 +42,7 @@ export const sendBrandedMagicLink = createServerFn({ method: "POST" })
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from: "كورسي <info@coursi.ai>",
+          from: "كورسي <support@coursi.ai>",
           to: [email],
           subject: MAGICLINK_SUBJECT,
           html: buildMagicLinkHtml({ link: link.properties.action_link, email }),

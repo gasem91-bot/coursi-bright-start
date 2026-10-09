@@ -78,7 +78,7 @@ export function emailFooter(reasonLine: string): string {
     <a href="https://coursi.ai" class="flink">الرئيسية</a>
     <a href="https://ai.portal.coursi.ai/login" class="flink">البوابة</a>
     <a href="https://terms.coursi.ai" class="flink">الشروط والأحكام</a>
-    <a href="mailto:info@coursi.ai" class="flink">تواصل معنا</a>
+    <a href="mailto:support@coursi.ai" class="flink">تواصل معنا</a>
   </div>
   <div class="fcopy">
     ${reasonLine}<br>
