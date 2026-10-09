@@ -3,10 +3,13 @@ import { useRouter } from "@tanstack/react-router";
 import { Bell } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import arabicLogo from "@/assets/arabic-logo.png.asset.json";
+import { AvatarSvg } from "@/lib/avatars";
+import { useProfile } from "@/contexts/ProfileContext";
 
 export default function MobileTopbar() {
   const router = useRouter();
   const pathname = router.state.location.pathname;
+  const { profile } = useProfile();
   const [, setEmail] = useState<string>("");
 
   useEffect(() => {
@@ -33,7 +36,7 @@ export default function MobileTopbar() {
           aria-label="فتح الحساب"
           onClick={() => window.dispatchEvent(new Event("cours:open-account"))}
         >
-          <img src={arabicLogo.url} alt="" />
+          <AvatarSvg id={profile?.avatar_id} size={40} />
         </button>
       </div>
       <img src={arabicLogo.url} alt="COURSI" className="mt-logo-img" />
