@@ -143,12 +143,6 @@ function DashboardPage() {
   ];
   const currentIdx = journeyLevels.findIndex((l) => l.key === level);
 
-  const upgradeMsg =
-    level === "beginner"
-      ? "بعد إتمام هذا المستوى ستحصل على خصم ١٥٪ للاشتراك في مستوى المتوسط"
-      : level === "intermediate"
-      ? "بعد إتمام هذا المستوى ستحصل على خصم ١٥٪ للاشتراك في مستوى المتقدم"
-      : null;
 
   return (
     <div style={{ minHeight: "100vh", background: "var(--bg-primary)", fontFamily: font, direction: "rtl", position: "relative" }}>
@@ -286,7 +280,6 @@ function DashboardPage() {
         >
           <div>
             <div style={{ color: "var(--text-primary)", fontWeight: 700, fontSize: 14 }}>🎁 عرض خاص لك</div>
-            <div style={{ color: "var(--text-secondary)", fontSize: 12, marginTop: 2 }}>ترقَّ للمستوى التالي بخصم ١٥٪</div>
           </div>
           <button style={{ background: "linear-gradient(135deg, #7B35C0, #40C8C8)", color: "white", border: "none", padding: "8px 16px", borderRadius: 30, fontFamily: font, fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
             عرض الآن ←
@@ -323,9 +316,6 @@ function DashboardPage() {
                 );
               })}
             </div>
-            {upgradeMsg && (
-              <p style={{ color: "var(--text-secondary)", fontSize: 13, textAlign: "center", marginTop: 14 }}>{upgradeMsg}</p>
-            )}
           </section>
         )}
       </main>
