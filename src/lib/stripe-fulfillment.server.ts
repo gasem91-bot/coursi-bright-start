@@ -80,15 +80,38 @@ async function saveSubscription(admin: Admin, userId: string, tier: string, inpu
 }
 
 export async function fulfillCheckout(admin: Admin, input: CheckoutInput): Promise<FulfillResult> {
-  // Idempotency: a session that already landed on a subscription row is done.
-  const { data: seen, error: seenErr } = await admin
+  // Idempotency: claim the session id first; a second delivery hits the
+  // primary key and is skipped. Also honour sessions recorded before the ledger.
+  const { data: seen } = await admin
     .from("subscriptions")
     .select("id")
     .eq("stripe_session_id", input.sessionId)
     .limit(1);
-  if (seenErr) throw new Error(`idempotency check: ${seenErr.message}`);
   if (seen && seen.length > 0) return { kind: "duplicate" };
+  const { error: claimErr } = await admin
+    .from("stripe_processed_sessions")
+    .insert({ session_id: input.sessionId });
+  if (claimErr) {
+    if (claimErr.code === "23505") return { kind: "duplicate" };
+    throw new Error(`idempotency claim: ${claimErr.message}`);
+  }
+  try {
+    const result = await fulfillOnce(admin, input);
+    if (result.kind !== "duplicate") {
+      await admin
+        .from("stripe_processed_sessions")
+        .update({ user_id: result.userId, kind: result.kind })
+        .eq("session_id", input.sessionId);
+    }
+    return result;
+  } catch (err) {
+    // Release the claim so Stripe's automatic retry can complete it.
+    await admin.from("stripe_processed_sessions").delete().eq("session_id", input.sessionId);
+    throw err;
+  }
+}
 
+async function fulfillOnce(admin: Admin, input: CheckoutInput): Promise<FulfillResult> {
   const { priceId, metadata } = input;
 
   // $10 next-level unlock — keeps the buyer's current tier.
