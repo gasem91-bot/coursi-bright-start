@@ -9,6 +9,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { ThemeToggle } from "@/lib/theme";
 import { PortalNav } from "@/components/portal-nav";
 import LevelExam from "@/components/level-exam";
+import { RatingPopup } from "@/components/level-final-stage";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { isLevelComplete } from "@/lib/certificate";
@@ -587,6 +588,13 @@ function CourseAIPage() {
             })}
           </div>
 
+          {userId && (
+            <RatingPopup
+              level={level}
+              userId={userId}
+              completedCount={[...completedIds].filter((id) => id.startsWith(`ai-${level}-`)).length}
+            />
+          )}
           {activeTab === "exam" ? (
             <LevelExam
               level={level}

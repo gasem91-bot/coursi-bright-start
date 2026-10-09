@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -205,7 +205,108 @@ export function TaskSubmission({
   );
 }
 
-export function LevelRating({ level, userId }: { level: Level; userId: string }) {
+const RATING_MILESTONES = [3, 8] as const;
+const shownKey = (userId: string, level: Level) => `coursi-rating-popup:${userId}:${level}`;
+
+export function RatingPopup({ level, userId, completedCount }: { level: Level; userId: string; completedCount: number }) {
+  const [rated, setRated] = useState<boolean | null>(null);
+  const [open, setOpen] = useState(false);
+  const [usedThisVisit, setUsedThisVisit] = useState(false);
+
+  useEffect(() => {
+    let alive = true;
+    setRated(null);
+    supabase
+      .from("level_ratings")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("level", level)
+      .limit(1)
+      .then(({ data, error }) => {
+        if (alive) setRated(error ? true : (data?.length ?? 0) > 0);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [userId, level]);
+
+  useEffect(() => {
+    if (rated !== false || usedThisVisit || open) return;
+    let shown: number[] = [];
+    try {
+      shown = JSON.parse(localStorage.getItem(shownKey(userId, level)) ?? "[]");
+    } catch {
+      shown = [];
+    }
+    const reached = RATING_MILESTONES.filter((m) => completedCount >= m && !shown.includes(m));
+    if (!reached.length) return;
+    const next = [...shown, ...reached];
+    localStorage.setItem(shownKey(userId, level), JSON.stringify(next));
+    setUsedThisVisit(true);
+    setOpen(true);
+  }, [rated, completedCount, usedThisVisit, open, userId, level]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
+  if (!open) return null;
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      onClick={() => setOpen(false)}
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 1000,
+        background: "rgba(0,0,0,0.6)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 16,
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{ position: "relative", width: "100%", maxWidth: 520, background: "var(--bg-primary)", borderRadius: 20 }}
+      >
+        <button
+          type="button"
+          aria-label="إغلاق"
+          onClick={() => setOpen(false)}
+          style={{
+            position: "absolute",
+            top: 22,
+            left: 14,
+            zIndex: 1,
+            background: "none",
+            border: "none",
+            color: "var(--text-secondary)",
+            fontSize: 22,
+            cursor: "pointer",
+          }}
+        >
+          ✕
+        </button>
+        <LevelRating
+          level={level}
+          userId={userId}
+          onSubmitted={() => {
+            setRated(true);
+            setOpen(false);
+            toast.success("شكراً لتقييمك 💜 رأيك يساعدنا نطوّر كورسي");
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+export function LevelRating({ level, userId, onSubmitted }: { level: Level; userId: string; onSubmitted?: () => void }) {
   const [stars, setStars] = useState(0);
   const [comment, setComment] = useState("");
   const [done, setDone] = useState(false);
@@ -232,6 +333,7 @@ export function LevelRating({ level, userId }: { level: Level; userId: string })
     });
     setBusy(false);
     if (error && !error.message.includes("duplicate")) return toast.error("تعذّر حفظ التقييم");
+    if (onSubmitted) return onSubmitted();
     setDone(true);
   };
 
