@@ -124,7 +124,7 @@ function DashboardPage() {
   const level = profile.level;
   const lb = levelBadge(level);
   const levelTotal = COURSE_CONTENT[level].chapters.length;
-  const course = { ...courseInfo(level), total: levelTotal };
+  const course = { ...courseInfo(level), meta: COURSE_CONTENT[level].meta, total: levelTotal };
   const levelPrefix = `ai-${level}-`;
   const completedChapters = Math.min(
     levelTotal,
@@ -161,7 +161,7 @@ function DashboardPage() {
             <button
               type="button"
               aria-label="القائمة"
-              className="navbar-logo"
+              className="navbar-logo dashboard-nav-logo"
               style={{ background: "transparent", border: "none", padding: 0, cursor: "pointer", display: "flex", alignItems: "center", flexShrink: 0 }}
             >
               <img src={arabicLogo.url} alt="COURSI" style={{ height: 56, width: "auto", display: "block" }} />

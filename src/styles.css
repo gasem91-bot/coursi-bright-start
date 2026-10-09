@@ -893,3 +893,8 @@ html, body {
     height: 52px !important;
   }
 }
+
+/* Mobile: the global top bar already shows the logo; hide the dashboard's duplicate */
+@media (max-width: 768px) {
+  .dashboard-nav-logo { display: none !important; }
+}
