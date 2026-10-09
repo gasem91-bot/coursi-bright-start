@@ -123,9 +123,14 @@ function DashboardPage() {
 
   const level = profile.level;
   const lb = levelBadge(level);
-  const course = courseInfo(level);
-  const completedChapters = progress.filter((p) => p.completed).length;
-  const percentage = course.total > 0 ? Math.round((completedChapters / course.total) * 100) : 0;
+  const levelTotal = COURSE_CONTENT[level].chapters.length;
+  const course = { ...courseInfo(level), total: levelTotal };
+  const levelPrefix = `ai-${level}-`;
+  const completedChapters = Math.min(
+    levelTotal,
+    new Set(progress.filter((p) => p.completed && p.chapter_id.startsWith(levelPrefix)).map((p) => p.chapter_id)).size,
+  );
+  const percentage = levelTotal > 0 ? Math.min(100, Math.round((completedChapters / levelTotal) * 100)) : 0;
 
   const tierBadge = subscription?.tier === "course_ai"
     ? { label: "باقة الكورس + مساعد AI", bg: "linear-gradient(135deg, var(--accent-purple-soft), var(--accent-cyan-soft))", border: "var(--accent-purple-border)", color: "var(--accent-cyan-text)" }
