@@ -19,6 +19,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SupportRouteImport } from './routes/support'
 import { Route as UpgradeRouteImport } from './routes/upgrade'
 import { Route as WelcomeRouteImport } from './routes/welcome'
+import { Route as AdminDataRouteImport } from './routes/admin.data'
 import { Route as AdminEmailsRouteImport } from './routes/admin.emails'
 import { Route as CourseAiRouteImport } from './routes/course.ai'
 import { Route as ApiPublicCheckSubscriptionRouteImport } from './routes/api/public/check-subscription'
@@ -75,6 +76,11 @@ const WelcomeRoute = WelcomeRouteImport.update({
   path: '/welcome',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminDataRoute = AdminDataRouteImport.update({
+  id: '/admin/data',
+  path: '/admin/data',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminEmailsRoute = AdminEmailsRouteImport.update({
   id: '/admin/emails',
   path: '/admin/emails',
@@ -113,6 +119,7 @@ export interface FileRoutesByFullPath {
   '/support': typeof SupportRoute
   '/upgrade': typeof UpgradeRoute
   '/welcome': typeof WelcomeRoute
+  '/admin/data': typeof AdminDataRoute
   '/admin/emails': typeof AdminEmailsRoute
   '/course/ai': typeof CourseAiRoute
   '/api/public/check-subscription': typeof ApiPublicCheckSubscriptionRoute
@@ -130,6 +137,7 @@ export interface FileRoutesByTo {
   '/support': typeof SupportRoute
   '/upgrade': typeof UpgradeRoute
   '/welcome': typeof WelcomeRoute
+  '/admin/data': typeof AdminDataRoute
   '/admin/emails': typeof AdminEmailsRoute
   '/course/ai': typeof CourseAiRoute
   '/api/public/check-subscription': typeof ApiPublicCheckSubscriptionRoute
@@ -148,6 +156,7 @@ export interface FileRoutesById {
   '/support': typeof SupportRoute
   '/upgrade': typeof UpgradeRoute
   '/welcome': typeof WelcomeRoute
+  '/admin/data': typeof AdminDataRoute
   '/admin/emails': typeof AdminEmailsRoute
   '/course/ai': typeof CourseAiRoute
   '/api/public/check-subscription': typeof ApiPublicCheckSubscriptionRoute
@@ -167,6 +176,7 @@ export interface FileRouteTypes {
     | '/support'
     | '/upgrade'
     | '/welcome'
+    | '/admin/data'
     | '/admin/emails'
     | '/course/ai'
     | '/api/public/check-subscription'
@@ -184,6 +194,7 @@ export interface FileRouteTypes {
     | '/support'
     | '/upgrade'
     | '/welcome'
+    | '/admin/data'
     | '/admin/emails'
     | '/course/ai'
     | '/api/public/check-subscription'
@@ -201,6 +212,7 @@ export interface FileRouteTypes {
     | '/support'
     | '/upgrade'
     | '/welcome'
+    | '/admin/data'
     | '/admin/emails'
     | '/course/ai'
     | '/api/public/check-subscription'
@@ -219,6 +231,7 @@ export interface RootRouteChildren {
   SupportRoute: typeof SupportRoute
   UpgradeRoute: typeof UpgradeRoute
   WelcomeRoute: typeof WelcomeRoute
+  AdminDataRoute: typeof AdminDataRoute
   AdminEmailsRoute: typeof AdminEmailsRoute
   CourseAiRoute: typeof CourseAiRoute
   ApiPublicCheckSubscriptionRoute: typeof ApiPublicCheckSubscriptionRoute
@@ -298,6 +311,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WelcomeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/data': {
+      id: '/admin/data'
+      path: '/admin/data'
+      fullPath: '/admin/data'
+      preLoaderRoute: typeof AdminDataRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/emails': {
       id: '/admin/emails'
       path: '/admin/emails'
@@ -347,6 +367,7 @@ const rootRouteChildren: RootRouteChildren = {
   SupportRoute: SupportRoute,
   UpgradeRoute: UpgradeRoute,
   WelcomeRoute: WelcomeRoute,
+  AdminDataRoute: AdminDataRoute,
   AdminEmailsRoute: AdminEmailsRoute,
   CourseAiRoute: CourseAiRoute,
   ApiPublicCheckSubscriptionRoute: ApiPublicCheckSubscriptionRoute,
