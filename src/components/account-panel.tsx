@@ -224,6 +224,13 @@ export default function AccountPanel() {
         <button onClick={handleLogout} style={{ margin: "20px 16px 40px", padding: "14px", background: "transparent", border: "1px solid var(--border)", color: "var(--text-primary)", borderRadius: 50, fontFamily: font, fontWeight: 700, cursor: "pointer", display: "block", width: "calc(100% - 32px)" }}>
           🚪 تسجيل الخروج
         </button>
+
+        <div style={{ margin: "0 16px 40px", paddingTop: 16, borderTop: "1px solid rgba(239,68,68,0.3)" }}>
+          <div style={{ color: "#EF4444", fontSize: 12, fontWeight: 700, marginBottom: 10 }}>منطقة الخطر</div>
+          <button onClick={() => { close(); navigate({ to: "/account/delete" }); }} style={{ width: "100%", minHeight: 48, background: "transparent", border: "1px solid #EF4444", color: "#EF4444", borderRadius: 50, fontFamily: font, fontWeight: 700, cursor: "pointer" }}>
+            حذف الحساب
+          </button>
+        </div>
       </aside>
     </>
   );

@@ -285,6 +285,14 @@ function ProfilePage() {
             ))
           )}
         </section>
+
+        <section style={{ marginTop: 40, paddingTop: 20, borderTop: "1px solid rgba(239,68,68,0.3)" }}>
+          <h2 style={{ color: "#EF4444", fontSize: 14, fontWeight: 700, marginBottom: 6 }}>منطقة الخطر</h2>
+          <p style={{ color: "var(--text-secondary)", fontSize: 12, marginBottom: 12 }}>حذف حسابك وجميع بياناتك نهائياً.</p>
+          <button onClick={() => navigate({ to: "/account/delete" })} style={{ width: "100%", minHeight: 48, background: "transparent", border: "1px solid #EF4444", color: "#EF4444", borderRadius: 50, fontFamily: font, fontWeight: 700, cursor: "pointer" }}>
+            حذف الحساب
+          </button>
+        </section>
       </main>
     </div>
   );
