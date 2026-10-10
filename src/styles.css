@@ -5,6 +5,7 @@
   --coursi-purple: #7B35FF;
   --coursi-cyan: #00D4C8;
   --media-viewer-bg: #000000;
+  --native-status-bar-bg: #0B0B10;
   --media-viewer-fg: #ffffff;
   --media-viewer-control-bg: rgba(0,0,0,0.75);
 
@@ -135,6 +136,13 @@ html, body {
   color: var(--text-primary);
   direction: rtl;
   min-height: 100%;
+}
+
+/* Android shell only; browser, desktop and iOS layouts stay untouched.
+   Native insets reserve the status bar on Android 15+, so its env inset is 0. */
+body.native-android-layout {
+  padding-top: env(safe-area-inset-top, 0px);
+  background: var(--native-status-bar-bg);
 }
 
 /* ===== Light-theme overrides for the lesson HTML (CONTENT_CSS) ===== */
