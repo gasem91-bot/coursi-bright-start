@@ -1,6 +1,7 @@
 package ai.coursi.app;
 
 import android.graphics.Color;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -23,7 +24,9 @@ public class MainActivity extends BridgeActivity {
         // cannot reserve this space. Paint and inset only the native top edge.
         if (Build.VERSION.SDK_INT >= 35) {
             View content = findViewById(android.R.id.content);
-            content.setBackgroundColor(Color.parseColor(getBridge().getConfig().getBackgroundColor()));
+            int background = Color.parseColor(getBridge().getConfig().getBackgroundColor());
+            content.setBackgroundColor(background);
+            getWindow().getDecorView().setBackgroundColor(background);
             final int left = content.getPaddingLeft();
             final int top = content.getPaddingTop();
             final int right = content.getPaddingRight();
@@ -38,5 +41,23 @@ public class MainActivity extends BridgeActivity {
             });
             ViewCompat.requestApplyInsets(content);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Run after Capacitor's built-in SystemBars applies its theme default.
+        getWindow().getDecorView().post(this::useLightStatusBarIcons);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        useLightStatusBarIcons();
+    }
+
+    private void useLightStatusBarIcons() {
+        WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView())
+            .setAppearanceLightStatusBars(false);
     }
 }
