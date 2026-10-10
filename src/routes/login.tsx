@@ -328,7 +328,7 @@ function LoginPage() {
                   onClick={handlePasswordReset}
                   disabled={resetLoading}
                 >
-                  {resetLoading ? "جارٍ الإرسال..." : "أرسل رابط الاسترداد ←"}
+                  {resetLoading ? "جارٍ الإرسال..." : "أرسل الرابط ←"}
                 </button>
               </>
             )}
