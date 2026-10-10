@@ -1,0 +1,1 @@
+CREATE POLICY "Users view tickets sent from their email" ON public.support_tickets FOR SELECT TO authenticated USING (lower(trim(email)) = lower(trim(coalesce(auth.jwt()->>'email',''))) AND coalesce(auth.jwt()->>'email','') <> '');
