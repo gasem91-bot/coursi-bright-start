@@ -43,6 +43,13 @@
       "when": 1791664058471,
       "tag": "0005_anonymise_subscriptions_on_account_delete",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1791664874207,
+      "tag": "0006_account_pause_exits_suppression",
+      "breakpoints": true
     }
   ]
 }

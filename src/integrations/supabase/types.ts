@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      account_exits: {
+        Row: {
+          certificates_earned: number
+          chapters_completed: number
+          comment: string | null
+          exit_type: string
+          exited_on: string
+          id: string
+          level_reached: string | null
+          reason: string | null
+          subscription_tier: string | null
+        }
+        Insert: {
+          certificates_earned?: number
+          chapters_completed?: number
+          comment?: string | null
+          exit_type: string
+          exited_on?: string
+          id?: string
+          level_reached?: string | null
+          reason?: string | null
+          subscription_tier?: string | null
+        }
+        Update: {
+          certificates_earned?: number
+          chapters_completed?: number
+          comment?: string | null
+          exit_type?: string
+          exited_on?: string
+          id?: string
+          level_reached?: string | null
+          reason?: string | null
+          subscription_tier?: string | null
+        }
+        Relationships: []
+      }
       certificate_emails: {
         Row: {
           certificate_id: string
@@ -119,6 +155,21 @@ export type Database = {
         }
         Relationships: []
       }
+      do_not_contact: {
+        Row: {
+          added_at: string
+          email: string
+        }
+        Insert: {
+          added_at?: string
+          email: string
+        }
+        Update: {
+          added_at?: string
+          email?: string
+        }
+        Relationships: []
+      }
       exam_attempts: {
         Row: {
           created_at: string
@@ -182,10 +233,12 @@ export type Database = {
           country_flag: string | null
           country_name: string | null
           created_at: string
+          deactivated_at: string | null
           display_name: string | null
           email: string | null
           full_name: string | null
           id: string
+          is_active: boolean
           last_active_date: string | null
           level: Database["public"]["Enums"]["user_level"]
           mobile: string | null
@@ -206,10 +259,12 @@ export type Database = {
           country_flag?: string | null
           country_name?: string | null
           created_at?: string
+          deactivated_at?: string | null
           display_name?: string | null
           email?: string | null
           full_name?: string | null
           id: string
+          is_active?: boolean
           last_active_date?: string | null
           level?: Database["public"]["Enums"]["user_level"]
           mobile?: string | null
@@ -230,10 +285,12 @@ export type Database = {
           country_flag?: string | null
           country_name?: string | null
           created_at?: string
+          deactivated_at?: string | null
           display_name?: string | null
           email?: string | null
           full_name?: string | null
           id?: string
+          is_active?: boolean
           last_active_date?: string | null
           level?: Database["public"]["Enums"]["user_level"]
           mobile?: string | null
