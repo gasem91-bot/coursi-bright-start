@@ -58,7 +58,7 @@ function SupportPage() {
   const loadTickets = async (uid: string, mail?: string) => {
     const clean = (mail ?? email).trim().toLowerCase();
     const filter = clean
-      ? `user_id.eq.${uid},email.ilike.${clean.replace(/[,()%_*\\]/g, (c) => `\\${c}`)}`
+      ? `user_id.eq.${uid},email.ilike."${clean.replace(/["\\]/g, "")}"`
       : `user_id.eq.${uid}`;
     const { data } = await supabase
       .from("support_tickets")
