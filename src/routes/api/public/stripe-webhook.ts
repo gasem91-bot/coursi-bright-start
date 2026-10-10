@@ -240,8 +240,12 @@ export const Route = createFileRoute("/api/public/stripe-webhook")({
             email,
             options: { redirectTo: "https://ai.portal.coursi.ai/dashboard" },
           });
-          const loginLink =
-            linkData?.properties?.action_link || "https://ai.portal.coursi.ai/login";
+          // Scanner-proof: our /login page redeems the token with JS, so email
+          // scanners and in-app browser prefetchers can't burn it.
+          const hashed = linkData?.properties?.hashed_token;
+          const loginLink = hashed
+            ? `https://ai.portal.coursi.ai/login?token_hash=${encodeURIComponent(hashed)}&type=magiclink&redirect=/dashboard`
+            : "https://ai.portal.coursi.ai/login";
           await sendWelcomeEmail(email, level, tier, loginLink, resendApiKey);
           await sendInternalSaleNotification(
             { email, name, level, tier, amount, currency, sessionId: session.id, mode },
