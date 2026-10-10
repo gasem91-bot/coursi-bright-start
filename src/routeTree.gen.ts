@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AchievementsRouteImport } from './routes/achievements'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as GoodbyeRouteImport } from './routes/goodbye'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as OffersRouteImport } from './routes/offers'
 import { Route as ProfileRouteImport } from './routes/profile'
@@ -19,6 +20,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SupportRouteImport } from './routes/support'
 import { Route as UpgradeRouteImport } from './routes/upgrade'
 import { Route as WelcomeRouteImport } from './routes/welcome'
+import { Route as AccountDeleteRouteImport } from './routes/account.delete'
 import { Route as AdminDataRouteImport } from './routes/admin.data'
 import { Route as AdminEmailsRouteImport } from './routes/admin.emails'
 import { Route as CourseAiRouteImport } from './routes/course.ai'
@@ -40,6 +42,11 @@ const AchievementsRoute = AchievementsRouteImport.update({
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GoodbyeRoute = GoodbyeRouteImport.update({
+  id: '/goodbye',
+  path: '/goodbye',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -75,6 +82,11 @@ const UpgradeRoute = UpgradeRouteImport.update({
 const WelcomeRoute = WelcomeRouteImport.update({
   id: '/welcome',
   path: '/welcome',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountDeleteRoute = AccountDeleteRouteImport.update({
+  id: '/account/delete',
+  path: '/account/delete',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminDataRoute = AdminDataRouteImport.update({
@@ -119,6 +131,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/achievements': typeof AchievementsRoute
   '/dashboard': typeof DashboardRoute
+  '/goodbye': typeof GoodbyeRoute
   '/login': typeof LoginRoute
   '/offers': typeof OffersRoute
   '/profile': typeof ProfileRoute
@@ -126,6 +139,7 @@ export interface FileRoutesByFullPath {
   '/support': typeof SupportRoute
   '/upgrade': typeof UpgradeRoute
   '/welcome': typeof WelcomeRoute
+  '/account/delete': typeof AccountDeleteRoute
   '/admin/data': typeof AdminDataRoute
   '/admin/emails': typeof AdminEmailsRoute
   '/course/ai': typeof CourseAiRoute
@@ -138,6 +152,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/achievements': typeof AchievementsRoute
   '/dashboard': typeof DashboardRoute
+  '/goodbye': typeof GoodbyeRoute
   '/login': typeof LoginRoute
   '/offers': typeof OffersRoute
   '/profile': typeof ProfileRoute
@@ -145,6 +160,7 @@ export interface FileRoutesByTo {
   '/support': typeof SupportRoute
   '/upgrade': typeof UpgradeRoute
   '/welcome': typeof WelcomeRoute
+  '/account/delete': typeof AccountDeleteRoute
   '/admin/data': typeof AdminDataRoute
   '/admin/emails': typeof AdminEmailsRoute
   '/course/ai': typeof CourseAiRoute
@@ -158,6 +174,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/achievements': typeof AchievementsRoute
   '/dashboard': typeof DashboardRoute
+  '/goodbye': typeof GoodbyeRoute
   '/login': typeof LoginRoute
   '/offers': typeof OffersRoute
   '/profile': typeof ProfileRoute
@@ -165,6 +182,7 @@ export interface FileRoutesById {
   '/support': typeof SupportRoute
   '/upgrade': typeof UpgradeRoute
   '/welcome': typeof WelcomeRoute
+  '/account/delete': typeof AccountDeleteRoute
   '/admin/data': typeof AdminDataRoute
   '/admin/emails': typeof AdminEmailsRoute
   '/course/ai': typeof CourseAiRoute
@@ -179,6 +197,7 @@ export interface FileRouteTypes {
     | '/'
     | '/achievements'
     | '/dashboard'
+    | '/goodbye'
     | '/login'
     | '/offers'
     | '/profile'
@@ -186,6 +205,7 @@ export interface FileRouteTypes {
     | '/support'
     | '/upgrade'
     | '/welcome'
+    | '/account/delete'
     | '/admin/data'
     | '/admin/emails'
     | '/course/ai'
@@ -198,6 +218,7 @@ export interface FileRouteTypes {
     | '/'
     | '/achievements'
     | '/dashboard'
+    | '/goodbye'
     | '/login'
     | '/offers'
     | '/profile'
@@ -205,6 +226,7 @@ export interface FileRouteTypes {
     | '/support'
     | '/upgrade'
     | '/welcome'
+    | '/account/delete'
     | '/admin/data'
     | '/admin/emails'
     | '/course/ai'
@@ -217,6 +239,7 @@ export interface FileRouteTypes {
     | '/'
     | '/achievements'
     | '/dashboard'
+    | '/goodbye'
     | '/login'
     | '/offers'
     | '/profile'
@@ -224,6 +247,7 @@ export interface FileRouteTypes {
     | '/support'
     | '/upgrade'
     | '/welcome'
+    | '/account/delete'
     | '/admin/data'
     | '/admin/emails'
     | '/course/ai'
@@ -237,6 +261,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AchievementsRoute: typeof AchievementsRoute
   DashboardRoute: typeof DashboardRoute
+  GoodbyeRoute: typeof GoodbyeRoute
   LoginRoute: typeof LoginRoute
   OffersRoute: typeof OffersRoute
   ProfileRoute: typeof ProfileRoute
@@ -244,6 +269,7 @@ export interface RootRouteChildren {
   SupportRoute: typeof SupportRoute
   UpgradeRoute: typeof UpgradeRoute
   WelcomeRoute: typeof WelcomeRoute
+  AccountDeleteRoute: typeof AccountDeleteRoute
   AdminDataRoute: typeof AdminDataRoute
   AdminEmailsRoute: typeof AdminEmailsRoute
   CourseAiRoute: typeof CourseAiRoute
@@ -274,6 +300,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/goodbye': {
+      id: '/goodbye'
+      path: '/goodbye'
+      fullPath: '/goodbye'
+      preLoaderRoute: typeof GoodbyeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -323,6 +356,13 @@ declare module '@tanstack/react-router' {
       path: '/welcome'
       fullPath: '/welcome'
       preLoaderRoute: typeof WelcomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/account/delete': {
+      id: '/account/delete'
+      path: '/account/delete'
+      fullPath: '/account/delete'
+      preLoaderRoute: typeof AccountDeleteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/data': {
@@ -381,6 +421,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AchievementsRoute: AchievementsRoute,
   DashboardRoute: DashboardRoute,
+  GoodbyeRoute: GoodbyeRoute,
   LoginRoute: LoginRoute,
   OffersRoute: OffersRoute,
   ProfileRoute: ProfileRoute,
@@ -388,6 +429,7 @@ const rootRouteChildren: RootRouteChildren = {
   SupportRoute: SupportRoute,
   UpgradeRoute: UpgradeRoute,
   WelcomeRoute: WelcomeRoute,
+  AccountDeleteRoute: AccountDeleteRoute,
   AdminDataRoute: AdminDataRoute,
   AdminEmailsRoute: AdminEmailsRoute,
   CourseAiRoute: CourseAiRoute,
