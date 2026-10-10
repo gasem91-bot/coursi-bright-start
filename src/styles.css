@@ -925,10 +925,10 @@ html, body {
 .admin-data-table th { color: var(--text-secondary); font-weight: 700; position: sticky; top: 0; background: var(--bg-primary); }
 
 /* Mobile: vertical breathing room between stacked blocks.
-   The unlayered `* { margin: 0 }` reset above cancels Tailwind's layered space-y utilities,
-   so stacked offer cards and stacked lesson media blocks need explicit gaps here. */
+   The unlayered `* { margin: 0 }` reset above cancels Tailwind's zero-specificity
+   space-y utilities, so stacked lesson media blocks need explicit gaps here.
+   (Offers page card spacing is scoped inside src/routes/offers.tsx, not here.) */
 @media (max-width: 768px) {
-  main [data-offer] + [data-offer] { margin-top: 16px; }
   .coursi-content .lesson-image-target + .lesson-image-target,
   .coursi-content .concept-diagram + .concept-diagram { margin-top: 16px; }
 }

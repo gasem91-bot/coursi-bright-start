@@ -79,7 +79,16 @@ function OffersPage() {
 
   const nextLevel = NEXT_LEVEL[level];
   return (
-    <main className="page-content min-h-screen bg-[var(--bg-primary)] px-4 pt-6 pb-28" dir="rtl">
+    <main data-page="offers" className="page-content min-h-screen bg-[var(--bg-primary)] px-4 pt-6 pb-28" dir="rtl">
+      {/* Mobile-only spacing fix: the unlayered `* { margin: 0 }` global reset cancels
+          Tailwind's zero-specificity space-y utilities, so card padding and the gap
+          between the two stacked cards are set here, scoped to this page. */}
+      <style>{`
+        @media (max-width: 768px) {
+          main[data-page="offers"] [data-offer="ai-tutor"] { padding: 16px; }
+          main[data-page="offers"] [data-offer="ai-tutor"] + [data-offer="next-level"] { margin-top: 20px; }
+        }
+      `}</style>
       <div className="mx-auto max-w-[720px]">
         <h1 className="mb-6 text-[28px] font-extrabold text-[var(--text-primary)]">العروض</h1>
         {loading ? <p className="py-12 text-center text-[var(--text-secondary)]">جاري التحميل...</p> : (
