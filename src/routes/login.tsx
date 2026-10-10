@@ -59,22 +59,56 @@ function LoginPage() {
   // Magic links land here as ?token_hash=…&type=magiclink: the token is only
   // redeemed by this page's script, so email link scanners (which fetch the
   // URL without running JS) can no longer burn the single-use token.
+  const [pausedPrompt, setPausedPrompt] = useState(false);
+  const [pausedNotice, setPausedNotice] = useState(false);
+
+  // Paused accounts keep the session only long enough to confirm reactivation.
+  const isActiveAccount = async (): Promise<boolean> => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return false;
+    const { data } = await supabase.from("profiles").select("is_active").eq("id", user.id).maybeSingle();
+    if (data && data.is_active === false) {
+      setPausedPrompt(true);
+      return false;
+    }
+    return true;
+  };
+
+  const reactivate = async () => {
+    setLoading(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const { error } = await supabase.from("profiles").update({ is_active: true, deactivated_at: null }).eq("id", user.id);
+      if (!error) { window.location.href = safeRedirect(); return; }
+    }
+    setError("تعذّر إعادة تفعيل الحساب. حاول مرة أخرى أو تواصل مع الدعم.");
+    setLoading(false);
+  };
+
+  const cancelReactivate = async () => {
+    await supabase.auth.signOut();
+    setPausedPrompt(false);
+  };
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
+    if (params.get("paused") === "1") setPausedNotice(true);
     if (params.get("reset") === "1") return;
     const tokenHash = params.get("token_hash");
     if (tokenHash) {
       supabase.auth
         .verifyOtp({ token_hash: tokenHash, type: "magiclink" })
-        .then(({ data, error }) => {
-          if (data?.session && !error) window.location.replace(safeRedirect());
-          else setError("انتهت صلاحية رابط الدخول أو استُخدم من قبل. اطلب رابطاً جديداً.");
+        .then(async ({ data, error }) => {
+          if (data?.session && !error) {
+            if (await isActiveAccount()) window.location.replace(safeRedirect());
+          } else setError("انتهت صلاحية رابط الدخول أو استُخدم من قبل. اطلب رابطاً جديداً.");
         });
       return;
     }
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) window.location.replace(safeRedirect());
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (session && (await isActiveAccount())) window.location.replace(safeRedirect());
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
 
@@ -119,7 +153,7 @@ function LoginPage() {
       const { error } = await supabase.auth.signInWithPassword({ email: cleanEmail, password });
       if (error) {
         setError("البريد الإلكتروني أو كلمة المرور غير صحيحة");
-      } else {
+      } else if (await isActiveAccount()) {
         window.location.href = safeRedirect();
       }
     } finally {
@@ -286,6 +320,25 @@ function LoginPage() {
           <p style={{ color: "#C5545E", fontSize: "13px", textAlign: "center", marginTop: "12px" }}>
             {error}
           </p>
+        )}
+
+        {pausedNotice && !pausedPrompt && (
+          <p style={{ color: "var(--text-secondary)", fontSize: 13, textAlign: "center", marginTop: 12, lineHeight: 1.8 }}>
+            تم تعطيل حسابك مؤقتاً. يمكنك العودة في أي وقت بتسجيل الدخول مرة أخرى.
+          </p>
+        )}
+
+        {pausedPrompt && (
+          <div role="alertdialog" style={{ marginTop: 16, background: "var(--bg-card)", border: "1px solid var(--accent-purple-border)", borderRadius: 14, padding: 18, textAlign: "center" }}>
+            <div style={{ color: "var(--text-primary)", fontWeight: 800, fontSize: 16, marginBottom: 6 }}>مرحباً بعودتك! 👋</div>
+            <p style={{ color: "var(--text-secondary)", fontSize: 14, lineHeight: 1.8, marginBottom: 12 }}>حسابك متوقف مؤقتاً، وكل تقدمك وشهاداتك محفوظة. هل تريد إعادة تفعيله الآن؟</p>
+            <button type="button" onClick={reactivate} disabled={loading} style={{ width: "100%", minHeight: 48, border: "none", borderRadius: 50, background: "linear-gradient(135deg, #7B35C0, #40C8C8)", color: "#fff", fontWeight: 700, fontFamily: "inherit", cursor: "pointer" }}>
+              إعادة تفعيل حسابي
+            </button>
+            <button type="button" onClick={cancelReactivate} style={{ width: "100%", minHeight: 48, marginTop: 8, background: "transparent", border: "1px solid var(--border)", borderRadius: 50, color: "var(--text-primary)", fontWeight: 700, fontFamily: "inherit", cursor: "pointer" }}>
+              ليس الآن
+            </button>
+          </div>
         )}
 
         <div className="login-recovery">
