@@ -36,6 +36,13 @@
       "when": 1791636963670,
       "tag": "0004_migration",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791664058471,
+      "tag": "0005_anonymise_subscriptions_on_account_delete",
+      "breakpoints": true
     }
   ]
 }
