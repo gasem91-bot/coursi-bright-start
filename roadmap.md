@@ -1,5 +1,5 @@
-- [ ] Simplify Offers with existing tutor eligibility/checkout and locked next level.
-- [ ] Hide referrals and remove student-visible launch urgency; retain referral infrastructure.
-- [ ] Verify actual Stripe price and signed-in preview for both subscription tiers.
-- [ ] Replace 12 avatars with supplied images; preserve keys and circle crops.
-- [ ] Add shared full-screen lesson image viewer with landscape fallback and pinch zoom; verify preview, do not publish.
+- [x] Simplify Offers with existing tutor eligibility/checkout and locked next level.
+- [x] Hide referrals and remove student-visible launch urgency; retain referral infrastructure. No referral sections found elsewhere in the portal.
+- [ ] Course-only signed-in Offers verification blocked: account-session approval declined. Real $14 price and AI-assistant hidden-card state verified.
+- [x] Replace 12 avatars with supplied managed project image assets; preserve keys and circle crops. All 12 render in preview.
+- [x] Add shared full-screen lesson image viewer with landscape fallback and pinch zoom. Image/icon opening, zoom, touch pinch, fallback rotation and closing verified. Do not publish.
