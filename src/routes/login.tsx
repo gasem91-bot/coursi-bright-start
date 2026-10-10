@@ -19,6 +19,12 @@ export const Route = createFileRoute("/login")({
   }),
 });
 
+// Same-origin path from ?redirect=…, defaulting to the dashboard.
+function safeRedirect(): string {
+  const r = new URLSearchParams(window.location.search).get("redirect") ?? "";
+  return r.startsWith("/") && !r.startsWith("//") ? r : "/dashboard";
+}
+
 const inputStyle: React.CSSProperties = {
   width: "100%",
   background: "var(--bg-secondary)",
@@ -50,11 +56,24 @@ function LoginPage() {
 
   // Already signed in (persisted session)? Skip the login form.
   // Keep ?reset=1 deep links on the form so password resets still work.
+  // Magic links land here as ?token_hash=…&type=magiclink: the token is only
+  // redeemed by this page's script, so email link scanners (which fetch the
+  // URL without running JS) can no longer burn the single-use token.
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("reset") === "1") return;
+    const tokenHash = params.get("token_hash");
+    if (tokenHash) {
+      supabase.auth
+        .verifyOtp({ token_hash: tokenHash, type: "magiclink" })
+        .then(({ data, error }) => {
+          if (data?.session && !error) window.location.replace(safeRedirect());
+          else setError("انتهت صلاحية رابط الدخول أو استُخدم من قبل. اطلب رابطاً جديداً.");
+        });
+      return;
+    }
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) window.location.replace("/dashboard");
+      if (session) window.location.replace(safeRedirect());
     });
   }, []);
 
@@ -87,20 +106,21 @@ function LoginPage() {
   };
 
   const handleLogin = async () => {
-    if (!email || !password) return;
+    const cleanEmail = email.trim().toLowerCase();
+    if (!cleanEmail || !password) return;
     setLoading(true);
     setError("");
     try {
-      const subError = await checkAiSubscription(email);
+      const subError = await checkAiSubscription(cleanEmail);
       if (subError !== null) {
         setError(subError);
         return; // HARD BLOCK — do not call signInWithPassword
       }
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { error } = await supabase.auth.signInWithPassword({ email: cleanEmail, password });
       if (error) {
         setError("البريد الإلكتروني أو كلمة المرور غير صحيحة");
       } else {
-        window.location.href = "/dashboard";
+        window.location.href = safeRedirect();
       }
     } finally {
       setLoading(false);
@@ -108,20 +128,21 @@ function LoginPage() {
   };
 
   const handleMagicLink = async () => {
-    if (!email) {
+    const cleanEmail = email.trim().toLowerCase();
+    if (!cleanEmail) {
       setError("أدخل بريدك الإلكتروني أولاً");
       return;
     }
     setLoading(true);
     setError("");
     try {
-      const subError = await checkAiSubscription(email);
+      const subError = await checkAiSubscription(cleanEmail);
       if (subError !== null) {
         setError(subError);
         return; // HARD BLOCK — do not call signInWithOtp
       }
       await sendBrandedMagicLink({
-        data: { email, redirectTo: "https://ai.portal.coursi.ai/dashboard" },
+        data: { email: cleanEmail, redirectTo: "https://ai.portal.coursi.ai/dashboard" },
       });
       setMagicSent(true);
     } finally {

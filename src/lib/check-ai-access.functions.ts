@@ -23,35 +23,35 @@ export const checkAiAccess = createServerFn({ method: "POST" })
     if (!email) return { ok: false, reason: "not_registered" };
 
 
-    // Look up profile by email in the user's own Supabase project.
-    // Fail-closed: any error or no match blocks login.
-    const { data: profile, error: profileError } = await admin
+    // Look up profile by email (trimmed, case-insensitive, exact — ilike would
+    // treat "_" as a wildcard). Fail-closed: any error or no match blocks login.
+    const { data: candidates, error: profileError } = await admin
       .from("profiles")
-      .select("id")
-      .ilike("email", email)
-      .maybeSingle();
+      .select("id, email")
+      .ilike("email", email);
 
     if (profileError) {
       console.error("[checkAiAccess] profile lookup error:", profileError);
       return { ok: false, reason: "not_registered" };
     }
-    if (!profile || !profile.id) {
-      return { ok: false, reason: "not_registered" };
-    }
+    const profile = (candidates ?? []).find((p) => (p.email ?? "").trim().toLowerCase() === email);
+    if (!profile) return { ok: false, reason: "not_registered" };
 
-    const { data: subscription, error: subError } = await admin
+    // Any active plan grants portal access: Course-only ("course") and
+    // Course + AI tutor ("course_ai"). Users may have several rows.
+    const { data: subs, error: subError } = await admin
       .from("subscriptions")
       .select("id")
       .eq("user_id", profile.id)
-      .eq("tier", "course_ai")
+      .in("tier", ["course", "course_ai"])
       .eq("status", "active")
-      .maybeSingle();
+      .limit(1);
 
     if (subError) {
       console.error("[checkAiAccess] subscription lookup error:", subError);
       return { ok: false, reason: "no_subscription" };
     }
-    if (!subscription) return { ok: false, reason: "no_subscription" };
+    if (!subs || subs.length === 0) return { ok: false, reason: "no_subscription" };
 
     return { ok: true };
   });

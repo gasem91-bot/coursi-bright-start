@@ -42,10 +42,18 @@ export async function createTicket(
   if (!email) return { ok: false, reason: "invalid" };
   if (!name) name = email.split("@")[0] || "مستخدم كورسي";
 
+  // Link bot tickets to the matching account so they show on /support.
+  let userId = input.userId ?? null;
+  if (!userId) {
+    const clean = email.toLowerCase();
+    const { data: matches } = await supabaseAdmin.from("profiles").select("id, email").ilike("email", clean);
+    userId = (matches ?? []).find((p) => (p.email ?? "").trim().toLowerCase() === clean)?.id ?? null;
+  }
+
   const { data: row, error } = await supabaseAdmin
     .from("support_tickets")
     .insert({
-      user_id: input.userId ?? null,
+      user_id: userId,
       email,
       name,
       category: input.category,

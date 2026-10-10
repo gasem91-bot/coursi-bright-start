@@ -24,10 +24,17 @@ export const sendBrandedMagicLink = createServerFn({ method: "POST" })
         email,
         options: { redirectTo: data.redirectTo ?? "https://ai.portal.coursi.ai/dashboard" },
       });
-      if (error || !link?.properties?.action_link) {
+      if (error || !link?.properties?.hashed_token) {
         console.error("[magiclink-email] generateLink failed:", error?.message);
         return { ok: true };
       }
+      // Point at our own /login page, which redeems the token with JS. Email
+      // scanners / in-app browser prefetchers no longer consume it on GET.
+      const target = new URL(data.redirectTo ?? "https://ai.portal.coursi.ai/dashboard");
+      const signInUrl = new URL("/login", target.origin);
+      signInUrl.searchParams.set("token_hash", link.properties.hashed_token);
+      signInUrl.searchParams.set("type", "magiclink");
+      if (target.pathname !== "/login") signInUrl.searchParams.set("redirect", target.pathname);
 
       const resendApiKey = process.env["RESEND_API_KEY"];
       if (!resendApiKey) {
@@ -45,7 +52,7 @@ export const sendBrandedMagicLink = createServerFn({ method: "POST" })
           from: "كورسي <support@coursi.ai>",
           to: [email],
           subject: MAGICLINK_SUBJECT,
-          html: buildMagicLinkHtml({ link: link.properties.action_link, email }),
+          html: buildMagicLinkHtml({ link: signInUrl.toString(), email }),
         }),
       });
       if (!res.ok) console.error("[magiclink-email] resend error:", res.status, await res.text());
