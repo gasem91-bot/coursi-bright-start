@@ -67,14 +67,15 @@ function WelcomePage() {
   }, []);
 
   const handleResend = async () => {
-    if (!email) {
-      toast.error("لا يوجد بريد إلكتروني محفوظ");
+    const clean = email.trim().toLowerCase();
+    if (!clean) {
+      toast.error("أدخل بريدك الإلكتروني");
       return;
     }
     setResending(true);
     try {
       await sendBrandedMagicLink({
-        data: { email, redirectTo: `${window.location.origin}/welcome` },
+        data: { email: clean, redirectTo: `${window.location.origin}/welcome` },
       });
       toast.success("تم إرسال الرابط إلى بريدك");
     } catch {
@@ -159,6 +160,72 @@ function WelcomePage() {
             {status === "ready" && <ReadyCard onGo={() => navigate({ to: "/dashboard" })} />}
             {status === "email" && (
               <EmailCard onResend={handleResend} resending={resending} />
+            )}
+            {status === "email" && (
+              <div style={{ ...cardBase, marginTop: 16, textAlign: "center" }}>
+                <a
+                  href="/login"
+                  style={{
+                    display: "block",
+                    background: "linear-gradient(135deg,#7B35C0,#40C8C8)",
+                    color: "#fff",
+                    fontWeight: 900,
+                    fontSize: 15,
+                    padding: "14px 24px",
+                    borderRadius: 50,
+                    textDecoration: "none",
+                    marginBottom: 20,
+                  }}
+                >
+                  الذهاب إلى صفحة الدخول ←
+                </a>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    void handleResend();
+                  }}
+                  style={{ display: "grid", gap: 10 }}
+                >
+                  <label style={{ fontSize: 14, color: "#ccc", fontWeight: 700 }}>
+                    أرسل لي رابط دخول جديد
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="بريدك الإلكتروني المستخدم في الدفع"
+                    autoComplete="email"
+                    style={{
+                      width: "100%",
+                      background: "#0D0D14",
+                      border: "1px solid #24243A",
+                      borderRadius: 12,
+                      color: "#fff",
+                      padding: "12px 14px",
+                      fontSize: 16,
+                      direction: "ltr",
+                      textAlign: "center",
+                    }}
+                  />
+                  <button
+                    type="submit"
+                    disabled={resending}
+                    style={{
+                      background: "transparent",
+                      border: "1px solid #40C8C8",
+                      color: "#40C8C8",
+                      borderRadius: 50,
+                      padding: "12px 24px",
+                      fontWeight: 800,
+                      fontSize: 14,
+                      cursor: resending ? "wait" : "pointer",
+                    }}
+                  >
+                    {resending ? "جارٍ الإرسال..." : "أرسل الرابط ←"}
+                  </button>
+                </form>
+              </div>
             )}
           </div>
 

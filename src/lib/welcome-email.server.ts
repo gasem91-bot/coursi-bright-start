@@ -58,6 +58,11 @@ export function buildWelcomeHtml(
     الرابط صالح لمدة ٤٨ ساعة · لا تحتاج كلمة مرور في المرة الأولى<br>
     <span style="color:#A2A2B0;">إذا لم يفتح الرابط، انسخه وضعه في متصفحك</span>
   </p>
+  <p class="cta-note" dir="rtl" style="margin-top:14px;line-height:2;">
+    <a href="https://ai.portal.coursi.ai/login" style="color:#7FE3E3;font-weight:700;">الذهاب إلى صفحة الدخول ←</a><br>
+    <span style="color:#A2A2B0;">بريد الدخول:</span> <strong style="unicode-bidi:plaintext;color:#FFFFFF;">${userEmail ?? "بريدك الإلكتروني المستخدم في الدفع"}</strong><br>
+    <a href="https://ai.portal.coursi.ai/login?reset=1${userEmail ? `&email=${encodeURIComponent(userEmail)}` : ""}" style="color:#7FE3E3;">تعيين كلمة مرور ←</a>
+  </p>
 </div>
 <div class="card" dir="rtl" style="direction:rtl;text-align:right;">
   <div class="card-label">✦ بيانات حسابك</div>
