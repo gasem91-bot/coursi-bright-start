@@ -53,11 +53,17 @@ function SupportPage() {
   const [sending, setSending] = useState(false);
   const [confirmation, setConfirmation] = useState<string | null>(null);
 
-  const loadTickets = async (uid: string) => {
+  // Tickets owned by this account OR sent from its email (e.g. via the
+  // Telegram bot). The database policy enforces both conditions.
+  const loadTickets = async (uid: string, mail?: string) => {
+    const clean = (mail ?? email).trim().toLowerCase();
+    const filter = clean
+      ? `user_id.eq.${uid},email.ilike.${clean.replace(/[,()%_*\\]/g, (c) => `\\${c}`)}`
+      : `user_id.eq.${uid}`;
     const { data } = await supabase
       .from("support_tickets")
       .select("id, category, message, status, created_at")
-      .eq("user_id", uid)
+      .or(filter)
       .order("created_at", { ascending: false });
     setTickets((data as Ticket[]) ?? []);
   };
@@ -66,12 +72,12 @@ function SupportPage() {
     (async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        navigate({ to: "/login" });
+        window.location.replace("/login?redirect=/support");
         return;
       }
       setUserId(session.user.id);
       setEmail(session.user.email ?? "");
-      await loadTickets(session.user.id);
+      await loadTickets(session.user.id, session.user.email ?? "");
       setLoading(false);
     })();
   }, [navigate]);
