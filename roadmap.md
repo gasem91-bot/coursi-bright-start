@@ -1,0 +1,3 @@
+- [ ] Simplify Offers with existing tutor eligibility/checkout and locked next level.
+- [ ] Hide referrals and remove student-visible launch urgency; retain referral infrastructure.
+- [ ] Verify actual Stripe price and signed-in preview for both subscription tiers.
