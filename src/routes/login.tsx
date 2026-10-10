@@ -19,6 +19,12 @@ export const Route = createFileRoute("/login")({
   }),
 });
 
+// Same-origin path from ?redirect=…, defaulting to the dashboard.
+function safeRedirect(): string {
+  const r = new URLSearchParams(window.location.search).get("redirect") ?? "";
+  return r.startsWith("/") && !r.startsWith("//") ? r : "/dashboard";
+}
+
 const inputStyle: React.CSSProperties = {
   width: "100%",
   background: "var(--bg-secondary)",
