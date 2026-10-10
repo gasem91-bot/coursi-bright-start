@@ -1,6 +1,7 @@
 - Keep finalized certificate and badge artwork centralized in `certificate-assets.ts` so previews, exports, and all placements use the same immutable managed assets.
 - Keep security-patched transitive build dependencies pinned through package-manager overrides until their parent frameworks adopt fixed minimum versions, because forced framework internals are less stable than compatible resolutions.
 - Keep course tutorial media mappings centralized in `course-tutorial-assets.ts` so privacy-safe replacements retain stable chapter assignments.- Admin access is granted through the `user_roles` table checked with `has_role()` in row-level security; admin data pages read with the signed-in user's own client so the database, not the page, enforces access.
-- Preset avatars live in `src/lib/avatars.tsx` as inline SVG keyed by `profiles.avatar_id`, so every avatar placement renders from one source.
+- Preset avatar managed image pointers map existing profile keys in `src/lib/avatars.tsx`, preserving stored selections and one shared renderer across placements.
+- All lesson images use `LessonImageViewer`, including existing HTML images; shared overlay and pinch zoom keep media behavior consistent without changing lesson data.
 - Offers reuses `getUpgradeStatus` and `createAiUpgradeCheckout`; retained referral UI stays unmounted, keeping eligibility/payment logic consistent and referrals reversible.
 - Stripe checkout fulfillment lives in `src/lib/stripe-fulfillment.server.ts` (route only verifies, emails); each session id is claimed in `stripe_processed_sessions` first so webhook retries never double-apply.

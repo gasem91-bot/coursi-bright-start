@@ -1,3 +1,5 @@
 - [ ] Simplify Offers with existing tutor eligibility/checkout and locked next level.
 - [ ] Hide referrals and remove student-visible launch urgency; retain referral infrastructure.
 - [ ] Verify actual Stripe price and signed-in preview for both subscription tiers.
+- [ ] Replace 12 avatars with supplied images; preserve keys and circle crops.
+- [ ] Add shared full-screen lesson image viewer with landscape fallback and pinch zoom; verify preview, do not publish.
