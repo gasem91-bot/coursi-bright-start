@@ -15,11 +15,19 @@ import { useServerFn } from "@tanstack/react-start";
 import { isLevelComplete } from "@/lib/certificate";
 import { triggerUpgradeNudge } from "@/lib/level-task.functions";
 import { createLevelUpgradeCheckout } from "@/lib/upgrade.functions";
+import { LessonImageViewer } from "@/components/lesson-image-viewer";
 
 
 export const Route = createFileRoute("/course/ai")({
   component: CourseAIPage,
-  head: () => ({ meta: [{ title: "كورس الذكاء الاصطناعي — COURSI" }] }),
+  head: () => ({ meta: [
+    { title: "كورس الذكاء الاصطناعي — كورسي" },
+    { name: "description", content: "دروس كورسي في الذكاء الاصطناعي وتمارين الكورس." },
+    { property: "og:title", content: "كورس الذكاء الاصطناعي — كورسي" },
+    { property: "og:description", content: "دروس كورسي في الذكاء الاصطناعي وتمارين الكورس." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
 });
 
 type Level = "beginner" | "intermediate" | "advanced";
@@ -1190,6 +1198,7 @@ function ContentTab({
         <span>🎯 مهمة عملية</span>
       </div>
 
+      <LessonImageViewer contentKey={`${chapterIndex}-${chapterTitle}`}>
       {chapterImage && (
         <figure className="chapter-visual">
           <img
@@ -1203,6 +1212,7 @@ function ContentTab({
       )}
 
       <div ref={rootRef} className="coursi-content" dir="rtl" dangerouslySetInnerHTML={{ __html: chapterHtml }} />
+      </LessonImageViewer>
 
       <button
         onClick={onGoQuiz}

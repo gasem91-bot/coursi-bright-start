@@ -4,6 +4,9 @@
   /* Brand (constant across themes) */
   --coursi-purple: #7B35FF;
   --coursi-cyan: #00D4C8;
+  --media-viewer-bg: #000000;
+  --media-viewer-fg: #ffffff;
+  --media-viewer-control-bg: rgba(0,0,0,0.75);
 
   /* Default = dark */
   --bg-primary: #060410;
@@ -110,6 +113,21 @@ html.theme-light, .theme-light {
 .theme-light :-ms-input-placeholder { color: #8E8E93; }
 ::-ms-input-placeholder { color: var(--text-muted); }
 .theme-light ::-ms-input-placeholder { color: #8E8E93; }
+
+.lesson-image-target { display: block; position: relative; cursor: zoom-in; }
+.lesson-image-expand { position: absolute; top: 8px; right: 8px; }
+.lesson-expand-button { color: var(--media-viewer-fg); background: var(--media-viewer-control-bg); }
+.lesson-expand-button:hover { color: var(--media-viewer-fg); background: var(--media-viewer-bg); }
+.lesson-viewer { position: fixed; inset: 0; width: 100vw; height: 100dvh; max-width: none; max-height: none; border: 0; padding: 0; margin: 0; overflow: hidden; background: var(--media-viewer-bg); color: var(--media-viewer-fg); }
+.lesson-viewer::backdrop { background: var(--media-viewer-bg); }
+.lesson-viewer-controls { position: absolute; z-index: 2; top: max(12px, env(safe-area-inset-top)); right: max(12px, env(safe-area-inset-right)); display: flex; gap: 8px; direction: ltr; }
+.lesson-viewer-controls button { background: var(--media-viewer-control-bg); color: var(--media-viewer-fg); }
+.lesson-viewer-controls button:hover { background: var(--media-viewer-control-bg); color: var(--media-viewer-fg); }
+.lesson-viewer-stage { position: absolute; inset: 0; width: 100vw; height: 100dvh; }
+.lesson-viewer-stage.is-rotated { inset: auto; left: 50%; top: 50%; width: 100dvh; height: 100vw; transform: translate(-50%, -50%) rotate(90deg); }
+.lesson-viewer .lesson-zoom-wrapper, .lesson-viewer .lesson-zoom-content { width: 100%; height: 100%; }
+.lesson-viewer .lesson-zoom-content { display: flex; align-items: center; justify-content: center; }
+.lesson-full-image { display: block; width: 100%; height: 100%; object-fit: contain; user-select: none; }
 
 html, body {
   font-family: 'Twemoji Country Flags', 'Cairo', 'Noto Sans Arabic', 'Noto Color Emoji', sans-serif;
