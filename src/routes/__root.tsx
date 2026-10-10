@@ -20,6 +20,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ProfileProvider } from "@/contexts/ProfileContext";
 import DeepLinkHandler from "@/components/deep-link-handler";
 import PushNotificationHandler from "@/components/push-notification-handler";
+import { isNative } from "@/lib/native";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
@@ -79,6 +80,13 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  useEffect(() => {
+    const cap = (window as unknown as { Capacitor?: { getPlatform?: () => string } }).Capacitor;
+    if (!isNative() || cap?.getPlatform?.() !== "android") return;
+    document.body.classList.add("native-android-layout");
+    return () => document.body.classList.remove("native-android-layout");
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

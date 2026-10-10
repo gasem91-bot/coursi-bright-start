@@ -27,6 +27,13 @@ const config: CapacitorConfig = {
   android: {
     allowMixedContent: false,
   },
+  plugins: {
+    StatusBar: {
+      overlaysWebView: false,
+      backgroundColor: "#0B0B10",
+      style: "DARK", // Capacitor DARK means light icons on a dark background.
+    },
+  },
   backgroundColor: "#0B0B10",
 };
 
