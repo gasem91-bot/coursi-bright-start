@@ -3,6 +3,9 @@
 
 export interface EmailPreview {
   key: string;
+  templateKey: string;
+  level?: "beginner" | "intermediate" | "advanced";
+  tier?: "course" | "course_ai";
   label: string;
   to: string;
   from: string;
@@ -34,7 +37,7 @@ export async function buildEmailPreviews(): Promise<EmailPreview[]> {
     dateText,
   };
 
-  return [
+  const samples = [
     {
       key: "welcome",
       label: "بريد الترحيب / تأكيد الدفع",
@@ -130,4 +133,29 @@ export async function buildEmailPreviews(): Promise<EmailPreview[]> {
       html: buildReferralInviteHtml({ userName: "قاسم", referralLink: "https://ai.portal.coursi.ai/?ref=SAMPLE123" }),
     },
   ];
+  const levels = ["beginner", "intermediate", "advanced"] as const;
+  return samples.filter((sample) => !sample.key.startsWith("certificate-")).flatMap((sample): EmailPreview[] => {
+    const base = { ...sample, templateKey: sample.key };
+    if (!["welcome", "level-upgrade", "certificate", "ai-upgrade", "upgrade-nudge"].includes(sample.key)) return [base];
+    const sampleLevels = sample.key === "upgrade-nudge" ? levels.slice(0, 2) : levels;
+    return sampleLevels.flatMap((level) => {
+      const tiers = sample.key === "welcome" || sample.key === "level-upgrade"
+        ? ["course", "course_ai"] as const : [undefined];
+      return tiers.map((tier): EmailPreview => {
+        let html = sample.html;
+        if (sample.key === "welcome") html = buildWelcomeHtml(level, tier ?? "course", "https://ai.portal.coursi.ai/login", "student@example.com");
+        if (sample.key === "level-upgrade") html = buildLevelUpgradeHtml(level, tier ?? "course");
+        if (sample.key === "ai-upgrade") html = buildAiUpgradeHtml(undefined, level);
+        if (sample.key === "upgrade-nudge") html = buildUpgradeNudgeHtml({ userName: "قاسم", currentLevel: level, remainingChapters: 2 });
+        if (sample.key === "certificate") html = buildCertificateHtml({
+          userName: "قاسم الرجال", courseName: courseName(level), levelLabel: LEVEL_LABEL[level],
+          certId: certificateId("00000000-0000-4000-8000-000000000000", level), dateText,
+          link: "https://ai.portal.coursi.ai/achievements", level,
+        });
+        return { ...base, key: `${sample.key}:${level}${tier ? `:${tier}` : ""}`, level, tier, html,
+          label: sample.key === "certificate" ? "شهادة الإتمام" : sample.label,
+          subject: sample.key === "certificate" ? `مبروك! 🏆 شهادة إتمام ${LEVEL_LABEL[level]} جاهزة` : sample.subject };
+      });
+    });
+  });
 }
