@@ -56,11 +56,11 @@ export function buildWelcomeHtml(
   <a href="${loginLink}" class="btn">ادخل لكورسك الآن ←</a>
   <p class="cta-note">
     الرابط صالح لمدة ٤٨ ساعة · لا تحتاج كلمة مرور في المرة الأولى<br>
-    <span style="color:#A2A2B0;">إذا لم يفتح الرابط، انسخه وضعه في متصفحك</span>
+    <span style="color:#B8B8C8;">إذا لم يفتح الرابط، انسخه وضعه في متصفحك</span>
   </p>
   <p class="cta-note" dir="rtl" style="margin-top:14px;line-height:2;">
     <a href="https://ai.portal.coursi.ai/login" style="color:#7FE3E3;font-weight:700;">الذهاب إلى صفحة الدخول ←</a><br>
-    <span style="color:#A2A2B0;">بريد الدخول:</span> <strong style="unicode-bidi:plaintext;color:#FFFFFF;">${userEmail ?? "بريدك الإلكتروني المستخدم في الدفع"}</strong><br>
+    <span style="color:#B8B8C8;">بريد الدخول:</span> <strong style="unicode-bidi:plaintext;color:#FFFFFF;">${userEmail ?? "بريدك الإلكتروني المستخدم في الدفع"}</strong><br>
     <a href="https://ai.portal.coursi.ai/login?reset=1${userEmail ? `&email=${encodeURIComponent(userEmail)}` : ""}" style="color:#7FE3E3;">تعيين كلمة مرور ←</a>
   </p>
 </div>
@@ -70,7 +70,7 @@ export function buildWelcomeHtml(
     اسم المستخدم (بريد الدخول):<br>
     <strong style="unicode-bidi:plaintext;color:#FFFFFF;">${userEmail ?? "بريدك الإلكتروني المستخدم في الدفع"}</strong>
   </div>
-  <div style="direction:rtl;text-align:right;margin-top:12px;line-height:2;color:#A2A2B0;">
+  <div style="direction:rtl;text-align:right;margin-top:12px;line-height:2;color:#B8B8C8;">
     حسابك محمي بكلمة مرور خاصة بك. تقدر تدخل مباشرة بالرابط أعلاه بدون كلمة مرور،
     وإذا رغبت بالدخول بكلمة مرور أو نسيتها، اضغط الزر التالي لتعيين كلمة مرور جديدة
   </div>

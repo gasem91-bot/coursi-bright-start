@@ -1,3 +1,4 @@
+import { EMAIL_BADGE_URL } from "./certificate-assets";
 // Shared branded email shell used by every كورسي email.
 // (welcome, certificate, support ticket confirmation & notification).
 
@@ -19,7 +20,7 @@ body{font-family:'Noto Sans Arabic',Arial,sans-serif;background:#0A0A0A;color:#F
 .box{max-width:600px;margin:0 auto;background:#0D0D0D;border-radius:24px;overflow:hidden;border:1px solid #232323;direction:rtl;text-align:right;}
 .hdr{background:linear-gradient(160deg,#0D0520,#110A24,#071520);padding:36px 40px 28px;text-align:center;border-bottom:1px solid rgba(146,86,214,0.28);}
 .logo-img{display:block;margin:0 auto;width:170px;max-width:70%;height:auto;border:0;outline:none;text-decoration:none;}
-.hdr-sub{font-size:12px;color:#9A9AA8;font-weight:600;letter-spacing:3px;margin-top:10px;}
+.hdr-sub{font-size:12px;color:#B8B8C8;font-weight:600;letter-spacing:3px;margin-top:10px;}
 .hero{padding:36px 40px 30px;text-align:center;direction:rtl;border-bottom:1px solid #1C1C1C;}
 .badge{display:inline-block;background:rgba(146,86,214,0.14);border:1px solid rgba(146,86,214,0.42);color:#C4A6EE;font-size:12px;font-weight:700;padding:6px 18px;border-radius:20px;margin-bottom:18px;}
 .badge-cyan{display:inline-block;background:rgba(96,214,214,0.14);border:1px solid rgba(96,214,214,0.42);color:#7FE3E3;font-size:12px;font-weight:700;padding:6px 18px;border-radius:20px;margin-bottom:18px;}
@@ -33,7 +34,7 @@ body{font-family:'Noto Sans Arabic',Arial,sans-serif;background:#0A0A0A;color:#F
 .card-label{font-size:12px;font-weight:800;color:#B98FEA;letter-spacing:2px;margin-bottom:12px;}
 .card-name{font-size:19px;font-weight:900;color:#FFFFFF;margin-bottom:10px;}
 .card-level{display:inline-block;background:rgba(93,226,176,0.14);border:1px solid rgba(93,226,176,0.42);color:#7CEBC0;font-size:12px;font-weight:800;padding:4px 14px;border-radius:20px;margin-bottom:14px;}
-.card-meta{font-size:13px;color:#B4B4C0;font-weight:600;padding-bottom:14px;border-bottom:1px solid #262626;margin-bottom:14px;}
+.card-meta{font-size:13px;color:#B8B8C8;font-weight:600;padding-bottom:14px;border-bottom:1px solid #262626;margin-bottom:14px;}
 .tier-box{background:#161616;border-radius:10px;padding:12px 16px;font-size:14px;color:#D2D2DC;font-weight:500;line-height:1.9;direction:rtl;text-align:right;}
 .certid{background:#161616;border-radius:10px;padding:12px 16px;font-size:13px;color:#C9C9D4;font-weight:600;letter-spacing:1px;}
 .row{font-size:14px;color:#C4C4D0;font-weight:600;padding:9px 0;border-bottom:1px solid #262626;direction:rtl;text-align:right;unicode-bidi:plaintext;}
@@ -43,16 +44,16 @@ body{font-family:'Noto Sans Arabic',Arial,sans-serif;background:#0A0A0A;color:#F
 .tid{display:inline-block;background:#161616;border-radius:10px;padding:10px 16px;font-size:14px;color:#7FE3E3;letter-spacing:1px;font-weight:800;unicode-bidi:plaintext;}
 .cta{padding:28px 40px;text-align:center;border-top:1px solid #1C1C1C;direction:rtl;}
 .btn{display:inline-block;background:linear-gradient(135deg,#8B49CE,#54D2D2);color:#fff!important;text-decoration:none;font-size:16px;font-weight:900;padding:16px 52px;border-radius:50px;box-shadow:0 8px 32px rgba(139,73,206,0.4);}
-.cta-note{margin-top:14px;font-size:13px;color:#A2A2B0;font-weight:500;line-height:1.85;direction:rtl;text-align:center;}
+.cta-note{margin-top:14px;font-size:13px;color:#B8B8C8;font-weight:500;line-height:1.85;direction:rtl;text-align:center;}
 .footer{background:#080808;border-top:1px solid #1C1C1C;padding:26px 32px;text-align:center;direction:rtl;}
 .footer-logo{display:block;margin:0 auto 8px;width:96px;max-width:45%;height:auto;border:0;outline:none;}
-.footer-tag{font-size:12px;color:#8F8F9C;font-weight:600;font-style:italic;margin-bottom:14px;}
+.footer-tag{font-size:12px;color:#B8B8C8;font-weight:600;font-style:italic;margin-bottom:14px;}
 .srow{margin-bottom:14px;}
 .sbtn{display:inline-block;border-radius:8px;background:#161616;border:1px solid #2A2A2A;margin:0 3px;text-decoration:none;font-size:11px;font-weight:700;padding:6px 11px;}
 .fdiv{width:32px;height:1px;background:linear-gradient(90deg,#8B49CE,#54D2D2);margin:14px auto;}
 .flinks{margin-bottom:12px;}
-.flink{color:#9A9AA8;text-decoration:none;font-size:12px;font-weight:600;margin:0 6px;}
-.fcopy{font-size:11px;color:#7C7C88;line-height:1.85;}
+.flink{color:#C4A6EE;text-decoration:none;font-size:12px;font-weight:600;margin:0 6px;}
+.fcopy{font-size:11px;color:#B8B8C8;line-height:1.85;}
 `;
 
 export function emailHeader(subtitle = `${BRAND_AR} · coursi.ai`): string {
@@ -108,4 +109,11 @@ ${emailFooter(params.footerReason)}
 </div></div>
 </body>
 </html>`;
+}
+
+// Centered glossy level medallion for the top of a congratulation hero.
+export function emailBadge(level: string, alt: string): string {
+  const src = (EMAIL_BADGE_URL as Record<string, string>)[level];
+  if (!src) return "";
+  return `<img src="${src}" alt="${alt}" width="96" height="96" style="display:block;margin:0 auto 16px;width:96px;height:96px;border:0;outline:none;text-decoration:none;" />`;
 }

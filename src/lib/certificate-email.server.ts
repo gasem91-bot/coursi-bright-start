@@ -1,6 +1,6 @@
 // Branded completion-certificate email — uses the shared كورسي email shell.
 
-import { emailShell } from "./email-shell.server";
+import { emailBadge, emailShell } from "./email-shell.server";
 
 export function buildCertificateHtml(params: {
   userName: string;
@@ -9,9 +9,11 @@ export function buildCertificateHtml(params: {
   certId: string;
   dateText: string;
   link: string;
+  level?: string;
 }): string {
-  const { userName, courseName, levelLabel, certId, dateText, link } = params;
+  const { userName, courseName, levelLabel, certId, dateText, link, level } = params;
   const body = `<div class="hero">
+  ${level ? emailBadge(level, `شارة ${levelLabel}`) : ""}
   <div class="badge">🏆 إنجاز جديد</div>
   <h1>مبروك ${userName}!<br><span>أكملت ${levelLabel}</span></h1>
   <div class="hero-sub">
@@ -30,7 +32,7 @@ export function buildCertificateHtml(params: {
   <a href="${link}" class="btn">حمّل شهادتك ←</a>
   <p class="cta-note">
     افتح صفحة الإنجازات في البوابة وحمّل الشهادة بصيغة PDF أو صورة<br>
-    <span style="color:#A2A2B0;">إذا لم يفتح الرابط، انسخه وضعه في متصفحك</span>
+    <span style="color:#B8B8C8;">إذا لم يفتح الرابط، انسخه وضعه في متصفحك</span>
   </p>
 </div>`;
   return emailShell({

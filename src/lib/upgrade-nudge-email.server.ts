@@ -53,7 +53,7 @@ export function buildUpgradeNudgeHtml(params: {
   <a href="${courseLink}" class="btn">افتح ${nextLevelName} الآن — $10 ←</a>
   <p class="cta-note">
     تقدر تكمل ${levelName} الأول، العرض يبقى متاحاً لك من صفحة الكورس<br>
-    <span style="color:#A2A2B0;">إذا لم يفتح الرابط، انسخه وضعه في متصفحك: ${courseLink}</span>
+    <span style="color:#B8B8C8;">إذا لم يفتح الرابط، انسخه وضعه في متصفحك: ${courseLink}</span>
   </p>
 </div>`;
 

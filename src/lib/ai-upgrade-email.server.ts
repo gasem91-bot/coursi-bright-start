@@ -19,7 +19,7 @@ export function buildAiUpgradeHtml(botLink: string = AI_TUTOR_BOT_LINK): string 
       افتح مساعد كورسي الذكي
     </a>
   </p>
-  <p style="margin:0;font-size:13px;line-height:1.9;color:#A2A2B0">
+  <p style="margin:0;font-size:13px;line-height:1.9;color:#B8B8C8">
     أو انسخ هذا الرابط: <span style="color:#7FE3E3;unicode-bidi:plaintext">${botLink}</span>
   </p>
 </div>`;
