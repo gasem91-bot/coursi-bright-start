@@ -50,6 +50,7 @@ export async function sendCertificateEmailFor(userId: string, level: Level): Pro
     certId: cert.certificate_id,
     dateText: arabicDate(new Date(cert.issued_at)),
     link: "https://ai.portal.coursi.ai/achievements",
+    level,
   });
 
   const res = await fetch("https://api.resend.com/emails", {

@@ -1,4 +1,4 @@
-import { emailShell } from "./email-shell.server";
+import { emailBadge, emailShell } from "./email-shell.server";
 
 export const LEVEL_UPGRADE_SUBJECT = "تم فتح مستواك الجديد في كورسي 🎓";
 
@@ -17,6 +17,7 @@ export function buildLevelUpgradeHtml(toLevel: string, tier: string): string {
 
   const body = `
 <div style="padding:8px 4px;text-align:right">
+  ${emailBadge(toLevel, `شارة ${levelName}`)}
   <h2 style="margin:0 0 14px;font-size:22px;color:#FFFFFF">مبروك، تم فتح ${levelName}</h2>
   <p style="margin:0 0 14px;font-size:15px;line-height:1.9;color:#D2D2DC">
     تم استلام دفعتك بنجاح وفُتح لك ${levelName} في مسار الذكاء الاصطناعي

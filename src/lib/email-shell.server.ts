@@ -1,3 +1,4 @@
+import { EMAIL_BADGE_URL } from "./certificate-assets";
 // Shared branded email shell used by every كورسي email.
 // (welcome, certificate, support ticket confirmation & notification).
 
@@ -111,8 +112,7 @@ ${emailFooter(params.footerReason)}
 }
 
 // Centered glossy level medallion for the top of a congratulation hero.
-export async function emailBadge(level: string, alt: string): Promise<string> {
-  const { EMAIL_BADGE_URL } = await import("./certificate-assets");
+export function emailBadge(level: string, alt: string): string {
   const src = (EMAIL_BADGE_URL as Record<string, string>)[level];
   if (!src) return "";
   return `<img src="${src}" alt="${alt}" width="96" height="96" style="display:block;margin:0 auto 16px;width:96px;height:96px;border:0;outline:none;text-decoration:none;" />`;
