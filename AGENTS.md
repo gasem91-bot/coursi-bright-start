@@ -6,3 +6,4 @@
 - Offers reuses `getUpgradeStatus` and `createAiUpgradeCheckout`; retained referral UI stays unmounted, keeping eligibility/payment logic consistent and referrals reversible.
 - Stripe checkout fulfillment lives in `src/lib/stripe-fulfillment.server.ts` (route only verifies, emails); each session id is claimed in `stripe_processed_sessions` first so webhook retries never double-apply.
 - Android status-bar separation uses StatusBar configuration plus a top-only native inset on edge-to-edge Android; consume that inset before the WebView and gate CSS safe-area handling to Android so browser layouts and bottom spacing remain unchanged.
+- Email congratulations use the shared shell's centred hero/CTA styles; admin samples carry template/level/tier metadata so previews and test sends use the same builders, one selected variant per template.

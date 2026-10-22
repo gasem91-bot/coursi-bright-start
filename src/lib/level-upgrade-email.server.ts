@@ -15,22 +15,16 @@ export function buildLevelUpgradeHtml(toLevel: string, tier: string): string {
       ? "اشتراكك يشمل مساعد كورسي الذكي، وهو متاح معك في المستوى الجديد أيضاً"
       : "تستطيع في أي وقت إضافة مساعد كورسي الذكي إلى اشتراكك من صفحة الترقية";
 
-  const body = `
-<div style="padding:8px 4px;text-align:right">
+  const body = `<div class="hero">
   ${emailBadge(toLevel, `شارة ${levelName}`)}
-  <h2 style="margin:0 0 14px;font-size:22px;color:#FFFFFF">مبروك، تم فتح ${levelName}</h2>
-  <p style="margin:0 0 14px;font-size:15px;line-height:1.9;color:#D2D2DC">
-    تم استلام دفعتك بنجاح وفُتح لك ${levelName} في مسار الذكاء الاصطناعي
-  </p>
-  <p style="margin:0 0 18px;font-size:15px;line-height:1.9;color:#D2D2DC">${tierLine}</p>
-  <p style="margin:0 0 18px;text-align:right">
-    <a href="https://ai.portal.coursi.ai/dashboard" style="display:inline-block;background:#7B35FF;color:#ffffff;text-decoration:none;font-weight:700;font-size:16px;padding:14px 30px;border-radius:50px">
-      ابدأ المستوى الجديد
-    </a>
-  </p>
-  <p style="margin:0;font-size:13px;line-height:1.9;color:#B8B8C8">
-    أو انسخ هذا الرابط: <span style="color:#7FE3E3;unicode-bidi:plaintext">https://ai.portal.coursi.ai/dashboard</span>
-  </p>
+  <h1>مبروك، تم فتح <span>${levelName}</span></h1>
+  <div class="hero-sub">
+    <p>تم استلام دفعتك بنجاح وفُتح لك ${levelName} في مسار الذكاء الاصطناعي<br>${tierLine}</p>
+  </div>
+</div>
+<div class="cta">
+  <a href="https://ai.portal.coursi.ai/dashboard" class="btn">ابدأ المستوى الجديد</a>
+  <p class="cta-note">أو انسخ هذا الرابط:<br><a href="https://ai.portal.coursi.ai/dashboard" class="flink" dir="ltr">https://ai.portal.coursi.ai/dashboard</a></p>
 </div>`;
   return emailShell({
     body,

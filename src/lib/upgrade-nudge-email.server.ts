@@ -4,7 +4,7 @@
 // before they finish. Sent once per level by triggerUpgradeNudge
 // (level-task.functions.ts) when the student passes the level's last unit quiz.
 
-import { emailShell } from "./email-shell.server";
+import { emailBadge, emailShell } from "./email-shell.server";
 
 export const UPGRADE_NUDGE_SUBJECT = "أنت قريب من إنهاء مستواك 🔥 افتح المستوى التالي بـ $10 فقط";
 
@@ -32,6 +32,7 @@ export function buildUpgradeNudgeHtml(params: {
   const greeting = userName ? `أنت رائع يا ${userName}!` : "أنت رائع!";
 
   const body = `<div class="hero">
+  ${emailBadge(currentLevel, `شارة ${levelName}`)}
   <div class="badge">🔥 على بعد خطوات قليلة</div>
   <h1>${greeting}<br><span>${remainingChapters > 0 ? `باقي ${remainingChapters} ${remainingChapters === 1 ? "فصل" : "فصول"} فقط على إنهاء ${levelName}` : `باقي خطوة أخيرة على إنهاء ${levelName}: الاختبار النهائي والمهمة العملية`}</span></h1>
   <div class="hero-sub">

@@ -1,6 +1,6 @@
 // Branded welcome / purchase-confirmation email — uses the shared كورسي email shell.
 
-import { emailShell } from "./email-shell.server";
+import { emailBadge, emailShell } from "./email-shell.server";
 import { AI_TUTOR_BOT_LINK } from "./ai-upgrade-email.server";
 
 export const WELCOME_SUBJECT = "مرحباً بك في كورسي! 🎉 كورسك جاهز";
@@ -38,6 +38,7 @@ export function buildWelcomeHtml(
       : "<strong>باقة الكورس</strong> — وصول كامل لجميع فصول مستواك";
 
   const body = `<div class="hero">
+  ${emailBadge(level, `شارة المستوى ${levelArabic}`)}
   <div class="badge">✦ رحلتك المهنية بدأت للتو</div>
   <h1>أهلاً بك في مجتمع<br><span>المتعلمين العرب الطموحين</span></h1>
   <div class="hero-sub">

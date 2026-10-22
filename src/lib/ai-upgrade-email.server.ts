@@ -1,27 +1,21 @@
-import { emailShell } from "./email-shell.server";
+import { emailBadge, emailShell } from "./email-shell.server";
 
 export const AI_UPGRADE_SUBJECT = "تم تفعيل مساعد كورسي الذكي 🤖 رابط الدخول بالداخل";
 
 export const AI_TUTOR_BOT_LINK = "https://t.me/CoursiAI_bot";
 
-export function buildAiUpgradeHtml(botLink: string = AI_TUTOR_BOT_LINK): string {
-  const body = `
-<div style="padding:8px 4px;text-align:right">
-  <h2 style="margin:0 0 14px;font-size:22px;color:#FFFFFF">تم تفعيل مساعد الذكاء الاصطناعي</h2>
-  <p style="margin:0 0 14px;font-size:15px;line-height:1.9;color:#D2D2DC">
-    شكراً لك، تمت إضافة مساعد كورسي الذكي إلى حسابك بنجاح
-  </p>
-  <p style="margin:0 0 18px;font-size:15px;line-height:1.9;color:#D2D2DC">
-    اضغط الزر أدناه لبدء المحادثة مع المساعد على تيليجرام، ثم أرسل بريدك الإلكتروني نفسه المسجل لدينا ليتعرّف عليك
-  </p>
-  <p style="margin:0 0 18px;text-align:right">
-    <a href="${botLink}" style="display:inline-block;background:#229ED9;color:#ffffff;text-decoration:none;font-weight:700;font-size:16px;padding:14px 30px;border-radius:50px">
-      افتح مساعد كورسي الذكي
-    </a>
-  </p>
-  <p style="margin:0;font-size:13px;line-height:1.9;color:#B8B8C8">
-    أو انسخ هذا الرابط: <span style="color:#7FE3E3;unicode-bidi:plaintext">${botLink}</span>
-  </p>
+export function buildAiUpgradeHtml(botLink: string = AI_TUTOR_BOT_LINK, level: string = "beginner"): string {
+  const body = `<div class="hero">
+  ${emailBadge(level, "شارة مستواك في كورسي")}
+  <h1>تم تفعيل <span>مساعد الذكاء الاصطناعي</span></h1>
+  <div class="hero-sub">
+    <p>شكراً لك، تمت إضافة مساعد كورسي الذكي إلى حسابك بنجاح<br>
+    اضغط الزر أدناه لبدء المحادثة مع المساعد على تيليجرام، ثم أرسل بريدك الإلكتروني نفسه المسجل لدينا ليتعرّف عليك</p>
+  </div>
+</div>
+<div class="cta">
+  <a href="${botLink}" class="btn">افتح مساعد كورسي الذكي</a>
+  <p class="cta-note">أو انسخ هذا الرابط:<br><a href="${botLink}" class="flink" dir="ltr">${botLink}</a></p>
 </div>`;
   return emailShell({
     body,

@@ -34,16 +34,7 @@ export const Route = createFileRoute("/admin/emails")({
 
 const font = "Cairo, 'Noto Sans Arabic', sans-serif";
 
-const EMAIL_TYPES: { key: string; label: string }[] = [
-  { key: "welcome", label: "بريد الترحيب / تأكيد الدفع" },
-  { key: "ticket-user", label: "تأكيد تذكرة الدعم (للمستخدم)" },
-  { key: "ticket-support", label: "إشعار تذكرة جديدة (لفريق الدعم)" },
-  { key: "reset", label: "إعادة تعيين كلمة المرور" },
-  { key: "magiclink", label: "رابط الدخول السريع" },
-  { key: "certificate", label: "شهادة الإتمام" },
-  { key: "level-upgrade", label: "فتح مستوى جديد (دفعة الترقية)" },
-  { key: "ai-upgrade", label: "تفعيل مساعد الذكاء الاصطناعي" },
-];
+const LEVEL_LABELS = { beginner: "مبتدئ", intermediate: "متوسط", advanced: "متقدم" };
 
 type ItemStatus = { state: "sending" } | { state: "ok"; to: string } | { state: "error"; error: string };
 type Access = "loading" | "signed_out" | "forbidden" | "admin" | "error";
@@ -69,7 +60,33 @@ function AdminEmailsPage() {
   const [previews, setPreviews] = useState<EmailPreview[] | null>(null);
   const [previewError, setPreviewError] = useState("");
   const [previewLoading, setPreviewLoading] = useState(false);
-  const [active, setActive] = useState(0);
+  const [active, setActive] = useState("welcome");
+  const [variants, setVariants] = useState<Record<string, { level: string; tier: string }>>({});
+  const groups = previews?.filter((preview, index, all) => all.findIndex((item) => item.templateKey === preview.templateKey) === index) ?? [];
+  const selected = (templateKey: string) => {
+    const items = previews?.filter((item) => item.templateKey === templateKey) ?? [];
+    const choice = variants[templateKey];
+    return items.find((item) => (!item.level || item.level === (choice?.level ?? "beginner")) &&
+      (!item.tier || item.tier === (choice?.tier ?? "course"))) ?? items[0];
+  };
+  const choose = (templateKey: string, field: "level" | "tier", value: string) => {
+    setVariants((old) => ({ ...old, [templateKey]: { ...(old[templateKey] ?? { level: "beginner", tier: "course" }), [field]: value } }));
+    setActive(templateKey);
+    setShowPreview(true);
+  };
+
+  useEffect(() => {
+    if (access !== "admin") return;
+    let cancelled = false;
+    setPreviewLoading(true);
+    void fetchPreviews().then((res) => {
+      if (cancelled) return;
+      if (res.ok) setPreviews(res.previews);
+      else setPreviewError(res.message ?? "تعذّر تحميل المعاينات");
+    }).catch((err) => { if (!cancelled) setPreviewError(err instanceof Error ? err.message : String(err)); })
+      .finally(() => { if (!cancelled) setPreviewLoading(false); });
+    return () => { cancelled = true; };
+  }, [access, fetchPreviews]);
 
   useEffect(() => {
     let cancelled = false;
@@ -98,12 +115,12 @@ function AdminEmailsPage() {
   }, [checkAdmin]);
 
   const handleSend = async (key?: string) => {
-    const keys = key ? [key] : EMAIL_TYPES.map((e) => e.key);
+    const keys = key ? [key] : groups.flatMap((group) => { const item = selected(group.templateKey); return item ? [item.key] : []; });
     setBusy(true);
     setGlobalMsg("");
     setStatus((s) => ({ ...s, ...Object.fromEntries(keys.map((k) => [k, { state: "sending" } as ItemStatus])) }));
     try {
-      const res = await sendEmails({ data: { key } });
+      const res = await sendEmails({ data: { keys } });
       if (!res || !res.ok) {
         const msg = res && !res.ok ? res.message : "لم يصل أي رد من الخادم";
         setStatus((s) => ({ ...s, ...Object.fromEntries(keys.map((k) => [k, { state: "error", error: msg } as ItemStatus])) }));
@@ -149,7 +166,7 @@ function AdminEmailsPage() {
     }
   };
 
-  const current = previews?.[Math.min(active, previews.length - 1)];
+  const current = selected(active);
 
   return (
     <div style={{ minHeight: "100vh", background: "var(--bg-primary)", fontFamily: font }} dir="rtl">
@@ -192,7 +209,7 @@ function AdminEmailsPage() {
         {access === "admin" && (
           <>
             <div style={{ marginBottom: 18 }}>
-              <Button size="lg" disabled={busy} onClick={() => void handleSend()}>
+              <Button size="lg" disabled={busy || !groups.length} onClick={() => void handleSend()}>
                 {busy ? "جاري الإرسال…" : "أرسل كل الرسائل التجريبية لبريدي"}
               </Button>
               {globalMsg && (
@@ -201,17 +218,38 @@ function AdminEmailsPage() {
             </div>
 
             <div style={{ display: "grid", gap: 10, marginBottom: 28 }}>
-              {EMAIL_TYPES.map((e) => {
-                const st = status[e.key];
+              {groups.map((e) => {
+                const item = selected(e.templateKey);
+                if (!item) return null;
+                const st = status[item.key];
+                const choice = variants[e.templateKey];
+                const levels = [...new Set(previews?.filter((p) => p.templateKey === e.templateKey).flatMap((p) => p.level ? [p.level] : []) ?? [])];
                 return (
-                  <div key={e.key} style={{ ...box, padding: 14 }}>
+                  <div key={e.templateKey} style={{ ...box, padding: 14 }}>
                     <div
                       style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}
                     >
                       <b style={{ color: "var(--text-primary)", fontSize: 15 }}>{e.label}</b>
-                      <Button variant="outline" disabled={busy} onClick={() => void handleSend(e.key)}>
+                      <Button variant="outline" disabled={busy} onClick={() => void handleSend(item.key)}>
                         {st?.state === "sending" ? "جاري الإرسال…" : "أرسل لبريدي"}
                       </Button>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-3 mt-3">
+                      {levels.length > 0 && <label className="flex items-center gap-2 text-foreground">
+                        المستوى
+                        <select aria-label={`المستوى — ${e.label}`} value={choice?.level ?? "beginner"}
+                          onChange={(event) => choose(e.templateKey, "level", event.target.value)}
+                          className="min-h-12 rounded-md border border-input bg-background text-foreground px-3">
+                          {levels.map((level) => <option key={level} value={level}>{LEVEL_LABELS[level]}</option>)}
+                        </select>
+                      </label>}
+                      {e.tier && <div role="group" aria-label={`المساعد — ${e.label}`} className="flex gap-2">
+                        <Button variant={(choice?.tier ?? "course") === "course" ? "default" : "outline"}
+                          aria-pressed={(choice?.tier ?? "course") === "course"} onClick={() => choose(e.templateKey, "tier", "course")}>بدون مساعد</Button>
+                        <Button variant={choice?.tier === "course_ai" ? "default" : "outline"}
+                          aria-pressed={choice?.tier === "course_ai"} onClick={() => choose(e.templateKey, "tier", "course_ai")}>مع المساعد</Button>
+                      </div>}
+                      <Button variant="ghost" onClick={() => { setActive(e.templateKey); setShowPreview(true); }}>معاينة</Button>
                     </div>
                     {st?.state === "ok" && (
                       <p style={{ margin: "8px 0 0", fontSize: 13, color: "#22c55e" }}>✓ تم الإرسال إلى {st.to}</p>
@@ -227,20 +265,11 @@ function AdminEmailsPage() {
             </div>
 
             <div style={{ ...box, padding: 14 }}>
-              <button
-                onClick={() => void togglePreview()}
-                style={{
-                  fontFamily: font,
-                  background: "transparent",
-                  border: "none",
-                  cursor: "pointer",
-                  color: "var(--text-primary)",
-                  fontWeight: 700,
-                  fontSize: 14,
-                }}
-              >
-                {showPreview ? "▾ إخفاء معاينة القوالب" : "▸ عرض معاينة القوالب (اختياري)"}
-              </button>
+              <Button variant="ghost" onClick={() => void togglePreview()}>
+                {showPreview ? "إخفاء معاينة القوالب" : "عرض معاينة القوالب"}
+              </Button>
+              {previewLoading && <p className="text-muted-foreground">جاري تحميل المعاينات…</p>}
+              {previewError && <p className="text-destructive">{previewError}</p>}
               {showPreview && (
                 <div style={{ marginTop: 14 }}>
                   {previewLoading && <p style={{ color: "var(--text-secondary)" }}>جاري تحميل المعاينات…</p>}
@@ -249,29 +278,10 @@ function AdminEmailsPage() {
                   )}
                   {previews && current && (
                     <>
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
-                        {previews.map((p, i) => (
-                          <button
-                            key={p.key}
-                            onClick={() => setActive(i)}
-                            style={{
-                              fontFamily: font,
-                              cursor: "pointer",
-                              fontSize: 13,
-                              fontWeight: 700,
-                              padding: "8px 14px",
-                              borderRadius: 999,
-                              border:
-                                i === active
-                                  ? "1px solid rgba(123,53,192,0.6)"
-                                  : "1px solid var(--border-color, rgba(128,128,128,0.25))",
-                              background: i === active ? "rgba(123,53,192,0.15)" : "transparent",
-                              color: "var(--text-primary)",
-                            }}
-                          >
-                            {p.label}
-                          </button>
-                        ))}
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {groups.map((group) => <Button key={group.templateKey}
+                          variant={group.templateKey === active ? "default" : "outline"}
+                          onClick={() => setActive(group.templateKey)}>{group.label}</Button>)}
                       </div>
                       <p style={{ fontSize: 13, color: "var(--text-secondary)", margin: "0 0 10px" }}>
                         <b style={{ color: "var(--text-primary)" }}>الموضوع:</b> {current.subject} ·{" "}
@@ -282,7 +292,7 @@ function AdminEmailsPage() {
                         title={`معاينة ${current.label}`}
                         srcDoc={current.html}
                         sandbox=""
-                        style={{ width: "100%", height: 900, border: "none", borderRadius: 12, background: "#0A0A0A" }}
+                        style={{ width: "100%", height: 900, border: "none", borderRadius: 12, background: "var(--bg-primary)" }}
                       />
                     </>
                   )}

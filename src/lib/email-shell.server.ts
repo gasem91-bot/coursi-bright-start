@@ -24,8 +24,8 @@ body{font-family:'Noto Sans Arabic',Arial,sans-serif;background:#0A0A0A;color:#F
 .hero{padding:36px 40px 30px;text-align:center;direction:rtl;border-bottom:1px solid #1C1C1C;}
 .badge{display:inline-block;background:rgba(146,86,214,0.14);border:1px solid rgba(146,86,214,0.42);color:#C4A6EE;font-size:12px;font-weight:700;padding:6px 18px;border-radius:20px;margin-bottom:18px;}
 .badge-cyan{display:inline-block;background:rgba(96,214,214,0.14);border:1px solid rgba(96,214,214,0.42);color:#7FE3E3;font-size:12px;font-weight:700;padding:6px 18px;border-radius:20px;margin-bottom:18px;}
-.hero h1{font-size:25px;font-weight:900;color:#FFFFFF;line-height:1.45;margin-bottom:15px;direction:rtl;text-align:center;}
-.hero h1 span{color:#C4A6EE;}
+.hero h1,.hero h2{font-size:25px;font-weight:900;color:#FFFFFF;line-height:1.45;margin-bottom:15px;direction:rtl;text-align:center;}
+.hero h1 span,.hero h2 span{color:#C4A6EE;}
 .hero p{font-size:15px;color:#C9C9D4;font-weight:500;line-height:1.95;direction:rtl;text-align:center;}
 .hero-sub{background:rgba(96,214,214,0.07);border:1px solid rgba(96,214,214,0.2);border-radius:14px;padding:16px 20px;direction:rtl;text-align:center;}
 .hero-sub p{font-size:15px;color:#D2D2DC;font-weight:500;line-height:1.95;}
@@ -44,6 +44,10 @@ body{font-family:'Noto Sans Arabic',Arial,sans-serif;background:#0A0A0A;color:#F
 .tid{display:inline-block;background:#161616;border-radius:10px;padding:10px 16px;font-size:14px;color:#7FE3E3;letter-spacing:1px;font-weight:800;unicode-bidi:plaintext;}
 .cta{padding:28px 40px;text-align:center;border-top:1px solid #1C1C1C;direction:rtl;}
 .btn{display:inline-block;background:linear-gradient(135deg,#8B49CE,#54D2D2);color:#fff!important;text-decoration:none;font-size:16px;font-weight:900;padding:16px 52px;border-radius:50px;box-shadow:0 8px 32px rgba(139,73,206,0.4);}
+.hero,.hero-sub,.cta{direction:rtl;text-align:center;}
+.hero p,.hero h1,.hero h2,.hero-sub p,.cta p,.cta-note{text-align:center;}
+.hero a,.cta a{overflow-wrap:anywhere;}
+.level-medallion{display:block;margin:0 auto 16px;width:96px;height:96px;border:0;outline:none;text-decoration:none;}
 .cta-note{margin-top:14px;font-size:13px;color:#B8B8C8;font-weight:500;line-height:1.85;direction:rtl;text-align:center;}
 .footer{background:#080808;border-top:1px solid #1C1C1C;padding:26px 32px;text-align:center;direction:rtl;}
 .footer-logo{display:block;margin:0 auto 8px;width:96px;max-width:45%;height:auto;border:0;outline:none;}
@@ -115,5 +119,5 @@ ${emailFooter(params.footerReason)}
 export function emailBadge(level: string, alt: string): string {
   const src = (EMAIL_BADGE_URL as Record<string, string>)[level];
   if (!src) return "";
-  return `<img src="${src}" alt="${alt}" width="96" height="96" style="display:block;margin:0 auto 16px;width:96px;height:96px;border:0;outline:none;text-decoration:none;" />`;
+  return `<img src="${src}" alt="${alt}" width="96" height="96" class="level-medallion" style="display:block;margin:0 auto 16px;width:96px;height:96px;border:0;outline:none;text-decoration:none;" />`;
 }

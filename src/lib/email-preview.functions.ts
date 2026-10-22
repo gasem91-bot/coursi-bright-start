@@ -59,7 +59,7 @@ export type SendTestEmailsResult =
 
 export const sendTestEmails = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data) => z.object({ key: z.string().optional() }).parse(data))
+  .inputValidator((data) => z.object({ key: z.string().optional(), keys: z.array(z.string()).max(20).optional() }).parse(data))
   .handler(async ({ context, data }): Promise<SendTestEmailsResult> => {
     try {
       const { isAdminEmail } = await import("./admin-allowlist.server");
@@ -80,7 +80,10 @@ export const sendTestEmails = createServerFn({ method: "POST" })
         return { ok: false, reason: "misconfigured", message: "مفتاح خدمة إرسال البريد (RESEND_API_KEY) غير مضبوط على الخادم" };
 
       const { buildEmailPreviews } = await import("./email-previews.server");
-      const previews = (await buildEmailPreviews()).filter((p) => !data.key || p.key === data.key);
+      const previews = (await buildEmailPreviews()).filter((p, index, all) =>
+        data.keys ? data.keys.includes(p.key) : data.key ? p.key === data.key :
+          all.findIndex((item) => item.templateKey === p.templateKey) === index
+      );
       if (previews.length === 0)
         return { ok: false, reason: "error", message: `لم يتم العثور على قالب البريد: ${data.key ?? "الكل"}` };
 
