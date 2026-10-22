@@ -70,7 +70,7 @@ function AdminEmailsPage() {
       (!item.tier || item.tier === (choice?.tier ?? "course"))) ?? items[0];
   };
   const choose = (templateKey: string, field: "level" | "tier", value: string) => {
-    setVariants((old) => ({ ...old, [templateKey]: { level: "beginner", tier: "course", ...old[templateKey], [field]: value } }));
+    setVariants((old) => ({ ...old, [templateKey]: { ...(old[templateKey] ?? { level: "beginner", tier: "course" }), [field]: value } }));
     setActive(templateKey);
     setShowPreview(true);
   };
