@@ -220,7 +220,7 @@ export const Route = createFileRoute("/api/public/stripe-webhook")({
                 from: "كورسي <support@coursi.ai>",
                 to: [email],
                 subject: AI_UPGRADE_SUBJECT,
-                html: buildAiUpgradeHtml(AI_TUTOR_BOT_LINK),
+                html: buildAiUpgradeHtml(AI_TUTOR_BOT_LINK, result.level),
               }),
             });
             if (!res.ok) {

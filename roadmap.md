@@ -3,3 +3,6 @@
 - [ ] Course-only signed-in Offers verification blocked: account-session approval declined. Real $14 price and AI-assistant hidden-card state verified.
 - [x] Replace 12 avatars with supplied managed project image assets; preserve keys and circle crops. All 12 render in preview.
 - [x] Add shared full-screen lesson image viewer with landscape fallback and pinch zoom. Image/icon opening, zoom, touch pinch, fallback rotation and closing verified. Do not publish.
+- [ ] Centre shared email heroes and add level badges to welcome, top-up and nudge emails without payment/access changes.
+- [ ] Group admin email previews by template with level/tutor choices and selected-variant test sending.
+- [ ] Render all level-specific email variants and verify preview controls; do not publish.
