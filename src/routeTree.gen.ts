@@ -25,6 +25,7 @@ import { Route as AdminDataRouteImport } from './routes/admin.data'
 import { Route as AdminEmailsRouteImport } from './routes/admin.emails'
 import { Route as CourseAiRouteImport } from './routes/course.ai'
 import { Route as ApiPublicCheckSubscriptionRouteImport } from './routes/api/public/check-subscription'
+import { Route as ApiPublicStatsRouteImport } from './routes/api/public/stats'
 import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe-webhook'
 import { Route as ApiPublicTelegramSubscriptionCheckRouteImport } from './routes/api/public/telegram-subscription-check'
 import { Route as ApiPublicTelegramTicketRouteImport } from './routes/api/public/telegram-ticket'
@@ -110,6 +111,11 @@ const ApiPublicCheckSubscriptionRoute =
     path: '/api/public/check-subscription',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicStatsRoute = ApiPublicStatsRouteImport.update({
+  id: '/api/public/stats',
+  path: '/api/public/stats',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicStripeWebhookRoute = ApiPublicStripeWebhookRouteImport.update({
   id: '/api/public/stripe-webhook',
   path: '/api/public/stripe-webhook',
@@ -144,6 +150,7 @@ export interface FileRoutesByFullPath {
   '/admin/emails': typeof AdminEmailsRoute
   '/course/ai': typeof CourseAiRoute
   '/api/public/check-subscription': typeof ApiPublicCheckSubscriptionRoute
+  '/api/public/stats': typeof ApiPublicStatsRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/telegram-subscription-check': typeof ApiPublicTelegramSubscriptionCheckRoute
   '/api/public/telegram-ticket': typeof ApiPublicTelegramTicketRoute
@@ -165,6 +172,7 @@ export interface FileRoutesByTo {
   '/admin/emails': typeof AdminEmailsRoute
   '/course/ai': typeof CourseAiRoute
   '/api/public/check-subscription': typeof ApiPublicCheckSubscriptionRoute
+  '/api/public/stats': typeof ApiPublicStatsRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/telegram-subscription-check': typeof ApiPublicTelegramSubscriptionCheckRoute
   '/api/public/telegram-ticket': typeof ApiPublicTelegramTicketRoute
@@ -187,6 +195,7 @@ export interface FileRoutesById {
   '/admin/emails': typeof AdminEmailsRoute
   '/course/ai': typeof CourseAiRoute
   '/api/public/check-subscription': typeof ApiPublicCheckSubscriptionRoute
+  '/api/public/stats': typeof ApiPublicStatsRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/telegram-subscription-check': typeof ApiPublicTelegramSubscriptionCheckRoute
   '/api/public/telegram-ticket': typeof ApiPublicTelegramTicketRoute
@@ -210,6 +219,7 @@ export interface FileRouteTypes {
     | '/admin/emails'
     | '/course/ai'
     | '/api/public/check-subscription'
+    | '/api/public/stats'
     | '/api/public/stripe-webhook'
     | '/api/public/telegram-subscription-check'
     | '/api/public/telegram-ticket'
@@ -231,6 +241,7 @@ export interface FileRouteTypes {
     | '/admin/emails'
     | '/course/ai'
     | '/api/public/check-subscription'
+    | '/api/public/stats'
     | '/api/public/stripe-webhook'
     | '/api/public/telegram-subscription-check'
     | '/api/public/telegram-ticket'
@@ -252,6 +263,7 @@ export interface FileRouteTypes {
     | '/admin/emails'
     | '/course/ai'
     | '/api/public/check-subscription'
+    | '/api/public/stats'
     | '/api/public/stripe-webhook'
     | '/api/public/telegram-subscription-check'
     | '/api/public/telegram-ticket'
@@ -274,6 +286,7 @@ export interface RootRouteChildren {
   AdminEmailsRoute: typeof AdminEmailsRoute
   CourseAiRoute: typeof CourseAiRoute
   ApiPublicCheckSubscriptionRoute: typeof ApiPublicCheckSubscriptionRoute
+  ApiPublicStatsRoute: typeof ApiPublicStatsRoute
   ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
   ApiPublicTelegramSubscriptionCheckRoute: typeof ApiPublicTelegramSubscriptionCheckRoute
   ApiPublicTelegramTicketRoute: typeof ApiPublicTelegramTicketRoute
@@ -393,6 +406,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicCheckSubscriptionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/stats': {
+      id: '/api/public/stats'
+      path: '/api/public/stats'
+      fullPath: '/api/public/stats'
+      preLoaderRoute: typeof ApiPublicStatsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/stripe-webhook': {
       id: '/api/public/stripe-webhook'
       path: '/api/public/stripe-webhook'
@@ -434,6 +454,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminEmailsRoute: AdminEmailsRoute,
   CourseAiRoute: CourseAiRoute,
   ApiPublicCheckSubscriptionRoute: ApiPublicCheckSubscriptionRoute,
+  ApiPublicStatsRoute: ApiPublicStatsRoute,
   ApiPublicStripeWebhookRoute: ApiPublicStripeWebhookRoute,
   ApiPublicTelegramSubscriptionCheckRoute:
     ApiPublicTelegramSubscriptionCheckRoute,
