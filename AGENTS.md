@@ -7,3 +7,5 @@
 - Stripe checkout fulfillment lives in `src/lib/stripe-fulfillment.server.ts` (route only verifies, emails); each session id is claimed in `stripe_processed_sessions` first so webhook retries never double-apply.
 - Android status-bar separation uses StatusBar configuration plus a top-only native inset on edge-to-edge Android; consume that inset before the WebView and gate CSS safe-area handling to Android so browser layouts and bottom spacing remain unchanged.
 - Email congratulations use the shared shell's centred hero/CTA styles; admin samples carry template/level/tier metadata so previews and test sends use the same builders, one selected variant per template.
+- Bundle offer links and prices live in `bundle-offers.ts`; signed-in Offers only consumes them, leaving existing checkout flows and public pages unchanged.
+- Subscriber stats authenticate a shared token before loading privileged clients, count distinct active positive-paid subscribers, and exclude admin allowlist/auth metadata test tags/QA addresses; only aggregate counts leave the server.

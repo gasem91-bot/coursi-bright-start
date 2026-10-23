@@ -1,5 +1,5 @@
-- [ ] Add all six signed-in AI + Trading bundle options with shared payment-link constants; keep existing flows unchanged.
-- [ ] Add token-protected paying-subscriber stats, excluding admins/internal tests/QA; verify and collect STATS_API_TOKEN securely.
+- [x] Add all six signed-in AI + Trading bundle options with shared payment-link constants; existing flows unchanged, signed-in desktop/390px checks passed.
+- [x] Add token-protected paying-subscriber stats, excluding admins/internal tests/QA; secret saved securely, missing/invalid tokens return 401, real token returns total 2/course 2/course_ai 0 matching database counts. Eight rule tests passed; ready to publish, not published.
 - [x] Simplify Offers with existing tutor eligibility/checkout and locked next level.
 - [x] Hide referrals and remove student-visible launch urgency; retain referral infrastructure. No referral sections found elsewhere in the portal.
 - [ ] Course-only signed-in Offers verification blocked: account-session approval declined. Real $14 price and AI-assistant hidden-card state verified.
