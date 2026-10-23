@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { BadgeMedallion } from "@/components/badge-medallion";
 import { createAiUpgradeCheckout, getUpgradeStatus, type UpgradeStatus } from "@/lib/upgrade.functions";
+import { BUNDLE_OFFERS, BUNDLE_PRICES } from "@/lib/bundle-offers";
 
 export const Route = createFileRoute("/offers")({
   component: OffersPage,
@@ -92,7 +93,7 @@ function OffersPage() {
       <div className="mx-auto max-w-[720px]">
         <h1 className="mb-6 text-[28px] font-extrabold text-[var(--text-primary)]">العروض</h1>
         {loading ? <p className="py-12 text-center text-[var(--text-secondary)]">جاري التحميل...</p> : (
-          <div className="space-y-4">
+          <div className="flex flex-col gap-5">
             {status && status.tier !== "course_ai" && (
               <article data-offer="ai-tutor" className="rounded-lg border border-[var(--accent-cyan-border)] bg-[var(--accent-cyan-soft)] p-6">
                 <Sparkles className="mb-4 size-7 text-[var(--accent-cyan-text)]" aria-hidden="true" />
@@ -117,7 +118,35 @@ function OffersPage() {
                 <p className="text-sm leading-7 text-[var(--text-secondary)]">{nextLevel ? "يُفتح عندما تصل إلى نهاية كورسك الحالي" : "أنت في أعلى المستويات"}</p>
               </div>
             </article>
-            {/* Future bundle/drop offers can be added here; none are currently displayed. */}
+            <h2 className="pt-4 text-xl font-bold text-[var(--text-primary)]">باقات الذكاء الاصطناعي + التداول</h2>
+            {BUNDLE_OFFERS.map((bundle) => (
+              <article key={bundle.level} data-offer="bundle" className="rounded-lg border border-[var(--accent-purple-border)] bg-[var(--bg-secondary)] px-4 py-4 sm:px-6 sm:py-6">
+                <div className="flex items-center gap-3">
+                  <BadgeMedallion level={bundle.level} size={56} />
+                  <h3 className="text-lg font-bold text-[var(--text-primary)]">باقة المستوى {bundle.label}</h3>
+                </div>
+                <p className="py-3 text-sm leading-7 text-[var(--text-secondary)]">كورس الذكاء الاصطناعي + كورس التداول</p>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <Button asChild variant="outline" className="h-auto min-h-12 whitespace-normal border-[var(--accent-cyan-border)] bg-[var(--bg-card)] px-3 py-3 text-[var(--accent-cyan-text)] hover:bg-[var(--accent-cyan-soft)] hover:text-[var(--accent-cyan-text)]">
+                    <a href={bundle.coursesUrl}>
+                      <span>الكورسات فقط</span>
+                      <bdi className="font-bold">${BUNDLE_PRICES.courses.price}</bdi>
+                      <del className="text-[var(--text-secondary)]"><bdi>${BUNDLE_PRICES.courses.original}</bdi></del>
+                      <ArrowLeft aria-hidden="true" />
+                    </a>
+                  </Button>
+                  <Button asChild variant="outline" className="h-auto min-h-12 whitespace-normal border-[var(--accent-purple-border)] bg-[var(--bg-card)] px-3 py-3 text-[var(--accent-purple-text)] hover:bg-[var(--accent-purple-soft)] hover:text-[var(--accent-purple-text)]">
+                    <a href={bundle.tutorsUrl}>
+                      <span>مع المعلمين الذكيين</span>
+                      <bdi className="font-bold">${BUNDLE_PRICES.tutors.price}</bdi>
+                      <del className="text-[var(--text-secondary)]"><bdi>${BUNDLE_PRICES.tutors.original}</bdi></del>
+                      <ArrowLeft aria-hidden="true" />
+                    </a>
+                  </Button>
+                </div>
+              </article>
+            ))}
+            {/* Future drop offers can be added here. */}
           </div>
         )}
       </div>
