@@ -85,9 +85,11 @@ function OffersPage() {
           Tailwind's zero-specificity space-y utilities, so card padding and the gap
           between the two stacked cards are set here, scoped to this page. */}
       <style>{`
+        main[data-page="offers"] [data-offer="bundle"] { padding: 24px; }
         @media (max-width: 768px) {
+          main[data-page="offers"] [data-offer="bundle"] { padding: 16px; }
           main[data-page="offers"] [data-offer="ai-tutor"] { padding: 16px; }
-          main[data-page="offers"] [data-offer="ai-tutor"] + [data-offer="next-level"] { margin-top: 20px; }
+          main[data-page="offers"] [data-offer="ai-tutor"] + [data-offer="next-level"] { margin-top: 0; }
         }
       `}</style>
       <div className="mx-auto max-w-[720px]">
