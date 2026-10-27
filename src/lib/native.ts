@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 /**
  * Small runtime bridge so the portal behaves correctly in three contexts:
  *  - a normal desktop/mobile browser
@@ -13,6 +15,16 @@ export function isNative(): boolean {
   if (typeof window === "undefined") return false;
   const cap = (window as unknown as { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor;
   return Boolean(cap?.isNativePlatform?.());
+}
+
+/**
+ * True only inside the native shell, and only after hydration, so server-
+ * rendered markup and the first client render always match.
+ */
+export function useIsNative(): boolean {
+  const [native, setNative] = useState(false);
+  useEffect(() => setNative(isNative()), []);
+  return native;
 }
 
 /**
