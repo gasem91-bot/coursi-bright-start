@@ -8,6 +8,7 @@ import ShaderBackground from "@/components/ui/shader-background";
 import { ThemeToggle, useTheme } from "@/lib/theme";
 import { useProfile } from "@/contexts/ProfileContext";
 import { PortalNav } from "@/components/portal-nav";
+import { useNativePaywall } from "@/hooks/use-native-paywall";
 import { BadgeMedallion } from "@/components/badge-medallion";
 import {
   DropdownMenu,
@@ -63,6 +64,7 @@ const courseInfo = (level: Level) => {
 
 function DashboardPage() {
   const navigate = useNavigate();
+  useNativePaywall();
   const { profile, loading: profileLoading } = useProfile();
   const [loading, setLoading] = useState(true);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
