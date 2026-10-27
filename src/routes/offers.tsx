@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { BadgeMedallion } from "@/components/badge-medallion";
 import { createAiUpgradeCheckout, getUpgradeStatus, type UpgradeStatus } from "@/lib/upgrade.functions";
 import { BUNDLE_OFFERS, BUNDLE_PRICES } from "@/lib/bundle-offers";
+import { useIsNative } from "@/lib/native";
+import { IapBuyButton } from "@/components/iap-buy-button";
 
 export const Route = createFileRoute("/offers")({
   component: OffersPage,
@@ -30,6 +32,7 @@ const NEXT_LEVEL: Record<Level, "intermediate" | "advanced" | null> = {
 const LEVEL_NAMES = { intermediate: "المتوسط", advanced: "المتقدم" };
 
 function OffersPage() {
+  const native = useIsNative();
   const navigate = useNavigate();
   const loadStatus = useServerFn(getUpgradeStatus);
   const startCheckout = useServerFn(createAiUpgradeCheckout);
@@ -101,12 +104,22 @@ function OffersPage() {
                 <Sparkles className="mb-4 size-7 text-[var(--accent-cyan-text)]" aria-hidden="true" />
                 <h2 className="text-xl font-bold text-[var(--text-primary)]">احصل على المعلم الذكي مقابل <bdi>{TUTOR_PRICE}</bdi> فقط</h2>
                 <p className="mt-3 text-sm leading-7 text-[var(--text-secondary)]">إجابات فورية بالعربية · يتذكر مستواك · متاح ٢٤/٧</p>
+                {native ? (
+                  <IapBuyButton
+                    productId="coursi_tutor_topup"
+                    label="أضف المعلم الذكي"
+                    disabled={!status.eligible}
+                    onSuccess={async () => setStatus(await loadStatus())}
+                    style={{ marginTop: 20 }}
+                  />
+                ) : (
                 <Button variant="outline" onClick={onUpgrade} disabled={busy || !status.eligible}
                   className="mt-5 h-auto min-h-11 w-full whitespace-normal border-[var(--accent-cyan-border)] bg-[var(--bg-card)] px-5 py-3 font-bold text-[var(--accent-cyan-text)] hover:bg-[var(--accent-cyan-soft)] hover:text-[var(--accent-cyan-text)] sm:w-auto">
                   {busy ? <LoaderCircle className="animate-spin" aria-hidden="true" /> : <Sparkles aria-hidden="true" />}
                   {busy ? "جاري التحويل..." : `أضف المعلم الذكي — ${TUTOR_PRICE}`}
                   {!busy && <ArrowLeft aria-hidden="true" />}
                 </Button>
+                )}
               </article>
             )}
             <article data-offer="next-level" aria-disabled="true" className="relative isolate min-h-64 overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)]">
@@ -120,6 +133,7 @@ function OffersPage() {
                 <p className="text-sm leading-7 text-[var(--text-secondary)]">{nextLevel ? "يُفتح عندما تصل إلى نهاية كورسك الحالي" : "أنت في أعلى المستويات"}</p>
               </div>
             </article>
+            {!native && (<>
             <h2 className="pt-4 text-xl font-bold text-[var(--text-primary)]">باقات الذكاء الاصطناعي + التداول</h2>
             {BUNDLE_OFFERS.map((bundle) => (
               <article key={bundle.level} data-offer="bundle" className="rounded-lg border border-[var(--accent-purple-border)] bg-[var(--bg-secondary)] px-4 py-4 sm:px-6 sm:py-6">
@@ -148,6 +162,7 @@ function OffersPage() {
                 </div>
               </article>
             ))}
+            </>)}
             {/* Future drop offers can be added here. */}
           </div>
         )}
