@@ -22,6 +22,7 @@ const config: CapacitorConfig = {
   },
   ios: {
     contentInset: "always",
+    backgroundColor: "#000000", // black strips behind the notch / home indicator
     limitsNavigationsToAppBoundDomains: false,
   },
   android: {
