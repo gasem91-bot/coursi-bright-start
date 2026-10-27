@@ -4,6 +4,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { createAiUpgradeCheckout, getUpgradeStatus, type UpgradeStatus } from "@/lib/upgrade.functions";
+import { useIsNative } from "@/lib/native";
+import { IapBuyButton } from "@/components/iap-buy-button";
 
 export const Route = createFileRoute("/upgrade")({
   component: UpgradePage,
@@ -23,6 +25,7 @@ const font = "Cairo, 'Noto Sans Arabic', sans-serif";
 
 function UpgradePage() {
   const navigate = useNavigate();
+  const native = useIsNative();
   const loadStatus = useServerFn(getUpgradeStatus);
   const startCheckout = useServerFn(createAiUpgradeCheckout);
   const [status, setStatus] = useState<UpgradeStatus | null>(null);
@@ -118,6 +121,14 @@ function UpgradePage() {
             المساعد مفعّل في حسابك بالفعل ✓
           </p>
         ) : status?.eligible ? (
+          native ? (
+            <IapBuyButton
+              productId="coursi_tutor_topup"
+              label="أضف المساعد الآن"
+              onSuccess={async () => setStatus(await loadStatus())}
+              style={{ marginTop: 20 }}
+            />
+          ) : (
           <button
             onClick={onUpgrade}
             disabled={busy}
@@ -138,6 +149,7 @@ function UpgradePage() {
           >
             {busy ? "جاري التحويل..." : "أضف المساعد الآن — $14"}
           </button>
+          )
         ) : (
           <p style={{ color: "var(--text-secondary)", marginTop: 18, fontSize: 14, lineHeight: 1.9 }}>
             هذه الترقية متاحة لمن اشترى الكورس فقط. إذا كنت تعتقد أن هناك خطأ، تواصل مع الدعم
