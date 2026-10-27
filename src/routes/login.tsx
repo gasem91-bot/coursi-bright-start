@@ -3,11 +3,12 @@ import { useState, useRef, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { sendBrandedPasswordReset } from "@/lib/reset-email.functions";
 import { sendBrandedMagicLink } from "@/lib/magiclink-email.functions";
+import { sendLoginCode } from "@/lib/native-register.functions";
 import { checkAiAccess } from "@/lib/check-ai-access.functions";
 import coursiLogo from "@/assets/arabic-logo.png.asset.json";
 import ShaderBackground from "@/components/ui/shader-background";
 import { ThemeToggle, useTheme } from "@/lib/theme";
-import { isNative, openExternal } from "@/lib/native";
+import { isNative, openExternal, useIsNative } from "@/lib/native";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
@@ -39,11 +40,14 @@ const inputStyle: React.CSSProperties = {
 };
 
 function LoginPage() {
+  const native = useIsNative();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [magicSent, setMagicSent] = useState(false);
+  // Native app: sign-in code typed inside the app (no browser hop).
+  const [loginCode, setLoginCode] = useState("");
 
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
@@ -132,6 +136,12 @@ function LoginPage() {
       return "تعذّر التحقق من الاشتراك. حاول مرة أخرى.";
     }
     if (result && result.ok === true) return null;
+    if (isNative() && result && result.ok === false && result.reason === "no_subscription") {
+      return null; // signed in without a plan -> in-app plans screen (see useNativePaywall)
+    }
+    if (isNative() && result && result.ok === false && result.reason === "not_registered") {
+      return "لا يوجد حساب بهذا البريد. أنشئ حساباً جديداً من الأسفل.";
+    }
     if (result && result.ok === false && result.reason === "no_subscription") {
       return "ليس لديك اشتراك نشط في كورس الذكاء الاصطناعي. للاشتراك: coursi.ai/ai";
     }
@@ -175,10 +185,30 @@ function LoginPage() {
         setError(subError);
         return; // HARD BLOCK — do not call signInWithOtp
       }
-      await sendBrandedMagicLink({
-        data: { email: cleanEmail, redirectTo: "https://ai.portal.coursi.ai/dashboard" },
-      });
+      if (isNative()) {
+        await sendLoginCode({ data: { email: cleanEmail } });
+      } else {
+        await sendBrandedMagicLink({
+          data: { email: cleanEmail, redirectTo: "https://ai.portal.coursi.ai/dashboard" },
+        });
+      }
       setMagicSent(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyLoginCode = async () => {
+    const cleanEmail = email.trim().toLowerCase();
+    const token = loginCode.replace(/\D/g, "");
+    if (!cleanEmail || token.length < 6) { setError("أدخل الرمز المكوّن من ٦ أرقام"); return; }
+    setLoading(true);
+    setError("");
+    try {
+      let res = await supabase.auth.verifyOtp({ email: cleanEmail, token, type: "email" });
+      if (res.error || !res.data.session) res = await supabase.auth.verifyOtp({ email: cleanEmail, token, type: "magiclink" });
+      if (res.error || !res.data.session) { setError("الرمز غير صحيح أو انتهت صلاحيته"); return; }
+      if (await isActiveAccount()) window.location.href = safeRedirect();
     } finally {
       setLoading(false);
     }
@@ -445,7 +475,25 @@ function LoginPage() {
           <div style={{ flex: 1, borderTop: "1px solid var(--border)" }} />
         </div>
 
-        {magicSent ? (
+        {magicSent && native ? (
+          <div>
+            <p style={{ color: "#3DD6A0", fontSize: "13px", textAlign: "center", marginBottom: 10 }}>
+              ✓ أرسلنا رمزاً من ٦ أرقام إلى بريدك — اكتبه هنا
+            </p>
+            <input
+              inputMode="numeric"
+              maxLength={8}
+              value={loginCode}
+              onChange={(e) => setLoginCode(e.target.value)}
+              placeholder="000000"
+              autoComplete="one-time-code"
+              style={{ ...inputStyle, textAlign: "center", letterSpacing: 8, fontSize: 22, direction: "ltr", marginBottom: 10 }}
+            />
+            <button type="button" className="login-btn" disabled={loading} onClick={handleVerifyLoginCode}>
+              تأكيد الرمز ←
+            </button>
+          </div>
+        ) : magicSent ? (
           <p style={{ color: "#3DD6A0", fontSize: "13px", textAlign: "center" }}>
             ✓ تم إرسال الرابط — راجع بريدك الإلكتروني
           </p>
@@ -467,10 +515,25 @@ function LoginPage() {
               fontFamily: "Noto Sans Arabic, sans-serif",
             }}
           >
-            أرسل لي رابط الدخول بدون كلمة مرور
+            {native ? "أرسل لي رمز دخول إلى بريدي" : "أرسل لي رابط الدخول بدون كلمة مرور"}
           </button>
         )}
 
+        {native ? (
+          <a
+            href="/register"
+            style={{
+              display: "block",
+              color: "var(--accent-cyan-text)",
+              fontSize: "14px",
+              fontWeight: 700,
+              textAlign: "center",
+              marginTop: "20px",
+            }}
+          >
+            مستخدم جديد؟ أنشئ حساباً
+          </a>
+        ) : (
         <a
           href="https://coursi.ai"
           target="_blank"
@@ -487,6 +550,7 @@ function LoginPage() {
         >
           مشترك جديد؟
         </a>
+        )}
       </div>
 
       <a
