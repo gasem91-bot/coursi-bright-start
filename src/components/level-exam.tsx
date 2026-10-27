@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { getExamState, submitExam } from "@/lib/exam.functions";
+import { useIsNative } from "@/lib/native";
+import { IapBuyButton } from "@/components/iap-buy-button";
 import { createLevelUpgradeCheckout, getLevelUpgradeStatus, type LevelUpgradeStatus } from "@/lib/upgrade.functions";
 import {
   EXAM_INTRO,
@@ -435,6 +437,7 @@ const LEVEL_AR: Record<string, string> = {
 };
 
 function NextLevelUpgrade({ level }: { level: Level }) {
+  const native = useIsNative();
   const loadStatus = useServerFn(getLevelUpgradeStatus);
   const startCheckout = useServerFn(createLevelUpgradeCheckout);
   const [status, setStatus] = useState<LevelUpgradeStatus | null>(null);
@@ -484,9 +487,18 @@ function NextLevelUpgrade({ level }: { level: Level }) {
         بدل دفع سعر المستوى كاملاً، تكمل رحلتك من {LEVEL_AR[level]} إلى {LEVEL_AR[next]} مقابل ١٠ دولارات لمرة واحدة
         {status.tier === "course_ai" ? " — ومساعد كورسي الذكي يبقى معك في المستوى الجديد" : ""}
       </p>
+      {native ? (
+        <IapBuyButton
+          productId="coursi_level_unlock"
+          label="افتح المستوى التالي"
+          onSuccess={() => window.location.reload()}
+          style={{ marginTop: 14 }}
+        />
+      ) : (
       <button onClick={go} disabled={busy} style={{ ...btn(accent), opacity: busy ? 0.6 : 1 }}>
         {busy ? "جاري التحويل..." : "افتح المستوى التالي — $10"}
       </button>
+      )}
     </div>
   );
 }
