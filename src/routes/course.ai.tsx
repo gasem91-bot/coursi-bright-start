@@ -16,6 +16,9 @@ import { isLevelComplete } from "@/lib/certificate";
 import { triggerUpgradeNudge } from "@/lib/level-task.functions";
 import { createLevelUpgradeCheckout } from "@/lib/upgrade.functions";
 import { LessonImageViewer } from "@/components/lesson-image-viewer";
+import { useNativePaywall } from "@/hooks/use-native-paywall";
+import { isNative } from "@/lib/native";
+import { syncIapPurchases } from "@/lib/iap.functions";
 
 
 export const Route = createFileRoute("/course/ai")({
@@ -55,9 +58,11 @@ const NEXT_LEVEL_AR: Record<string, string> = { beginner: "المستوى الم
 
 function CourseAIPage() {
   const navigate = useNavigate();
+  useNativePaywall();
   const isMobile = useIsMobile();
   const nudgeFn = useServerFn(triggerUpgradeNudge);
   const upgradeCheckout = useServerFn(createLevelUpgradeCheckout);
+  const syncPurchases = useServerFn(syncIapPurchases);
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -271,6 +276,28 @@ function CourseAIPage() {
 
   const goUpgrade = async () => {
     setNudgeBusy(true);
+    // Native apps sell the next-level unlock through the store, never Stripe.
+    if (isNative()) {
+      try {
+        const { initIap, buyProduct } = await import("@/lib/iap");
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("no_user");
+        await initIap(user.id);
+        if ((await buyProduct("coursi_level_unlock")) === "purchased") {
+          for (let i = 0; i < 8; i++) {
+            await syncPurchases().catch(() => null);
+            await new Promise((res) => setTimeout(res, 1500));
+            const { data: p } = await supabase.from("profiles").select("level").eq("id", user.id).maybeSingle();
+            if (p && p.level !== level) { window.location.reload(); return; }
+          }
+          toast.error("تمت العملية لكن لم يُفتح المستوى بعد. أعد فتح التطبيق أو تواصل مع الدعم.");
+        }
+      } catch {
+        toast.error("تعذّر إتمام الشراء، حاول مرة أخرى");
+      }
+      setNudgeBusy(false);
+      return;
+    }
     try {
       const r = await upgradeCheckout();
       if ("url" in r) {
