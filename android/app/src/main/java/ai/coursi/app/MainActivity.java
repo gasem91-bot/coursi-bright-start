@@ -20,24 +20,30 @@ public class MainActivity extends BridgeActivity {
         WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView())
             .setAppearanceLightStatusBars(false);
 
-        // Android 15/16 enforce edge-to-edge: StatusBar.overlay/color alone
-        // cannot reserve this space. Paint and inset only the native top edge.
+        // Android 15/16 enforce edge-to-edge, so the web page would otherwise
+        // draw underneath the status bar AND the system navigation bar (back /
+        // home buttons or gesture pill). Reserve a solid black strip on every
+        // system edge (top, bottom, sides, keyboard) and place the page between
+        // them, so system UI never overlaps the app and vice versa.
         if (Build.VERSION.SDK_INT >= 35) {
             View content = findViewById(android.R.id.content);
-            int background = Color.parseColor(getBridge().getConfig().getBackgroundColor());
-            content.setBackgroundColor(background);
-            getWindow().getDecorView().setBackgroundColor(background);
+            content.setBackgroundColor(Color.BLACK); // black strips around the page
+            getWindow().getDecorView().setBackgroundColor(Color.BLACK);
+            WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView())
+                .setAppearanceLightNavigationBars(false);
             final int left = content.getPaddingLeft();
             final int top = content.getPaddingTop();
             final int right = content.getPaddingRight();
             final int bottom = content.getPaddingBottom();
             ViewCompat.setOnApplyWindowInsetsListener(content, (view, windowInsets) -> {
-                Insets safeTop = windowInsets.getInsets(
-                    WindowInsetsCompat.Type.statusBars() | WindowInsetsCompat.Type.displayCutout()
+                Insets safe = windowInsets.getInsets(
+                    WindowInsetsCompat.Type.systemBars()
+                        | WindowInsetsCompat.Type.displayCutout()
+                        | WindowInsetsCompat.Type.ime()
                 );
-                view.setPadding(left, top + safeTop.top, right, bottom);
-                // The WebView is now below the bar; do not apply this top inset twice.
-                return windowInsets.inset(0, safeTop.top, 0, 0);
+                view.setPadding(left + safe.left, top + safe.top, right + safe.right, bottom + safe.bottom);
+                // The WebView now sits inside the strips; do not apply insets twice.
+                return windowInsets.inset(safe.left, safe.top, safe.right, safe.bottom);
             });
             ViewCompat.requestApplyInsets(content);
         }
