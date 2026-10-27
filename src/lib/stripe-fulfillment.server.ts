@@ -148,8 +148,23 @@ async function fulfillOnce(admin: Admin, input: CheckoutInput): Promise<FulfillR
       email_confirm: true,
       user_metadata: { level, tier, segment: "ai" },
     });
-    if (error) throw error;
-    userId = created.user?.id;
+    if (error) {
+      // An in-app registration that was never verified owns this address but has
+      // no profile. The paying customer takes it over: reset its password so the
+      // unverified registrant cannot use the account, and confirm the email.
+      const claimed = await admin.auth.admin.generateLink({ type: "magiclink", email: input.email });
+      const existingId = claimed.data?.user?.id;
+      if (claimed.error || !existingId) throw error;
+      const { error: takeErr } = await admin.auth.admin.updateUserById(existingId, {
+        password: crypto.randomUUID() + crypto.randomUUID(),
+        email_confirm: true,
+        user_metadata: { level, tier, segment: "ai" },
+      });
+      if (takeErr) throw takeErr;
+      userId = existingId;
+    } else {
+      userId = created.user?.id;
+    }
   }
   if (!userId) throw new Error("no user id");
 
