@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { registerNativeAccount, finishNativeRegistration } from "@/lib/native-register.functions";
 import coursiLogo from "@/assets/arabic-logo.png.asset.json";
 import { gradientButton } from "@/components/iap-buy-button";
+import { captureReferral } from "@/lib/referral-capture";
 
 export const Route = createFileRoute("/register")({
   component: RegisterPage,
@@ -45,7 +46,7 @@ function RegisterPage() {
     setBusy(true);
     try {
       const r = await registerNativeAccount({
-        data: { email: email.trim(), password, fullName: fullName.trim() },
+        data: { email: email.trim(), password, fullName: fullName.trim(), referralCode: captureReferral() },
       });
       if (!r.ok) {
         setError(

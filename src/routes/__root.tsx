@@ -21,6 +21,7 @@ import { ProfileProvider } from "@/contexts/ProfileContext";
 import DeepLinkHandler from "@/components/deep-link-handler";
 import PushNotificationHandler from "@/components/push-notification-handler";
 import { isNative } from "@/lib/native";
+import { captureReferral } from "@/lib/referral-capture";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
@@ -80,6 +81,8 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  useEffect(() => { captureReferral(); }, []);
 
   useEffect(() => {
     const cap = (window as unknown as { Capacitor?: { getPlatform?: () => string } }).Capacitor;
