@@ -1,13 +1,14 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { LockKeyhole, Sparkles, ArrowLeft, LoaderCircle } from "lucide-react";
+import { LockKeyhole, Sparkles, ArrowLeft, LoaderCircle, TrendingUp, BadgeCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { BadgeMedallion } from "@/components/badge-medallion";
 import { createAiUpgradeCheckout, getUpgradeStatus, type UpgradeStatus } from "@/lib/upgrade.functions";
 import { BUNDLE_OFFERS, BUNDLE_LIMITED_TIME_OFFER, getBundleOfferState, getBundleCheckoutUrl } from "@/lib/bundle-offers";
+import { TRADING_OFFERS, TRADING_PRICES } from "@/lib/trading-offers";
 import { useIsNative } from "@/lib/native";
 import { IapBuyButton } from "@/components/iap-buy-button";
 
@@ -112,8 +113,10 @@ function OffersPage() {
           between the two stacked cards are set here, scoped to this page. */}
       <style>{`
         main[data-page="offers"] [data-offer="bundle"] { padding: 24px; }
+        main[data-page="offers"] [data-offer="trading"] { padding: 24px; }
         @media (max-width: 768px) {
           main[data-page="offers"] [data-offer="bundle"] { padding: 16px; }
+          main[data-page="offers"] [data-offer="trading"] { padding: 16px; }
           main[data-page="offers"] [data-offer="ai-tutor"] { padding: 16px; }
           main[data-page="offers"] [data-offer="ai-tutor"] + [data-offer="next-level"] { margin-top: 0; }
         }
@@ -122,11 +125,17 @@ function OffersPage() {
         <h1 className="mb-6 text-[28px] font-extrabold text-[var(--text-primary)]">العروض</h1>
         {loading ? <p className="py-12 text-center text-[var(--text-secondary)]">جاري التحميل...</p> : (
           <div className="flex flex-col gap-5">
-            {status && status.tier !== "course_ai" && (
+            <h2 className="text-xl font-bold text-[var(--text-primary)]">كورس الذكاء الاصطناعي</h2>
+            {status && (
               <article data-offer="ai-tutor" className="rounded-lg border border-[var(--accent-cyan-border)] bg-[var(--accent-cyan-soft)] p-6">
                 <Sparkles className="mb-4 size-7 text-[var(--accent-cyan-text)]" aria-hidden="true" />
                 <h2 className="text-xl font-bold text-[var(--text-primary)]">احصل على المعلم الذكي مقابل <bdi>{TUTOR_PRICE}</bdi> فقط</h2>
                 <p className="mt-3 text-sm leading-7 text-[var(--text-secondary)]">إجابات فورية بالعربية · يتذكر مستواك · متاح ٢٤/٧</p>
+                {status.tier === "course_ai" ? (
+                  <p className="mt-5 inline-flex items-center gap-2 rounded border border-[var(--accent-green-border)] bg-[var(--accent-green-soft)] px-3 py-2 text-sm font-bold text-[var(--accent-green-text)]">
+                    <BadgeCheck className="size-4" aria-hidden="true" /> تملكه ✓
+                  </p>
+                ) : (<>
                 {native ? (
                   <IapBuyButton
                     productId="coursi_tutor_topup"
@@ -143,6 +152,7 @@ function OffersPage() {
                   {!busy && <ArrowLeft aria-hidden="true" />}
                 </Button>
                 )}
+                </>)}
               </article>
             )}
             <article data-offer="next-level" aria-disabled="true" className="relative isolate min-h-64 overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)]">
@@ -157,7 +167,39 @@ function OffersPage() {
               </div>
             </article>
             {!native && (<>
-            <h2 className="pt-4 text-xl font-bold text-[var(--text-primary)]">باقات الذكاء الاصطناعي + التداول</h2>
+            <h2 className="pt-4 text-xl font-bold text-[var(--text-primary)]">كورس التداول</h2>
+            <p className="-mt-3 text-sm leading-7 text-[var(--text-secondary)]">تصلك بيانات الدخول لبوابة التداول على بريدك بعد الدفع</p>
+            {TRADING_OFFERS.map((offer) => (
+              <article key={offer.level} data-offer="trading" className="rounded-lg border border-[var(--accent-purple-border)] bg-[var(--bg-secondary)] px-4 py-4 sm:px-6 sm:py-6">
+                <div className="flex flex-wrap items-center gap-3">
+                  <TrendingUp className="size-6 text-[var(--accent-purple-text)]" aria-hidden="true" />
+                  <h3 className="text-lg font-bold text-[var(--text-primary)]">{offer.name}</h3>
+                </div>
+                <p className="py-3 text-sm leading-7 text-[var(--text-secondary)]">دفعة واحدة</p>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <Button asChild variant="outline" className="h-auto min-h-12 whitespace-normal border-[var(--accent-cyan-border)] bg-[var(--bg-card)] px-3 py-3 text-[var(--accent-cyan-text)] hover:bg-[var(--accent-cyan-soft)] hover:text-[var(--accent-cyan-text)]">
+                    <a href={offer.courseUrl}>
+                      <span>الكورس فقط</span>
+                      <bdi className="font-bold">${TRADING_PRICES.course}</bdi>
+                      <ArrowLeft aria-hidden="true" />
+                    </a>
+                  </Button>
+                  <div className="flex flex-col gap-1">
+                    <Button asChild variant="outline" className="h-auto min-h-12 whitespace-normal border-[var(--accent-purple-border)] bg-[var(--bg-card)] px-3 py-3 text-[var(--accent-purple-text)] hover:bg-[var(--accent-purple-soft)] hover:text-[var(--accent-purple-text)]">
+                      <a href={offer.botsUrl}>
+                        <span>الكورس + بوت المعلم + بوت الإشارات</span>
+                        <bdi className="font-bold">${TRADING_PRICES.bots}</bdi>
+                        <ArrowLeft aria-hidden="true" />
+                      </a>
+                    </Button>
+                    <p className="text-center text-xs text-[var(--text-secondary)]">إشارات تداول مدى الحياة</p>
+                  </div>
+                </div>
+              </article>
+            ))}
+            </>)}
+            {!native && (<>
+             <h2 className="pt-4 text-xl font-bold text-[var(--text-primary)]">باقات الذكاء الاصطناعي + التداول</h2>
             {BUNDLE_OFFERS.map((bundle) => (
               <article key={bundle.level} data-offer="bundle" className="rounded-lg border border-[var(--accent-purple-border)] bg-[var(--bg-secondary)] px-4 py-4 sm:px-6 sm:py-6">
                 <div className="flex flex-wrap items-center gap-3">

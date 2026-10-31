@@ -13,4 +13,4 @@
 - [x] Add shared full-screen lesson image viewer with landscape fallback and pinch zoom. Image/icon opening, zoom, touch pinch, fallback rotation and closing verified. Do not publish.
 - [x] Centre shared email heroes and add level badges to welcome, top-up and nudge emails without payment/access changes.
 - [x] Group admin email previews by template with level/tutor choices and selected-variant test sending.
-- [x] Render 20 level-specific variants; verify all four three-level selectors and tutor toggle signed in as admin, hosted badges and centring, no overflow at 390px. No real email sent; not published.
+- [x] Render 20 level-specific variants; verify all four three-level selectors and tutor toggle signed in as admin, hosted badges and centring, no overflow at 390px. No real email sent; not published.- [ ] Add signed-in Offers Trading cross-sell section (3 levels, $35/$60, exact Stripe links, no promo), owned tutor marked «تملكه ✓»; verify desktop/390px signed in, clean build, publish.
