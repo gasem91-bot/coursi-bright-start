@@ -1,3 +1,4 @@
+- [ ] Apply owner-approved bundle limited-time prices, existing-link promo prefills and automatic Dubai expiry; check all placements/emails, test, and publish.
 - [x] Build referral schema, 30-day capture and new-user friend-code issuance; all 8 existing profiles backfilled with valid unique codes.
 - [x] Extend verified Stripe events for first-paid rewards, redemption and refunds; enabled charge.refunded on the existing Stripe endpoint.
 - [x] Add three Arabic referral emails and admin-owned test samples; 17 rule tests and isolated real-database lifecycle checks pass (Stripe/email simulated), automatic checks OK.
