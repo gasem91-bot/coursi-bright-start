@@ -351,6 +351,32 @@ export type Database = {
           },
         ]
       }
+      referral_signup_claims: {
+        Row: {
+          created_at: string
+          referral_code: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          referral_code: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          referral_code?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_signup_claims_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       referrals: {
         Row: {
           created_at: string
