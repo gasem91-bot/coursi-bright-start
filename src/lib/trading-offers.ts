@@ -3,22 +3,19 @@
 export const TRADING_OFFERS = [
   {
     level: "beginner",
-    title: "أساسيات التداول",
-    label: "المبتدئ",
+    name: "أساسيات التداول — المبتدئ",
     courseUrl: "https://buy.stripe.com/cNi7sLfQH2UJenC2rleQM0c",
     botsUrl: "https://buy.stripe.com/9B65kD9sjgLz4N22rleQM0d",
   },
   {
     level: "intermediate",
-    title: "التداول الاحترافي",
-    label: "المتوسط",
+    name: "التداول الاحترافي — المتوسط",
     courseUrl: "https://buy.stripe.com/6oU6oH7kbeDr4N2c1VeQM0f",
     botsUrl: "https://buy.stripe.com/dRmdR91ZRdzn1AQ4zteQM0e",
   },
   {
     level: "advanced",
-    title: "التداول المتقدم",
-    label: "المتقدم",
+    name: "التداول المتقدم",
     courseUrl: "https://buy.stripe.com/14AeVd6g7dzn4N28PJeQM0h",
     botsUrl: "https://buy.stripe.com/fZudR933V1QF7Zefe7eQM0g",
   },
