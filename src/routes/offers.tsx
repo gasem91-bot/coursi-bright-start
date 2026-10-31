@@ -217,14 +217,18 @@ function OffersPage() {
                       <ArrowLeft aria-hidden="true" />
                     </a>
                   </Button>
-                  <Button asChild variant="outline" className="h-auto min-h-12 whitespace-normal border-[var(--accent-purple-border)] bg-[var(--bg-card)] px-3 py-3 text-[var(--accent-purple-text)] hover:bg-[var(--accent-purple-soft)] hover:text-[var(--accent-purple-text)]">
-                    <a href={getBundleCheckoutUrl(bundle.tutorsUrl, "tutors")} onClick={(event) => { event.currentTarget.href = getBundleCheckoutUrl(bundle.tutorsUrl, "tutors"); }}>
-                      <span>مع المعلمين الذكيين</span>
-                      <del className="text-[var(--text-secondary)]"><bdi>${bundleOffer.prices.tutors.original}</bdi></del>
-                      <bdi className="font-bold">${bundleOffer.prices.tutors.price}</bdi>
-                      <ArrowLeft aria-hidden="true" />
-                    </a>
-                  </Button>
+                  <div className="flex flex-col gap-2">
+                    <p className="text-sm font-bold leading-6 text-[var(--text-primary)]">الذكاء الاصطناعي + التداول — الكورس + بوتات التعلّم والإشارات</p>
+                    <Button asChild variant="outline" className="h-auto min-h-12 whitespace-normal border-[var(--accent-purple-border)] bg-[var(--bg-card)] px-3 py-3 text-[var(--accent-purple-text)] hover:bg-[var(--accent-purple-soft)] hover:text-[var(--accent-purple-text)]">
+                      <a href={getBundleCheckoutUrl(bundle.tutorsUrl, "tutors")} onClick={(event) => { event.currentTarget.href = getBundleCheckoutUrl(bundle.tutorsUrl, "tutors"); }}>
+                        <span>شراء مع بوتات التعلّم والإشارات —</span>
+                        <del className="text-[var(--text-secondary)]"><bdi>${bundleOffer.prices.tutors.original}</bdi></del>
+                        <bdi className="font-bold">${bundleOffer.prices.tutors.price}</bdi>
+                        <ArrowLeft aria-hidden="true" />
+                      </a>
+                    </Button>
+                  </div>
+
                 </div>
               </article>
             ))}
