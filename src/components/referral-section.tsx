@@ -49,7 +49,7 @@ export function ReferralSection() {
       <p style={{ fontSize: 14, lineHeight: 1.8, color: "var(--text-secondary)", marginBottom: 14 }}>
         أرسل دعوة بالبريد لصديقك. يحصل صديقك على خصم 5$ عند الدفع، وتحصل أنت على خصم 5$ عندما يُكمل صديقك أول عملية شراء. كل خصم صالح 90 يوماً من تاريخ إصداره ولا يُجمع مع العروض الجارية.
       </p>
-      <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      <form noValidate onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         <input type="email" dir="ltr" inputMode="email" autoComplete="off" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="بريد صديقك الإلكتروني" aria-label="بريد صديقك الإلكتروني" maxLength={254}
           style={{ minHeight: 48, borderRadius: 12, border: "1px solid var(--card-glass-border)", background: "var(--bg-primary)", color: "var(--text-primary)", padding: "0 14px", fontFamily: font, fontSize: 15, textAlign: "right", width: "100%", boxSizing: "border-box" }} />
         <button type="submit" disabled={busy} style={{ minHeight: 48, borderRadius: 50, border: "none", background: "linear-gradient(135deg, #7B35C0, #40C8C8)", color: "#fff", fontFamily: font, fontWeight: 700, fontSize: 15, cursor: busy ? "wait" : "pointer", opacity: busy ? 0.7 : 1 }}>
