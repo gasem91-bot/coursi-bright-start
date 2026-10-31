@@ -25,6 +25,7 @@ import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as AccountDeleteRouteImport } from './routes/account.delete'
 import { Route as AdminDataRouteImport } from './routes/admin.data'
 import { Route as AdminEmailsRouteImport } from './routes/admin.emails'
+import { Route as AdminReferralsRouteImport } from './routes/admin.referrals'
 import { Route as CourseAiRouteImport } from './routes/course.ai'
 import { Route as ApiPublicCheckSubscriptionRouteImport } from './routes/api/public/check-subscription'
 import { Route as ApiPublicStatsRouteImport } from './routes/api/public/stats'
@@ -112,6 +113,11 @@ const AdminEmailsRoute = AdminEmailsRouteImport.update({
   path: '/admin/emails',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminReferralsRoute = AdminReferralsRouteImport.update({
+  id: '/admin/referrals',
+  path: '/admin/referrals',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CourseAiRoute = CourseAiRouteImport.update({
   id: '/course/ai',
   path: '/course/ai',
@@ -162,6 +168,7 @@ export interface FileRoutesByFullPath {
   '/account/delete': typeof AccountDeleteRoute
   '/admin/data': typeof AdminDataRoute
   '/admin/emails': typeof AdminEmailsRoute
+  '/admin/referrals': typeof AdminReferralsRoute
   '/course/ai': typeof CourseAiRoute
   '/api/public/check-subscription': typeof ApiPublicCheckSubscriptionRoute
   '/api/public/stats': typeof ApiPublicStatsRoute
@@ -186,6 +193,7 @@ export interface FileRoutesByTo {
   '/account/delete': typeof AccountDeleteRoute
   '/admin/data': typeof AdminDataRoute
   '/admin/emails': typeof AdminEmailsRoute
+  '/admin/referrals': typeof AdminReferralsRoute
   '/course/ai': typeof CourseAiRoute
   '/api/public/check-subscription': typeof ApiPublicCheckSubscriptionRoute
   '/api/public/stats': typeof ApiPublicStatsRoute
@@ -211,6 +219,7 @@ export interface FileRoutesById {
   '/account/delete': typeof AccountDeleteRoute
   '/admin/data': typeof AdminDataRoute
   '/admin/emails': typeof AdminEmailsRoute
+  '/admin/referrals': typeof AdminReferralsRoute
   '/course/ai': typeof CourseAiRoute
   '/api/public/check-subscription': typeof ApiPublicCheckSubscriptionRoute
   '/api/public/stats': typeof ApiPublicStatsRoute
@@ -237,6 +246,7 @@ export interface FileRouteTypes {
     | '/account/delete'
     | '/admin/data'
     | '/admin/emails'
+    | '/admin/referrals'
     | '/course/ai'
     | '/api/public/check-subscription'
     | '/api/public/stats'
@@ -261,6 +271,7 @@ export interface FileRouteTypes {
     | '/account/delete'
     | '/admin/data'
     | '/admin/emails'
+    | '/admin/referrals'
     | '/course/ai'
     | '/api/public/check-subscription'
     | '/api/public/stats'
@@ -285,6 +296,7 @@ export interface FileRouteTypes {
     | '/account/delete'
     | '/admin/data'
     | '/admin/emails'
+    | '/admin/referrals'
     | '/course/ai'
     | '/api/public/check-subscription'
     | '/api/public/stats'
@@ -310,6 +322,7 @@ export interface RootRouteChildren {
   AccountDeleteRoute: typeof AccountDeleteRoute
   AdminDataRoute: typeof AdminDataRoute
   AdminEmailsRoute: typeof AdminEmailsRoute
+  AdminReferralsRoute: typeof AdminReferralsRoute
   CourseAiRoute: typeof CourseAiRoute
   ApiPublicCheckSubscriptionRoute: typeof ApiPublicCheckSubscriptionRoute
   ApiPublicStatsRoute: typeof ApiPublicStatsRoute
@@ -432,6 +445,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminEmailsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/referrals': {
+      id: '/admin/referrals'
+      path: '/admin/referrals'
+      fullPath: '/admin/referrals'
+      preLoaderRoute: typeof AdminReferralsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/course/ai': {
       id: '/course/ai'
       path: '/course/ai'
@@ -494,6 +514,7 @@ const rootRouteChildren: RootRouteChildren = {
   AccountDeleteRoute: AccountDeleteRoute,
   AdminDataRoute: AdminDataRoute,
   AdminEmailsRoute: AdminEmailsRoute,
+  AdminReferralsRoute: AdminReferralsRoute,
   CourseAiRoute: CourseAiRoute,
   ApiPublicCheckSubscriptionRoute: ApiPublicCheckSubscriptionRoute,
   ApiPublicStatsRoute: ApiPublicStatsRoute,

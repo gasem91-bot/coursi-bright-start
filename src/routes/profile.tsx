@@ -8,6 +8,7 @@ import { useProfile } from "@/contexts/ProfileContext";
 import { BadgeMedallion } from "@/components/badge-medallion";
 import { getMyCertificates, type EarnedCertificate } from "@/lib/exam.functions";
 import { LEVEL_LABEL } from "@/lib/certificate";
+import { ReferralSection } from "@/components/referral-section";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
