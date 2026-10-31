@@ -384,8 +384,10 @@ export type Database = {
           friend_code_expires_at: string | null
           friend_code_redeemed_at: string | null
           friend_email_sent_at: string | null
+          friend_issued_at: string | null
           friend_promotion_id: string | null
           id: string
+          invite_email_sent_at: string | null
           order_amount_usd: number | null
           purchased_at: string | null
           referred_email: string
@@ -408,8 +410,10 @@ export type Database = {
           friend_code_expires_at?: string | null
           friend_code_redeemed_at?: string | null
           friend_email_sent_at?: string | null
+          friend_issued_at?: string | null
           friend_promotion_id?: string | null
           id?: string
+          invite_email_sent_at?: string | null
           order_amount_usd?: number | null
           purchased_at?: string | null
           referred_email: string
@@ -432,8 +436,10 @@ export type Database = {
           friend_code_expires_at?: string | null
           friend_code_redeemed_at?: string | null
           friend_email_sent_at?: string | null
+          friend_issued_at?: string | null
           friend_promotion_id?: string | null
           id?: string
+          invite_email_sent_at?: string | null
           order_amount_usd?: number | null
           purchased_at?: string | null
           referred_email?: string
