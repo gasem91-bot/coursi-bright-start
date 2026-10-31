@@ -1,3 +1,6 @@
+- [ ] Build referral schema, 30-day capture and new-user friend-code issuance.
+- [ ] Extend verified Stripe events for first-paid rewards, redemption and refunds.
+- [ ] Add three Arabic referral emails and admin-owned test samples; validate and publish.
 - [x] Add all six signed-in AI + Trading bundle options with shared payment-link constants; existing flows unchanged, signed-in desktop/390px checks passed.
 - [x] Add token-protected paying-subscriber stats, excluding admins/internal tests/QA; secret saved securely, missing/invalid tokens return 401, real token returns total 2/course 2/course_ai 0 matching database counts. Eight rule tests passed; ready to publish, not published.
 - [x] Simplify Offers with existing tutor eligibility/checkout and locked next level.
