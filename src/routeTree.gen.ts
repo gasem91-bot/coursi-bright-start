@@ -16,7 +16,9 @@ import { Route as GoodbyeRouteImport } from './routes/goodbye'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as OffersRouteImport } from './routes/offers'
 import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as SubscribeRouteImport } from './routes/subscribe'
 import { Route as SupportRouteImport } from './routes/support'
 import { Route as UpgradeRouteImport } from './routes/upgrade'
 import { Route as WelcomeRouteImport } from './routes/welcome'
@@ -65,9 +67,19 @@ const ProfileRoute = ProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SubscribeRoute = SubscribeRouteImport.update({
+  id: '/subscribe',
+  path: '/subscribe',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SupportRoute = SupportRouteImport.update({
@@ -141,7 +153,9 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/offers': typeof OffersRoute
   '/profile': typeof ProfileRoute
+  '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/subscribe': typeof SubscribeRoute
   '/support': typeof SupportRoute
   '/upgrade': typeof UpgradeRoute
   '/welcome': typeof WelcomeRoute
@@ -163,7 +177,9 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/offers': typeof OffersRoute
   '/profile': typeof ProfileRoute
+  '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/subscribe': typeof SubscribeRoute
   '/support': typeof SupportRoute
   '/upgrade': typeof UpgradeRoute
   '/welcome': typeof WelcomeRoute
@@ -186,7 +202,9 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/offers': typeof OffersRoute
   '/profile': typeof ProfileRoute
+  '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/subscribe': typeof SubscribeRoute
   '/support': typeof SupportRoute
   '/upgrade': typeof UpgradeRoute
   '/welcome': typeof WelcomeRoute
@@ -210,7 +228,9 @@ export interface FileRouteTypes {
     | '/login'
     | '/offers'
     | '/profile'
+    | '/register'
     | '/reset-password'
+    | '/subscribe'
     | '/support'
     | '/upgrade'
     | '/welcome'
@@ -232,7 +252,9 @@ export interface FileRouteTypes {
     | '/login'
     | '/offers'
     | '/profile'
+    | '/register'
     | '/reset-password'
+    | '/subscribe'
     | '/support'
     | '/upgrade'
     | '/welcome'
@@ -254,7 +276,9 @@ export interface FileRouteTypes {
     | '/login'
     | '/offers'
     | '/profile'
+    | '/register'
     | '/reset-password'
+    | '/subscribe'
     | '/support'
     | '/upgrade'
     | '/welcome'
@@ -277,7 +301,9 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   OffersRoute: typeof OffersRoute
   ProfileRoute: typeof ProfileRoute
+  RegisterRoute: typeof RegisterRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  SubscribeRoute: typeof SubscribeRoute
   SupportRoute: typeof SupportRoute
   UpgradeRoute: typeof UpgradeRoute
   WelcomeRoute: typeof WelcomeRoute
@@ -343,11 +369,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reset-password': {
       id: '/reset-password'
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/subscribe': {
+      id: '/subscribe'
+      path: '/subscribe'
+      fullPath: '/subscribe'
+      preLoaderRoute: typeof SubscribeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/support': {
@@ -445,7 +485,9 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   OffersRoute: OffersRoute,
   ProfileRoute: ProfileRoute,
+  RegisterRoute: RegisterRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  SubscribeRoute: SubscribeRoute,
   SupportRoute: SupportRoute,
   UpgradeRoute: UpgradeRoute,
   WelcomeRoute: WelcomeRoute,

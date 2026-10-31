@@ -248,6 +248,8 @@ export type Database = {
           nationality_name: string | null
           notification_prefs: Json
           referral_code: string | null
+          referred_at: string | null
+          referred_by_user_id: string | null
           streak_days: number
           telegram_id: string | null
           theme: string
@@ -274,6 +276,8 @@ export type Database = {
           nationality_name?: string | null
           notification_prefs?: Json
           referral_code?: string | null
+          referred_at?: string | null
+          referred_by_user_id?: string | null
           streak_days?: number
           telegram_id?: string | null
           theme?: string
@@ -300,13 +304,142 @@ export type Database = {
           nationality_name?: string | null
           notification_prefs?: Json
           referral_code?: string | null
+          referred_at?: string | null
+          referred_by_user_id?: string | null
           streak_days?: number
           telegram_id?: string | null
           theme?: string
           updated_at?: string
           xp_points?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_referred_by_user_id_fkey"
+            columns: ["referred_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      referral_paid_purchases: {
+        Row: {
+          amount_usd: number
+          paid_at: string
+          session_id: string
+          user_id: string | null
+        }
+        Insert: {
+          amount_usd: number
+          paid_at: string
+          session_id: string
+          user_id?: string | null
+        }
+        Update: {
+          amount_usd?: number
+          paid_at?: string
+          session_id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_paid_purchases_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      referrals: {
+        Row: {
+          created_at: string
+          friend_code: string | null
+          friend_code_expires_at: string | null
+          friend_code_redeemed_at: string | null
+          friend_email_sent_at: string | null
+          friend_promotion_id: string | null
+          id: string
+          order_amount_usd: number | null
+          purchased_at: string | null
+          referred_email: string
+          referred_user_id: string | null
+          referrer_user_id: string
+          reward_code: string | null
+          reward_email_sent_at: string | null
+          reward_expires_at: string | null
+          reward_issued_at: string | null
+          reward_promotion_id: string | null
+          reward_redeemed_at: string | null
+          signed_up_at: string | null
+          source: string
+          status: string
+          stripe_session_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          friend_code?: string | null
+          friend_code_expires_at?: string | null
+          friend_code_redeemed_at?: string | null
+          friend_email_sent_at?: string | null
+          friend_promotion_id?: string | null
+          id?: string
+          order_amount_usd?: number | null
+          purchased_at?: string | null
+          referred_email: string
+          referred_user_id?: string | null
+          referrer_user_id: string
+          reward_code?: string | null
+          reward_email_sent_at?: string | null
+          reward_expires_at?: string | null
+          reward_issued_at?: string | null
+          reward_promotion_id?: string | null
+          reward_redeemed_at?: string | null
+          signed_up_at?: string | null
+          source?: string
+          status?: string
+          stripe_session_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          friend_code?: string | null
+          friend_code_expires_at?: string | null
+          friend_code_redeemed_at?: string | null
+          friend_email_sent_at?: string | null
+          friend_promotion_id?: string | null
+          id?: string
+          order_amount_usd?: number | null
+          purchased_at?: string | null
+          referred_email?: string
+          referred_user_id?: string | null
+          referrer_user_id?: string
+          reward_code?: string | null
+          reward_email_sent_at?: string | null
+          reward_expires_at?: string | null
+          reward_issued_at?: string | null
+          reward_promotion_id?: string | null
+          reward_redeemed_at?: string | null
+          signed_up_at?: string | null
+          source?: string
+          status?: string
+          stripe_session_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_referred_user_id_fkey"
+            columns: ["referred_user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referrals_referrer_user_id_fkey"
+            columns: ["referrer_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       stripe_processed_sessions: {
         Row: {
@@ -499,12 +632,26 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      claim_signup_referral: {
+        Args: { p_code: string; p_source?: string; p_user_id: string }
+        Returns: string
+      }
+      generate_referral_code: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      record_referral_paid_purchase: {
+        Args: {
+          p_amount: number
+          p_paid_at: string
+          p_session_id: string
+          p_user_id: string
+        }
+        Returns: string
       }
     }
     Enums: {
