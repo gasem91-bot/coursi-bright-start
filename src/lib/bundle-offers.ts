@@ -8,3 +8,28 @@ export const BUNDLE_PRICES = {
   courses: { price: 60, original: 70 },
   tutors: { price: 89, original: 99 },
 } as const;
+
+// Exclusive cutoff: the offer includes the entire 23:59 minute in Dubai.
+export const BUNDLE_LIMITED_TIME_OFFER = {
+  endsAt: "2027-01-01T00:00:00+04:00",
+  courses: { price: 55, promoCode: "LTO5B" },
+  tutors: { price: 79, promoCode: "LTO10B" },
+} as const;
+
+export function getBundleOfferState(now = Date.now()) {
+  const limitedTime = now < Date.parse(BUNDLE_LIMITED_TIME_OFFER.endsAt);
+  return {
+    limitedTime,
+    prices: {
+      courses: { ...BUNDLE_PRICES.courses, price: limitedTime ? BUNDLE_LIMITED_TIME_OFFER.courses.price : BUNDLE_PRICES.courses.price },
+      tutors: { ...BUNDLE_PRICES.tutors, price: limitedTime ? BUNDLE_LIMITED_TIME_OFFER.tutors.price : BUNDLE_PRICES.tutors.price },
+    },
+  };
+}
+
+export function getBundleCheckoutUrl(url: string, tier: "courses" | "tutors", now = Date.now()) {
+  if (!getBundleOfferState(now).limitedTime) return url;
+  const checkout = new URL(url);
+  checkout.searchParams.set("prefilled_promo_code", BUNDLE_LIMITED_TIME_OFFER[tier].promoCode);
+  return checkout.toString();
+}

@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { BadgeMedallion } from "@/components/badge-medallion";
 import { createAiUpgradeCheckout, getUpgradeStatus, type UpgradeStatus } from "@/lib/upgrade.functions";
-import { BUNDLE_OFFERS, BUNDLE_PRICES } from "@/lib/bundle-offers";
+import { BUNDLE_OFFERS, BUNDLE_LIMITED_TIME_OFFER, getBundleOfferState, getBundleCheckoutUrl } from "@/lib/bundle-offers";
 import { useIsNative } from "@/lib/native";
 import { IapBuyButton } from "@/components/iap-buy-button";
 
@@ -40,6 +40,29 @@ function OffersPage() {
   const [level, setLevel] = useState<Level>("beginner");
   const [status, setStatus] = useState<UpgradeStatus | null>(null);
   const [busy, setBusy] = useState(false);
+  const [bundleOffer, setBundleOffer] = useState(() => getBundleOfferState());
+
+  useEffect(() => {
+    const refresh = () => setBundleOffer(getBundleOfferState());
+    refresh();
+    // Refresh open tabs at expiry (chunks avoid the browser timer limit).
+    const timer = window.setInterval(refresh, 30_000);
+    let cutoffTimer: number | undefined;
+    const scheduleCutoff = () => {
+      const remaining = Date.parse(BUNDLE_LIMITED_TIME_OFFER.endsAt) - Date.now();
+      if (remaining <= 0) { refresh(); return; }
+      cutoffTimer = window.setTimeout(scheduleCutoff, Math.min(remaining, 2_147_483_647));
+    };
+    scheduleCutoff();
+    window.addEventListener("focus", refresh);
+    document.addEventListener("visibilitychange", refresh);
+    return () => {
+      window.clearInterval(timer);
+      if (cutoffTimer !== undefined) window.clearTimeout(cutoffTimer);
+      window.removeEventListener("focus", refresh);
+      document.removeEventListener("visibilitychange", refresh);
+    };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -137,25 +160,26 @@ function OffersPage() {
             <h2 className="pt-4 text-xl font-bold text-[var(--text-primary)]">باقات الذكاء الاصطناعي + التداول</h2>
             {BUNDLE_OFFERS.map((bundle) => (
               <article key={bundle.level} data-offer="bundle" className="rounded-lg border border-[var(--accent-purple-border)] bg-[var(--bg-secondary)] px-4 py-4 sm:px-6 sm:py-6">
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3">
                   <BadgeMedallion level={bundle.level} size={56} />
                   <h3 className="text-lg font-bold text-[var(--text-primary)]">باقة المستوى {bundle.label}</h3>
+                  {bundleOffer.limitedTime && <span className="rounded border border-[var(--accent-purple-border)] bg-[var(--accent-purple-soft)] px-2 py-1 text-xs font-semibold text-[var(--accent-purple-text)]">عرض لفترة محدودة</span>}
                 </div>
                 <p className="py-3 text-sm leading-7 text-[var(--text-secondary)]">كورس الذكاء الاصطناعي + كورس التداول</p>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <Button asChild variant="outline" className="h-auto min-h-12 whitespace-normal border-[var(--accent-cyan-border)] bg-[var(--bg-card)] px-3 py-3 text-[var(--accent-cyan-text)] hover:bg-[var(--accent-cyan-soft)] hover:text-[var(--accent-cyan-text)]">
-                    <a href={bundle.coursesUrl}>
+                    <a href={getBundleCheckoutUrl(bundle.coursesUrl, "courses")} onClick={(event) => { event.currentTarget.href = getBundleCheckoutUrl(bundle.coursesUrl, "courses"); }}>
                       <span>الكورسات فقط</span>
-                      <bdi className="font-bold">${BUNDLE_PRICES.courses.price}</bdi>
-                      <del className="text-[var(--text-secondary)]"><bdi>${BUNDLE_PRICES.courses.original}</bdi></del>
+                      <del className="text-[var(--text-secondary)]"><bdi>${bundleOffer.prices.courses.original}</bdi></del>
+                      <bdi className="font-bold">${bundleOffer.prices.courses.price}</bdi>
                       <ArrowLeft aria-hidden="true" />
                     </a>
                   </Button>
                   <Button asChild variant="outline" className="h-auto min-h-12 whitespace-normal border-[var(--accent-purple-border)] bg-[var(--bg-card)] px-3 py-3 text-[var(--accent-purple-text)] hover:bg-[var(--accent-purple-soft)] hover:text-[var(--accent-purple-text)]">
-                    <a href={bundle.tutorsUrl}>
+                    <a href={getBundleCheckoutUrl(bundle.tutorsUrl, "tutors")} onClick={(event) => { event.currentTarget.href = getBundleCheckoutUrl(bundle.tutorsUrl, "tutors"); }}>
                       <span>مع المعلمين الذكيين</span>
-                      <bdi className="font-bold">${BUNDLE_PRICES.tutors.price}</bdi>
-                      <del className="text-[var(--text-secondary)]"><bdi>${BUNDLE_PRICES.tutors.original}</bdi></del>
+                      <del className="text-[var(--text-secondary)]"><bdi>${bundleOffer.prices.tutors.original}</bdi></del>
+                      <bdi className="font-bold">${bundleOffer.prices.tutors.price}</bdi>
                       <ArrowLeft aria-hidden="true" />
                     </a>
                   </Button>
