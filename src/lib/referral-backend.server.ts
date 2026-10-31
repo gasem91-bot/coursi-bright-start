@@ -66,6 +66,16 @@ export async function applySignupReferral(userId: string, keys: { stripe: string
   const { data: auth, error: authError } = await admin.auth.admin.getUserById(userId);
   check(authError);
   if (!auth.user?.email_confirmed_at) return;
+  const { data: owner, error: ownerError } = await admin.from("profiles").select("id").eq("referral_code", claim.referral_code).maybeSingle();
+  check(ownerError);
+  if (owner) {
+    const { data: referrerAuth, error: referrerAuthError } = await admin.auth.admin.getUserById(owner.id);
+    check(referrerAuthError);
+    if (auth.user.email?.trim().toLowerCase() === referrerAuth.user?.email?.trim().toLowerCase()) {
+      const { error: eraseError } = await admin.from("referral_signup_claims").delete().eq("user_id", userId);
+      check(eraseError); return;
+    }
+  }
   const { data: id, error } = await admin.rpc("claim_signup_referral", { p_user_id: userId, p_code: claim.referral_code, p_source: "link" });
   check(error);
   if (!id) {

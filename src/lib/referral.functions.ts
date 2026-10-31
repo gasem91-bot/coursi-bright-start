@@ -15,6 +15,7 @@ export const inviteReferralFriend = createServerFn({ method: "POST" })
     if (error || !referrer?.email) throw new Error("Profile unavailable");
     const email = data.email.toLowerCase();
     if (email === referrer.email.trim().toLowerCase()) return { ok: true };
+    if (email === String(context.claims.email ?? "").trim().toLowerCase()) return { ok: true };
     const { data: existing, error: existingError } = await admin.from("profiles").select("id").ilike("email", email).limit(1);
     if (existingError) throw existingError;
     if (existing?.length) return { ok: true };
