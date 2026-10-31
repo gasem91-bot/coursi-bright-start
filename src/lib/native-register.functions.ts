@@ -41,6 +41,7 @@ export const registerNativeAccount = createServerFn({ method: "POST" })
         email: z.string().trim().email().max(254),
         password: z.string().min(8).max(72),
         fullName: z.string().trim().min(2).max(80),
+        referralCode: z.string().regex(/^[A-HJ-NP-Z2-9]{8}$/).nullable().optional(),
       })
       .parse(input),
   )
@@ -64,6 +65,12 @@ export const registerNativeAccount = createServerFn({ method: "POST" })
       options: { data: { full_name: data.fullName, segment: "ai" } },
     });
     code = created.data?.properties?.email_otp;
+    if (!created.error && code && created.data?.user?.id && data.referralCode) {
+      const { error } = await supabaseAdmin.from("referral_signup_claims").insert({
+        user_id: created.data.user.id, referral_code: data.referralCode,
+      });
+      if (error) console.error("[register] referral capture failed:", error.message);
+    }
     if (created.error || !code) {
       // An earlier, never-verified attempt may already own this address.
       const retry = await supabaseAdmin.auth.admin.generateLink({ type: "magiclink", email });
@@ -120,6 +127,10 @@ export const finishNativeRegistration = createServerFn({ method: "POST" })
         return { ok: false };
       }
     }
+    const { applySignupReferral } = await import("./referral-backend.server");
+    try {
+      await applySignupReferral(userId);
+    } catch (error) { console.error("[register] referral issuance pending:", error instanceof Error ? error.message : "failed"); }
     return { ok: true };
   });
 
