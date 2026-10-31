@@ -141,6 +141,17 @@ export const Route = createFileRoute("/api/public/stripe-webhook")({
           return new Response("Invalid signature", { status: 400 });
         }
 
+        if (event.type === "charge.refunded") {
+          const { processReferralRefund } = await import("@/lib/referral-backend.server");
+          const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+          try {
+            await processReferralRefund(supabaseAdmin, stripe, event.data.object as Stripe.Charge);
+            return Response.json({ received: true });
+          } catch {
+            return new Response("Referral refund processing failed", { status: 500 });
+          }
+        }
+
         if (event.type !== "checkout.session.completed") {
           return Response.json({ received: true });
         }
@@ -160,6 +171,24 @@ export const Route = createFileRoute("/api/public/stripe-webhook")({
         const mode = session.mode || "payment";
 
         try {
+          const promoCode = await lookupPromoCode(stripe, session.id);
+          const { processReferralCheckout } = await import("@/lib/referral-backend.server");
+          // Preserve historical paid evidence before existing fulfillment updates
+          // the buyer's latest subscription row.
+          const { data: priorProfile, error: priorError } = await admin.from("profiles").select("id").ilike("email", email.trim().toLowerCase()).maybeSingle();
+          if (priorError) throw priorError;
+          if (priorProfile) {
+            const { data: priorPaid, error: paidError } = await admin.from("subscriptions").select("stripe_session_id,purchased_at,created_at,amount,amount_paid_cents").eq("user_id", priorProfile.id).gt("amount", 0);
+            if (paidError) throw paidError;
+            for (const paid of priorPaid ?? []) {
+              const { error: ledgerError } = await admin.from("referral_paid_purchases").upsert({
+                session_id: paid.stripe_session_id || `legacy-${priorProfile.id}`,
+                user_id: priorProfile.id, paid_at: paid.purchased_at || paid.created_at,
+                amount_usd: paid.amount_paid_cents == null ? paid.amount : paid.amount_paid_cents / 100,
+              }, { onConflict: "session_id", ignoreDuplicates: true });
+              if (ledgerError) throw ledgerError;
+            }
+          }
           const result = await fulfillCheckout(admin, {
             sessionId: session.id,
             email,
@@ -169,13 +198,29 @@ export const Route = createFileRoute("/api/public/stripe-webhook")({
             amountTotal: session.amount_total ?? null,
             currency: session.currency ?? null,
             createdUnix: session.created ?? null,
-            promoCode: await lookupPromoCode(stripe, session.id),
+            promoCode,
           });
 
           if (result.kind === "duplicate") {
+            const { data: buyer } = await admin.from("profiles").select("id").ilike("email", email.trim().toLowerCase()).maybeSingle();
+            if (buyer) {
+              const { applySignupReferral } = await import("@/lib/referral-backend.server");
+              await applySignupReferral(buyer.id, { stripe: stripeSecretKey, email: resendApiKey });
+              await processReferralCheckout(admin, stripe, session, buyer.id, { stripe: stripeSecretKey, email: resendApiKey }, promoCode);
+            }
             console.log(`[stripe-webhook] session ${session.id} already processed — skipped`);
             return Response.json({ received: true, duplicate: true });
           }
+
+          const processReferral = async () => {
+            if (!priorProfile && session.client_reference_id && /^[A-HJ-NP-Z2-9]{8}$/.test(session.client_reference_id)) {
+              const { error: captureError } = await admin.from("referral_signup_claims").upsert({ user_id: result.userId, referral_code: session.client_reference_id }, { onConflict: "user_id", ignoreDuplicates: true });
+              if (captureError) throw captureError;
+              const { applySignupReferral } = await import("@/lib/referral-backend.server");
+              await applySignupReferral(result.userId, { stripe: stripeSecretKey, email: resendApiKey });
+            }
+            await processReferralCheckout(admin, stripe, session, result.userId, { stripe: stripeSecretKey, email: resendApiKey }, promoCode);
+          };
 
           if (result.kind === "level_upgrade") {
             const { fromLevel, toLevel, keptTier } = result;
@@ -203,6 +248,7 @@ export const Route = createFileRoute("/api/public/stripe-webhook")({
               resendApiKey,
             );
             console.log(`[stripe-webhook] level upgrade ${fromLevel}→${toLevel} for ${email}`);
+            await processReferral();
             return Response.json({ success: true, upgrade: "level_upgrade" });
           }
 
@@ -231,6 +277,7 @@ export const Route = createFileRoute("/api/public/stripe-webhook")({
               resendApiKey,
             );
             console.log(`[stripe-webhook] AI top-up completed for ${email}`);
+            await processReferral();
             return Response.json({ success: true, upgrade: "course_ai_topup" });
           }
 
@@ -252,6 +299,7 @@ export const Route = createFileRoute("/api/public/stripe-webhook")({
             resendApiKey,
           );
           console.log(`[stripe-webhook] onboarded ${email} — ${level} ${tier}`);
+          await processReferral();
           return Response.json({ success: true });
         } catch (err) {
           console.error("[stripe-webhook] processing error:", err);

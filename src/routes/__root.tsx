@@ -21,6 +21,8 @@ import { ProfileProvider } from "@/contexts/ProfileContext";
 import DeepLinkHandler from "@/components/deep-link-handler";
 import PushNotificationHandler from "@/components/push-notification-handler";
 import { isNative } from "@/lib/native";
+import { captureReferral } from "@/lib/referral-capture";
+import { finishPendingReferral } from "@/lib/referral.functions";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
@@ -80,6 +82,16 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  useEffect(() => {
+    captureReferral();
+    const retry = () => { void finishPendingReferral().catch(() => { /* retry on next sign-in */ }); };
+    void supabase.auth.getSession().then(({ data }) => { if (data.session) retry(); });
+    const { data } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_IN") setTimeout(retry, 0);
+    });
+    return () => data.subscription.unsubscribe();
+  }, []);
 
   useEffect(() => {
     const cap = (window as unknown as { Capacitor?: { getPlatform?: () => string } }).Capacitor;

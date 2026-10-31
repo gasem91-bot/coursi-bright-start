@@ -25,6 +25,7 @@ export async function buildEmailPreviews(): Promise<EmailPreview[]> {
   const { buildAiUpgradeHtml, AI_UPGRADE_SUBJECT } = await import("./ai-upgrade-email.server");
   const { buildUpgradeNudgeHtml, UPGRADE_NUDGE_SUBJECT } = await import("./upgrade-nudge-email.server");
   const { buildReferralInviteHtml, REFERRAL_INVITE_SUBJECT } = await import("./referral-invite-email.server");
+  const { buildFriendInviteHtml, buildFriendDiscountHtml, buildReferrerRewardHtml, referralInviteSubject, FRIEND_DISCOUNT_SUBJECT, REFERRER_REWARD_SUBJECT } = await import("./referral-emails.server");
 
   const dateText = arabicDate(new Date());
   const ticket = {
@@ -38,6 +39,18 @@ export async function buildEmailPreviews(): Promise<EmailPreview[]> {
   };
 
   const samples = [
+    {
+      key: "referral-friend-invite", label: "دعوة صديق — خصم 5$", to: "student@example.com", from: "كورسي <support@coursi.ai>",
+      subject: referralInviteSubject("قاسم"), html: buildFriendInviteHtml({ referrerName: "قاسم", friendCode: "FR-EXAMPLE", purchaseLink: "https://coursi.ai/ai?ref=ABCDEFGH" }),
+    },
+    {
+      key: "referral-friend-discount", label: "خصم الدعوة للصديق", to: "student@example.com", from: "كورسي <support@coursi.ai>",
+      subject: FRIEND_DISCOUNT_SUBJECT, html: buildFriendDiscountHtml({ firstName: "أحمد", referrerName: "قاسم", friendCode: "FR-EXAMPLE", expiryDate: "٢٩ يناير ٢٠٢٧", purchaseLink: "https://coursi.ai/ai" }),
+    },
+    {
+      key: "referral-referrer-reward", label: "مكافأة صاحب الدعوة", to: "student@example.com", from: "كورسي <support@coursi.ai>",
+      subject: REFERRER_REWARD_SUBJECT, html: buildReferrerRewardHtml({ firstName: "قاسم", friendFirstName: "أحمد", rewardCode: "RW-EXAMPLE", expiryDate: "٢٩ يناير ٢٠٢٧", purchaseLink: "https://coursi.ai/ai" }),
+    },
     {
       key: "welcome",
       label: "بريد الترحيب / تأكيد الدفع",

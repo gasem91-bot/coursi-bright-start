@@ -49,7 +49,9 @@ async function findUserIdByEmail(admin: Admin, email: string): Promise<string | 
 }
 
 async function resolveExistingUserId(admin: Admin, input: CheckoutInput) {
-  return input.metadata.user_id || input.clientReferenceId || (await findUserIdByEmail(admin, input.email));
+  const referenceUserId = input.clientReferenceId && /^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(input.clientReferenceId)
+    ? input.clientReferenceId : undefined;
+  return input.metadata.user_id || referenceUserId || (await findUserIdByEmail(admin, input.email));
 }
 
 // Update the buyer's newest subscription row, or insert one if none exists.
