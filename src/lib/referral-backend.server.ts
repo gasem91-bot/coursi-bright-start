@@ -25,6 +25,8 @@ export async function ensurePromotion(key: string, id: string, kind: "friend" | 
   if (!existing.ok) throw new Error(`Stripe promotion lookup failed (${existing.status})`);
   const found = (await existing.json() as { data: Array<{ id: string; code: string; expires_at: number }> }).data[0];
   if (found) return found;
+  // A delayed retry must not mint an already-expired code.
+  if (expires <= Math.floor(Date.now() / 1000)) throw new Error("Referral code issue window expired");
   const coupon = await fetch(`https://api.stripe.com/v1/coupons/${REFERRAL_COUPON_ID}`, { headers });
   if (!coupon.ok) throw new Error(`Required Stripe coupon ${REFERRAL_COUPON_ID} is missing`);
   const details = await coupon.json() as { valid: boolean; amount_off: number; currency: string };

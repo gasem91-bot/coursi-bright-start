@@ -208,7 +208,15 @@ export const Route = createFileRoute("/api/public/stripe-webhook")({
             return Response.json({ received: true, duplicate: true });
           }
 
-          await processReferralCheckout(admin, stripe, session, result.userId, { stripe: stripeSecretKey, email: resendApiKey }, promoCode);
+          const processReferral = async () => {
+            if (!priorProfile && session.client_reference_id && /^[A-HJ-NP-Z2-9]{8}$/.test(session.client_reference_id)) {
+              const { error: captureError } = await admin.from("referral_signup_claims").upsert({ user_id: result.userId, referral_code: session.client_reference_id }, { onConflict: "user_id", ignoreDuplicates: true });
+              if (captureError) throw captureError;
+              const { applySignupReferral } = await import("@/lib/referral-backend.server");
+              await applySignupReferral(result.userId, { stripe: stripeSecretKey, email: resendApiKey });
+            }
+            await processReferralCheckout(admin, stripe, session, result.userId, { stripe: stripeSecretKey, email: resendApiKey }, promoCode);
+          };
 
           if (result.kind === "level_upgrade") {
             const { fromLevel, toLevel, keptTier } = result;
@@ -236,6 +244,7 @@ export const Route = createFileRoute("/api/public/stripe-webhook")({
               resendApiKey,
             );
             console.log(`[stripe-webhook] level upgrade ${fromLevel}→${toLevel} for ${email}`);
+            await processReferral();
             return Response.json({ success: true, upgrade: "level_upgrade" });
           }
 
@@ -264,6 +273,7 @@ export const Route = createFileRoute("/api/public/stripe-webhook")({
               resendApiKey,
             );
             console.log(`[stripe-webhook] AI top-up completed for ${email}`);
+            await processReferral();
             return Response.json({ success: true, upgrade: "course_ai_topup" });
           }
 
@@ -285,6 +295,7 @@ export const Route = createFileRoute("/api/public/stripe-webhook")({
             resendApiKey,
           );
           console.log(`[stripe-webhook] onboarded ${email} — ${level} ${tier}`);
+          await processReferral();
           return Response.json({ success: true });
         } catch (err) {
           console.error("[stripe-webhook] processing error:", err);
