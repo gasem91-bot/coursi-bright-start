@@ -78,6 +78,13 @@
       "when": 1793439509888,
       "tag": "0010_referral_paid_session_ownership_guard",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1793447008175,
+      "tag": "0011_referral_link_invited_signup",
+      "breakpoints": true
     }
   ]
 }
