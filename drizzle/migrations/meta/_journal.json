@@ -71,6 +71,13 @@
       "when": 1793439440164,
       "tag": "0009_referral_issue_and_delivery_timestamps",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1793439509888,
+      "tag": "0010_referral_paid_session_ownership_guard",
+      "breakpoints": true
     }
   ]
 }
