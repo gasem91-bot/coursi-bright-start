@@ -9,3 +9,5 @@
 - Email congratulations use the shared shell's centred hero/CTA styles; admin samples carry template/level/tier metadata so previews and test sends use the same builders, one selected variant per template.
 - Bundle offer links and prices live in `bundle-offers.ts`; signed-in Offers only consumes them, leaving existing checkout flows and public pages unchanged.
 - Subscriber stats authenticate a shared token before loading privileged clients, count distinct active positive-paid subscribers, and exclude admin allowlist/auth metadata test tags/QA addresses; only aggregate counts leave the server.
+- Referral attribution is claimed only from server-recorded new signups; protected profile fields and service-role-only writes prevent client reassignment. Durable paid evidence plus Stripe history determine first purchases, deterministic promotion codes permit retries, and verified webhooks handle rewards/refunds separately from existing fulfillment.
+- Referral personal rows cascade on profile deletion; paid referral evidence is unlinked for accounting and no referral code is prefilled at checkout.

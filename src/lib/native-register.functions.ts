@@ -129,7 +129,9 @@ export const finishNativeRegistration = createServerFn({ method: "POST" })
     }
     const { applySignupReferral } = await import("./referral-backend.server");
     try {
-      await applySignupReferral(userId);
+      const stripe = process.env["STRIPE_SECRET_KEY"];
+      const emailKey = process.env["RESEND_API_KEY"];
+      if (stripe && emailKey) await applySignupReferral(userId, { stripe, email: emailKey });
     } catch (error) { console.error("[register] referral issuance pending:", error instanceof Error ? error.message : "failed"); }
     return { ok: true };
   });

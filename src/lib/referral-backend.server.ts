@@ -48,9 +48,9 @@ export async function issueFriendCode(admin: Admin, row: Referral, stripeKey: st
   return data;
 }
 
-export async function applySignupReferral(userId: string, keys?: { stripe: string; email: string }) {
-  const stripeKey = keys?.stripe ?? process.env["STRIPE_SECRET_KEY"];
-  const emailKey = keys?.email ?? process.env["RESEND_API_KEY"];
+export async function applySignupReferral(userId: string, keys: { stripe: string; email: string }) {
+  const stripeKey = keys.stripe;
+  const emailKey = keys.email;
   if (!stripeKey || !emailKey) throw new Error("Referral Stripe/email credentials missing");
   const { supabaseAdmin: admin } = await import("@/integrations/supabase/client.server");
   const { data: claim, error: claimError } = await admin.from("referral_signup_claims").select().eq("user_id", userId).maybeSingle();
@@ -107,9 +107,7 @@ export async function findCheckoutReferral(admin: Admin, session: Stripe.Checkou
 async function hasEarlierStripePurchase(stripe: Stripe, session: Stripe.Checkout.Session, email: string) {
   let startingAfter: string | undefined;
   do {
-    const page = await stripe.checkout.sessions.list({ limit: 100, starting_after: startingAfter,
-      ...(typeof session.customer === "string" ? { customer: session.customer } : {}),
-    });
+    const page = await stripe.checkout.sessions.list({ limit: 100, starting_after: startingAfter });
     for (const prior of page.data) {
       const address = (prior.customer_email || prior.customer_details?.email || "").trim().toLowerCase();
       if (prior.id !== session.id && prior.created <= session.created && address === email && prior.payment_status === "paid" && (prior.amount_total ?? 0) > 0) return true;
@@ -158,7 +156,10 @@ export async function processReferralCheckout(admin: Admin, stripe: Stripe, sess
     }).eq("id", row.id).eq("status", "purchased").select().maybeSingle();
     check(rewardError);
     if (!rewarded) {
-      await deactivateUnusedPromotion(stripe, promo.id); return;
+      const { data: latest, error: latestError } = await admin.from("referrals").select("status").eq("id", row.id).single();
+      check(latestError);
+      if (latest?.status === "voided") await deactivateUnusedPromotion(stripe, promo.id);
+      return;
     }
     row = rewarded;
   }
