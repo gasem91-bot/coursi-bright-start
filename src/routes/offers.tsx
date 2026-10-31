@@ -209,14 +209,19 @@ function OffersPage() {
                 </div>
                 <p className="py-3 text-sm leading-7 text-[var(--text-secondary)]">كورس الذكاء الاصطناعي + كورس التداول</p>
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <Button asChild variant="outline" className="h-auto min-h-12 whitespace-normal border-[var(--accent-cyan-border)] bg-[var(--bg-card)] px-3 py-3 text-[var(--accent-cyan-text)] hover:bg-[var(--accent-cyan-soft)] hover:text-[var(--accent-cyan-text)]">
-                    <a href={getBundleCheckoutUrl(bundle.coursesUrl, "courses")} onClick={(event) => { event.currentTarget.href = getBundleCheckoutUrl(bundle.coursesUrl, "courses"); }}>
-                      <span>الكورسات فقط</span>
-                      <del className="text-[var(--text-secondary)]"><bdi>${bundleOffer.prices.courses.original}</bdi></del>
-                      <bdi className="font-bold">${bundleOffer.prices.courses.price}</bdi>
-                      <ArrowLeft aria-hidden="true" />
-                    </a>
-                  </Button>
+                  <div className="flex flex-col gap-2">
+                    {/* Invisible spacer matching the tutor card title so both buttons line up. */}
+                    <p aria-hidden="true" className="invisible text-sm font-bold leading-6">الذكاء الاصطناعي + التداول — الكورس + بوتات التعلّم والإشارات</p>
+                    <Button asChild variant="outline" className="h-auto min-h-12 whitespace-normal border-[var(--accent-cyan-border)] bg-[var(--bg-card)] px-3 py-3 text-[var(--accent-cyan-text)] hover:bg-[var(--accent-cyan-soft)] hover:text-[var(--accent-cyan-text)]">
+                      <a href={getBundleCheckoutUrl(bundle.coursesUrl, "courses")} onClick={(event) => { event.currentTarget.href = getBundleCheckoutUrl(bundle.coursesUrl, "courses"); }}>
+                        <span>الكورسات فقط</span>
+                        <del className="text-[var(--text-secondary)]"><bdi>${bundleOffer.prices.courses.original}</bdi></del>
+                        <bdi className="font-bold">${bundleOffer.prices.courses.price}</bdi>
+                        <ArrowLeft aria-hidden="true" />
+                      </a>
+                    </Button>
+                  </div>
+
                   <div className="flex flex-col gap-2">
                     <p className="text-sm font-bold leading-6 text-[var(--text-primary)]">الذكاء الاصطناعي + التداول — الكورس + بوتات التعلّم والإشارات</p>
                     <Button asChild variant="outline" className="h-auto min-h-12 whitespace-normal border-[var(--accent-purple-border)] bg-[var(--bg-card)] px-3 py-3 text-[var(--accent-purple-text)] hover:bg-[var(--accent-purple-soft)] hover:text-[var(--accent-purple-text)]">
