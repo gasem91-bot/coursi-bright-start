@@ -180,7 +180,10 @@ function AdminDataPage() {
       <main style={{ maxWidth: 1200, margin: "0 auto", padding: "24px 16px 64px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 16 }}>
           <h1 style={{ fontSize: 24, fontWeight: 800 }}>مركز البيانات</h1>
-          <Link to="/admin/emails" style={{ color: "var(--accent-cyan-text)", fontSize: 14 }}>رسائل البريد التجريبية ←</Link>
+          <div style={{ display: "flex", gap: 16 }}>
+            <Link to="/admin/referrals" style={{ color: "var(--accent-cyan-text)", fontSize: 14 }}>الدعوات</Link>
+            <Link to="/admin/emails" style={{ color: "var(--accent-cyan-text)", fontSize: 14 }}>رسائل البريد التجريبية ←</Link>
+          </div>
         </div>
 
         {state === "loading" && <p style={{ color: "var(--text-secondary)" }}>جاري التحميل...</p>}

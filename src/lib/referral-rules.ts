@@ -28,3 +28,28 @@ export function isSuccessfulPaidCheckout(paymentStatus: string, amount: number, 
 export function canRewardReferral(status: string, firstSession: string, sessionId: string): boolean {
   return firstSession === sessionId && (status === "signed_up" || status === "invited" || status === "purchased");
 }
+// Existing Beginner AI course Stripe payment link (promotion codes enabled). No promo is ever prefilled.
+export const REFERRAL_PURCHASE_BASE = "https://buy.stripe.com/9B69AT8of2UJ93ic1VeQM08";
+
+export function referralPurchaseLink(referralCode: string, friendEmail: string): string {
+  const url = new URL(REFERRAL_PURCHASE_BASE);
+  url.searchParams.set("client_reference_id", referralCode);
+  url.searchParams.set("prefilled_email", friendEmail.trim().toLowerCase());
+  return url.toString();
+}
+
+export type InviteBlock = "self" | "has_account" | "already_invited" | null;
+export function inviteBlockReason(friendEmail: string, ownEmail: string, hasAccount: boolean, alreadyInvited: boolean): InviteBlock {
+  const e = friendEmail.trim().toLowerCase();
+  if (e === ownEmail.trim().toLowerCase()) return "self";
+  if (hasAccount) return "has_account";
+  if (alreadyInvited) return "already_invited";
+  return null;
+}
+
+export type RewardState = "active" | "used" | "expired";
+export function rewardState(redeemedAt: string | null, expiresAt: string | null, now: number): RewardState {
+  if (redeemedAt) return "used";
+  if (expiresAt && new Date(expiresAt).getTime() <= now) return "expired";
+  return "active";
+}

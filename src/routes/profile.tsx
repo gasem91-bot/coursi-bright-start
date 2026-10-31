@@ -8,6 +8,7 @@ import { useProfile } from "@/contexts/ProfileContext";
 import { BadgeMedallion } from "@/components/badge-medallion";
 import { getMyCertificates, type EarnedCertificate } from "@/lib/exam.functions";
 import { LEVEL_LABEL } from "@/lib/certificate";
+import { ReferralSection } from "@/components/referral-section";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -285,6 +286,8 @@ function ProfilePage() {
             ))
           )}
         </section>
+
+        <div style={{ marginTop: 24 }}><ReferralSection /></div>
 
         <section style={{ marginTop: 40, paddingTop: 20, borderTop: "1px solid rgba(239,68,68,0.3)" }}>
           <h2 style={{ color: "#EF4444", fontSize: 14, fontWeight: 700, marginBottom: 6 }}>منطقة الخطر</h2>

@@ -676,6 +676,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      link_invited_signup: { Args: { p_user_id: string }; Returns: string }
       record_referral_paid_purchase: {
         Args: {
           p_amount: number

@@ -11,3 +11,4 @@
 - Subscriber stats authenticate a shared token before loading privileged clients, count distinct active positive-paid subscribers, and exclude admin allowlist/auth metadata test tags/QA addresses; only aggregate counts leave the server.
 - Referral attribution is claimed only from server-recorded new signups; protected profile fields and service-role-only writes prevent client reassignment. Durable paid evidence plus Stripe history determine first purchases, deterministic promotion codes permit retries, and verified webhooks handle rewards/refunds separately from existing fulfillment.
 - Referral personal rows cascade on profile deletion; paid referral evidence is unlinked for accounting and no referral code is prefilled at checkout.
+- Referral invites are email-only through `inviteReferralFriend`; invited signups are linked by `link_invited_signup` and reuse the invite's friend code so a friend never gets a second code or email.

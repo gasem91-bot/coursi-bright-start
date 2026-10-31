@@ -62,10 +62,16 @@ export async function applySignupReferral(userId: string, keys: { stripe: string
   const { supabaseAdmin: admin } = await import("@/integrations/supabase/client.server");
   const { data: claim, error: claimError } = await admin.from("referral_signup_claims").select().eq("user_id", userId).maybeSingle();
   check(claimError);
-  if (!claim) return;
   const { data: auth, error: authError } = await admin.auth.admin.getUserById(userId);
   check(authError);
   if (!auth.user?.email_confirmed_at) return;
+  // An emailed invite wins: link it and reuse its code; the invite email already carried it.
+  const { data: invited, error: inviteError } = await admin.rpc("link_invited_signup", { p_user_id: userId });
+  check(inviteError);
+  if (invited || !claim) {
+    if (claim) { const { error: clearError } = await admin.from("referral_signup_claims").delete().eq("user_id", userId); check(clearError); }
+    return;
+  }
   const { data: owner, error: ownerError } = await admin.from("profiles").select("id").eq("referral_code", claim.referral_code).maybeSingle();
   check(ownerError);
   if (owner) {
