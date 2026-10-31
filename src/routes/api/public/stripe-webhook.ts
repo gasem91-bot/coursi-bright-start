@@ -203,7 +203,11 @@ export const Route = createFileRoute("/api/public/stripe-webhook")({
 
           if (result.kind === "duplicate") {
             const { data: buyer } = await admin.from("profiles").select("id").ilike("email", email.trim().toLowerCase()).maybeSingle();
-            if (buyer) await processReferralCheckout(admin, stripe, session, buyer.id, { stripe: stripeSecretKey, email: resendApiKey }, promoCode);
+            if (buyer) {
+              const { applySignupReferral } = await import("@/lib/referral-backend.server");
+              await applySignupReferral(buyer.id, { stripe: stripeSecretKey, email: resendApiKey });
+              await processReferralCheckout(admin, stripe, session, buyer.id, { stripe: stripeSecretKey, email: resendApiKey }, promoCode);
+            }
             console.log(`[stripe-webhook] session ${session.id} already processed — skipped`);
             return Response.json({ received: true, duplicate: true });
           }

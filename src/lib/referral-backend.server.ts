@@ -41,7 +41,12 @@ export async function ensurePromotion(key: string, id: string, kind: "friend" | 
 
 export async function issueFriendCode(admin: Admin, row: Referral, stripeKey: string) {
   if (row.friend_code) return row;
-  const promo = await ensurePromotion(stripeKey, row.id, "friend", row.created_at);
+  const { error: issueError } = await admin.from("referrals").update({ friend_issued_at: new Date().toISOString() }).eq("id", row.id).is("friend_issued_at", null);
+  check(issueError);
+  const { data: current, error: currentError } = await admin.from("referrals").select("friend_issued_at").eq("id", row.id).single();
+  check(currentError);
+  if (!current?.friend_issued_at) throw new Error("Friend issue timestamp missing");
+  const promo = await ensurePromotion(stripeKey, row.id, "friend", current.friend_issued_at);
   const { data, error } = await admin.from("referrals").update({
     friend_code: promo.code, friend_promotion_id: promo.id, friend_code_expires_at: new Date(promo.expires_at * 1000).toISOString(),
   }).eq("id", row.id).select().single();

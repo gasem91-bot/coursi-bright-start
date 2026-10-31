@@ -20,14 +20,22 @@ export const inviteReferralFriend = createServerFn({ method: "POST" })
     if (existing?.length) return { ok: true };
     const { data: inserted, error: insertError } = await admin.from("referrals").upsert({ referrer_user_id: context.userId, referred_email: email, source: data.source }, { onConflict: "referred_email", ignoreDuplicates: true }).select().maybeSingle();
     if (insertError) throw insertError;
-    if (!inserted) return { ok: true };
+    let invitation = inserted;
+    if (!invitation) {
+      const { data: pending, error: pendingError } = await admin.from("referrals").select().eq("referred_email", email).eq("referrer_user_id", context.userId).eq("status", "invited").maybeSingle();
+      if (pendingError) throw pendingError;
+      invitation = pending;
+    }
+    if (!invitation || invitation.invite_email_sent_at) return { ok: true };
     const { issueFriendCode } = await import("./referral-backend.server");
-    const row = await issueFriendCode(admin, inserted, stripeKey);
+    const row = await issueFriendCode(admin, invitation, stripeKey);
     const { buildFriendInviteHtml, referralInviteSubject, sendReferralEmail } = await import("./referral-emails.server");
     const name = referrer.full_name || referrer.display_name || "صديقك";
     await sendReferralEmail({ to: email, subject: referralInviteSubject(name), eventKey: `referral-invite-${row.id}`, html: buildFriendInviteHtml({
       referrerName: name, friendCode: row.friend_code || "", purchaseLink: `https://coursi.ai/ai?ref=${encodeURIComponent(referrer.referral_code || "")}`,
     }) }, emailKey);
+    const { error: sentError } = await admin.from("referrals").update({ invite_email_sent_at: new Date().toISOString() }).eq("id", row.id);
+    if (sentError) throw sentError;
     return { ok: true };
   });
 
