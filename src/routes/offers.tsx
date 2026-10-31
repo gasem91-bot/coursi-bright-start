@@ -45,11 +45,15 @@ function OffersPage() {
   useEffect(() => {
     const refresh = () => setBundleOffer(getBundleOfferState());
     refresh();
-    // Refresh open tabs at expiry (short chunks avoid the browser timer limit).
+    // Refresh open tabs at expiry (chunks avoid the browser timer limit).
     const timer = window.setInterval(refresh, 30_000);
-    const remaining = Date.parse(BUNDLE_LIMITED_TIME_OFFER.endsAt) - Date.now();
-    const cutoffTimer = remaining > 0 && remaining <= 2_147_483_647
-      ? window.setTimeout(refresh, remaining) : undefined;
+    let cutoffTimer: number | undefined;
+    const scheduleCutoff = () => {
+      const remaining = Date.parse(BUNDLE_LIMITED_TIME_OFFER.endsAt) - Date.now();
+      if (remaining <= 0) { refresh(); return; }
+      cutoffTimer = window.setTimeout(scheduleCutoff, Math.min(remaining, 2_147_483_647));
+    };
+    scheduleCutoff();
     window.addEventListener("focus", refresh);
     document.addEventListener("visibilitychange", refresh);
     return () => {
