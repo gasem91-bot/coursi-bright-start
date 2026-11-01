@@ -1,3 +1,7 @@
+- [ ] Add owner-only referral wallet, synchronized per-code rows, unlimited scrolling and concrete rule tests.
+- [ ] Segment referral/wallet records and admin filter; brand three referral emails from shared vertical config.
+- [ ] Remove only the specified unused test invite/code; confirm Stripe refund subscription and handling.
+- [ ] Verify signed-in desktop/phone wallet, admin filtering, clean checks and publish.
 - [x] Apply owner-approved bundle limited-time prices and existing-link promo prefills; all three cards/six links verified signed in at desktop/390px, including open-tab Dubai-midnight expiry. No other bundle placements/email prices found; 25 rule tests pass and automatic build OK.
 - [x] Publication requested for https://ai.portal.coursi.ai; deployment completion remains unverified.
 - [x] Build referral schema, 30-day capture and new-user friend-code issuance; all 8 existing profiles backfilled with valid unique codes.
