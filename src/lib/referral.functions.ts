@@ -116,7 +116,7 @@ export const getMyReferralWallet = createServerFn({ method: "POST" })
     });
   });
 
-const offerLinks = [
+const offerLinks: string[] = [
   ...BUNDLE_OFFERS.flatMap((b) => [b.coursesUrl, b.tutorsUrl]),
   ...TRADING_OFFERS.flatMap((b) => [b.courseUrl, b.botsUrl]),
 ];

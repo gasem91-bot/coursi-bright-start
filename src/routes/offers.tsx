@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { BadgeMedallion } from "@/components/badge-medallion";
-import { createAiUpgradeCheckout, getUpgradeStatus, type UpgradeStatus } from "@/lib/upgrade.functions";
+import { createAiUpgradeCheckout, createAiWalletUpgradeCheckout, getUpgradeStatus, type UpgradeStatus } from "@/lib/upgrade.functions";
 import { BUNDLE_OFFERS, BUNDLE_LIMITED_TIME_OFFER, getBundleOfferState, getBundleCheckoutUrl } from "@/lib/bundle-offers";
 import { TRADING_OFFERS, TRADING_PRICES } from "@/lib/trading-offers";
 import { useIsNative } from "@/lib/native";
@@ -43,6 +43,7 @@ function OffersPage() {
   const loadWallet = useServerFn(getMyReferralWallet);
   const loadCreditLinks = useServerFn(getOfferCreditLinks);
   const creditCheckout = useServerFn(createWalletCreditLink);
+  const tutorCreditCheckout = useServerFn(createAiWalletUpgradeCheckout);
   const [wallet, setWallet] = useState<WalletCode[]>([]);
   const [creditLinks, setCreditLinks] = useState<string[]>([]);
   const [creditBusy, setCreditBusy] = useState<string | null>(null);
@@ -113,13 +114,13 @@ function OffersPage() {
     return () => { cancelled = true; clearInterval(timer); window.removeEventListener("focus", refresh); };
   }, [status, native, loadWallet, loadCreditLinks]);
 
-  const creditChoice = (url: string) => !native && earliestWalletCode(wallet) && creditLinks.includes(url) ? (
+  const creditChoice = (url: string) => !native && earliestWalletCode(wallet) && (url === "ai-tutor" || creditLinks.includes(url)) ? (
     <Button variant="outline" disabled={creditBusy !== null} className="min-h-12 w-full whitespace-normal border-[var(--accent-green-border)] text-[var(--accent-green-text)]"
       onClick={async () => {
         setCreditBusy(url);
         try {
-          const result = await creditCheckout({ data: { url } });
-          if (result.url) { window.location.href = result.url; return; }
+          const result = url === "ai-tutor" ? await tutorCreditCheckout() : await creditCheckout({ data: { url } });
+          if ("url" in result && result.url) { window.location.href = result.url; return; }
           setWallet(await loadWallet());
           toast.error("لا يوجد رصيد نشط متاح، اختر العرض الحالي");
         } catch { toast.error("تعذّر التحقق من رصيدك، حاول مرة أخرى"); }
@@ -193,6 +194,7 @@ function OffersPage() {
                   {!busy && <ArrowLeft aria-hidden="true" />}
                 </Button>
                 )}
+                {status.eligible && creditChoice("ai-tutor")}
                 </>)}
               </article>
             )}
