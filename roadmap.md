@@ -1,7 +1,9 @@
-- [ ] Add owner-only referral wallet, synchronized per-code rows, unlimited scrolling and concrete rule tests.
-- [ ] Segment referral/wallet records and admin filter; brand three referral emails from shared vertical config.
-- [ ] Remove only the specified unused test invite/code; confirm Stripe refund subscription and handling.
-- [ ] Verify signed-in desktop/phone wallet, admin filtering, clean checks and publish.
+- [x] Add owner-only referral wallet, synchronized per-code rows, unlimited scrolling and concrete rule tests; QA welcome/reward/cancelled rows and clipboard checked, then fully removed.
+- [x] Segment referral/wallet records and admin filter; brand three referral emails from shared vertical config, rendered previews checked.
+- [x] Remove only the specified unused test invite; Stripe code deactivated (Stripe does not delete promotion codes). Existing AI webhook already enabled for charge.refunded; unused/used reward and duplicate refund tests pass.
+- [x] Verify signed-in desktop/390px wallet and non-admin denial; 31 tests pass and automatic checks clean.
+- [ ] Verify admin filter while signed in as owner: owner-session approval declined.
+- [ ] Publish wallet extension and confirm live deployment.
 - [x] Apply owner-approved bundle limited-time prices and existing-link promo prefills; all three cards/six links verified signed in at desktop/390px, including open-tab Dubai-midnight expiry. No other bundle placements/email prices found; 25 rule tests pass and automatic build OK.
 - [x] Publication requested for https://ai.portal.coursi.ai; deployment completion remains unverified.
 - [x] Build referral schema, 30-day capture and new-user friend-code issuance; all 8 existing profiles backfilled with valid unique codes.

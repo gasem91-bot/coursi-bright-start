@@ -16,7 +16,17 @@ export function ReferralWallet({ rows, loading, error, retry }: { rows: WalletCo
     try { await navigator.clipboard.writeText(row.code); setCopied(row.id); setCopyError(false); }
     catch { setCopyError(true); }
   }
-  return <div dir="rtl" className="mt-6 border-t border-border pt-5 text-foreground">
+  return <div dir="rtl" className="referral-wallet mt-6 border-t border-border pt-5 text-foreground">
+    <style>{`
+      .referral-wallet { margin-top:24px; padding-top:20px; color:var(--text-primary); }
+      .referral-wallet > p { margin-top:12px; }
+      .referral-wallet > ul { margin-top:16px; padding:0; list-style:none; }
+      .referral-wallet > ul > li { padding:14px; margin-bottom:12px; border:1px solid var(--card-glass-border); border-radius:8px; background:var(--bg-secondary); }
+      .referral-wallet li > p, .referral-wallet li > div + div { margin-top:10px; }
+      .referral-wallet button { min-width:48px; min-height:48px; padding:12px; border-color:var(--card-glass-border); }
+      .referral-wallet p[dir="ltr"] { text-align:right; }
+      .referral-wallet .text-muted-foreground { color:var(--text-secondary); }
+    `}</style>
     <h3 className="flex items-center gap-2 text-lg font-bold"><Wallet aria-hidden="true" />محفظتي</h3>
     <p className="mt-3 text-sm text-muted-foreground">الرصيد المتاح</p>
     <p className="text-3xl font-bold" dir="ltr">{loading ? "…" : error ? "—" : `$${availableCredit(rows, CURRENT_VERTICAL, now).toFixed(2)} USD`}</p>

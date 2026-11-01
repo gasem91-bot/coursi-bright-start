@@ -19,7 +19,14 @@ import {
 
 export const Route = createFileRoute("/profile")({
   component: ProfilePage,
-  head: () => ({ meta: [{ title: "حسابي — COURSI AI Portal" }] }),
+  head: () => ({ meta: [
+    { title: "حسابي ومحفظتي — كورسي للذكاء الاصطناعي" },
+    { name: "description", content: "حساب المتعلّم وشهاداته ودعوات الأصدقاء ومحفظة أكواد الخصم في كورسي للذكاء الاصطناعي." },
+    { property: "og:title", content: "حسابي ومحفظتي — كورسي للذكاء الاصطناعي" },
+    { property: "og:description", content: "حساب المتعلّم وشهاداته ودعواته وأكواد الخصم في كورسي." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
 });
 
 type Level = "beginner" | "intermediate" | "advanced";
