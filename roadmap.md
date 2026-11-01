@@ -1,3 +1,5 @@
+- [ ] Update owned wording, add earliest-expiring wallet credit checkout choice and fitness coming-soon card without changing existing offers.
+- [ ] Synchronize wallet status with Stripe on load and verified payment/refund events; test links and used-code balance, verify signed-in screens and publish.
 - [x] Add owner-only referral wallet, synchronized per-code rows, unlimited scrolling and concrete rule tests; QA welcome/reward/cancelled rows and clipboard checked, then fully removed.
 - [x] Segment referral/wallet records and admin filter; brand three referral emails from shared vertical config, rendered previews checked.
 - [x] Remove only the specified unused test invite; Stripe code deactivated (Stripe does not delete promotion codes). Existing AI webhook already enabled for charge.refunded; unused/used reward and duplicate refund tests pass.
