@@ -11,6 +11,9 @@ import { BUNDLE_OFFERS, BUNDLE_LIMITED_TIME_OFFER, getBundleOfferState, getBundl
 import { TRADING_OFFERS, TRADING_PRICES } from "@/lib/trading-offers";
 import { useIsNative } from "@/lib/native";
 import { IapBuyButton } from "@/components/iap-buy-button";
+import { getMyReferralWallet, getOfferCreditLinks, createWalletCreditLink } from "@/lib/referral.functions";
+import { earliestWalletCode } from "@/lib/wallet-credit";
+import type { WalletCode } from "@/lib/referral-wallet";
 
 export const Route = createFileRoute("/offers")({
   component: OffersPage,
@@ -37,6 +40,12 @@ function OffersPage() {
   const navigate = useNavigate();
   const loadStatus = useServerFn(getUpgradeStatus);
   const startCheckout = useServerFn(createAiUpgradeCheckout);
+  const loadWallet = useServerFn(getMyReferralWallet);
+  const loadCreditLinks = useServerFn(getOfferCreditLinks);
+  const creditCheckout = useServerFn(createWalletCreditLink);
+  const [wallet, setWallet] = useState<WalletCode[]>([]);
+  const [creditLinks, setCreditLinks] = useState<string[]>([]);
+  const [creditBusy, setCreditBusy] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [level, setLevel] = useState<Level>("beginner");
   const [status, setStatus] = useState<UpgradeStatus | null>(null);
@@ -89,6 +98,38 @@ function OffersPage() {
     return () => { cancelled = true; };
   }, [navigate, loadStatus]);
 
+  useEffect(() => {
+    if (!status || native) return;
+    let cancelled = false;
+    const refresh = async () => {
+      try {
+        const [rows, links] = await Promise.all([loadWallet(), loadCreditLinks()]);
+        if (!cancelled) { setWallet(rows); setCreditLinks(links); }
+      } catch { if (!cancelled) { setWallet([]); setCreditLinks([]); } }
+    };
+    void refresh();
+    const timer = window.setInterval(() => void refresh(), 60_000);
+    window.addEventListener("focus", refresh);
+    return () => { cancelled = true; clearInterval(timer); window.removeEventListener("focus", refresh); };
+  }, [status, native, loadWallet, loadCreditLinks]);
+
+  const creditChoice = (url: string) => !native && earliestWalletCode(wallet) && creditLinks.includes(url) ? (
+    <Button variant="outline" disabled={creditBusy !== null} className="min-h-12 w-full whitespace-normal border-[var(--accent-green-border)] text-[var(--accent-green-text)]"
+      onClick={async () => {
+        setCreditBusy(url);
+        try {
+          const result = await creditCheckout({ data: { url } });
+          if (result.url) { window.location.href = result.url; return; }
+          setWallet(await loadWallet());
+          toast.error("لا يوجد رصيد نشط متاح، اختر العرض الحالي");
+        } catch { toast.error("تعذّر التحقق من رصيدك، حاول مرة أخرى"); }
+        setCreditBusy(null);
+      }}>
+      {creditBusy === url ? <LoaderCircle className="animate-spin" /> : <Sparkles />}
+      استخدم رصيدي <bdi>$5</bdi>
+    </Button>
+  ) : null;
+
   const onUpgrade = async () => {
     if (busy) return;
     setBusy(true);
@@ -133,7 +174,7 @@ function OffersPage() {
                 <p className="mt-3 text-sm leading-7 text-[var(--text-secondary)]">إجابات فورية بالعربية · يتذكر مستواك · متاح ٢٤/٧</p>
                 {status.tier === "course_ai" ? (
                   <p className="mt-5 inline-flex items-center gap-2 rounded border border-[var(--accent-green-border)] bg-[var(--accent-green-soft)] px-3 py-2 text-sm font-bold text-[var(--accent-green-text)]">
-                    <BadgeCheck className="size-4" aria-hidden="true" /> تملكه ✓
+                    <BadgeCheck className="size-4" aria-hidden="true" /> مسجّل فيه ✓
                   </p>
                 ) : (<>
                 {native ? (
@@ -177,13 +218,14 @@ function OffersPage() {
                 </div>
                 <p className="py-3 text-sm leading-7 text-[var(--text-secondary)]">دفعة واحدة</p>
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <Button asChild variant="outline" className="h-auto min-h-12 whitespace-normal border-[var(--accent-cyan-border)] bg-[var(--bg-card)] px-3 py-3 text-[var(--accent-cyan-text)] hover:bg-[var(--accent-cyan-soft)] hover:text-[var(--accent-cyan-text)]">
+                  <div className="flex flex-col gap-2"><Button asChild variant="outline" className="h-auto min-h-12 whitespace-normal border-[var(--accent-cyan-border)] bg-[var(--bg-card)] px-3 py-3 text-[var(--accent-cyan-text)] hover:bg-[var(--accent-cyan-soft)] hover:text-[var(--accent-cyan-text)]">
                     <a href={offer.courseUrl}>
                       <span>الكورس فقط</span>
                       <bdi className="font-bold">${TRADING_PRICES.course}</bdi>
                       <ArrowLeft aria-hidden="true" />
                     </a>
                   </Button>
+                  {creditChoice(offer.courseUrl)}</div>
                   <div className="flex flex-col gap-1">
                     <Button asChild variant="outline" className="h-auto min-h-12 whitespace-normal border-[var(--accent-purple-border)] bg-[var(--bg-card)] px-3 py-3 text-[var(--accent-purple-text)] hover:bg-[var(--accent-purple-soft)] hover:text-[var(--accent-purple-text)]">
                       <a href={offer.botsUrl}>
@@ -192,6 +234,7 @@ function OffersPage() {
                         <ArrowLeft aria-hidden="true" />
                       </a>
                     </Button>
+                    {creditChoice(offer.botsUrl)}
                     <p className="text-center text-xs text-[var(--text-secondary)]">إشارات تداول مدى الحياة</p>
                   </div>
                 </div>
@@ -220,6 +263,7 @@ function OffersPage() {
                         <ArrowLeft aria-hidden="true" />
                       </a>
                     </Button>
+                    {creditChoice(bundle.coursesUrl)}
                   </div>
 
                   <div className="flex flex-col gap-2">
@@ -232,6 +276,7 @@ function OffersPage() {
                         <ArrowLeft aria-hidden="true" />
                       </a>
                     </Button>
+                    {creditChoice(bundle.tutorsUrl)}
                   </div>
 
                 </div>
@@ -239,6 +284,13 @@ function OffersPage() {
             ))}
             </>)}
             {/* Future drop offers can be added here. */}
+            <article data-offer="bundle" aria-disabled="true" className="rounded-lg border border-[var(--accent-purple-border)] bg-[var(--bg-secondary)] p-6">
+              <div className="flex flex-wrap items-center gap-3">
+                <Sparkles className="size-6 text-[var(--accent-purple-text)]" aria-hidden="true" />
+                <h2 className="text-lg font-bold text-[var(--text-primary)]">كورس اللياقة البدنية</h2>
+                <span className="rounded border border-[var(--accent-purple-border)] bg-[var(--accent-purple-soft)] px-2 py-1 text-xs font-semibold text-[var(--accent-purple-text)]">قريباً</span>
+              </div>
+            </article>
           </div>
         )}
       </div>
