@@ -1,11 +1,12 @@
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
-import { getMyReferrals, inviteReferralFriend, type MyReferral } from "@/lib/referral.functions";
-import { rewardState } from "@/lib/referral-rules";
+import { getMyReferrals, getMyReferralWallet, inviteReferralFriend, type MyReferral } from "@/lib/referral.functions";
+import { ReferralWallet } from "./referral-wallet";
+import type { WalletCode } from "@/lib/referral-wallet";
+import { Button } from "@/components/ui/button";
 
 const font = "Cairo, 'Noto Sans Arabic', sans-serif";
 const STATUS_AR: Record<string, string> = { invited: "تم إرسال الدعوة", signed_up: "انضم", purchased: "اشترى", rewarded: "تم منح الخصم", voided: "ملغاة" };
-const REWARD_AR = { active: "فعّال", used: "مستخدم", expired: "منتهي" } as const;
 const ERR_AR: Record<string, string> = {
   invalid: "يرجى إدخال بريد إلكتروني صحيح.",
   self: "لا يمكنك دعوة بريدك الإلكتروني.",
@@ -18,12 +19,22 @@ const day = (d: string | null) => (d ? new Date(d).toLocaleDateString("ar-AE") :
 export function ReferralSection() {
   const invite = useServerFn(inviteReferralFriend);
   const load = useServerFn(getMyReferrals);
+  const loadWallet = useServerFn(getMyReferralWallet);
   const [email, setEmail] = useState("");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [rows, setRows] = useState<MyReferral[]>([]);
+  const [wallet, setWallet] = useState<WalletCode[]>([]);
+  const [walletLoading, setWalletLoading] = useState(true);
+  const [walletError, setWalletError] = useState(false);
 
-  const refresh = () => load().then(setRows).catch(() => {});
+  const refresh = async () => {
+    setWalletLoading(true);
+    const [, result] = await Promise.allSettled([load().then(setRows), loadWallet()]);
+    if (result.status === "fulfilled") { setWallet(result.value); setWalletError(false); }
+    else setWalletError(true);
+    setWalletLoading(false);
+  };
   useEffect(() => { void refresh(); }, []);
 
   const submit = async (e: React.FormEvent) => {
@@ -41,7 +52,6 @@ export function ReferralSection() {
 
   const joined = rows.filter((r) => r.status !== "invited" && r.status !== "voided").length;
   const rewards = rows.filter((r) => r.reward_code);
-  const now = Date.now();
 
   return (
     <section dir="rtl" style={{ background: "var(--card-glass)", border: "1px solid var(--card-glass-border)", borderRadius: 16, padding: 20, marginBottom: 24, fontFamily: font }}>
@@ -52,9 +62,9 @@ export function ReferralSection() {
       <form noValidate onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         <input type="email" dir="ltr" inputMode="email" autoComplete="off" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="بريد صديقك الإلكتروني" aria-label="بريد صديقك الإلكتروني" maxLength={254}
           style={{ minHeight: 48, borderRadius: 12, border: "1px solid var(--card-glass-border)", background: "var(--bg-primary)", color: "var(--text-primary)", padding: "0 14px", fontFamily: font, fontSize: 15, textAlign: "right", width: "100%", boxSizing: "border-box" }} />
-        <button type="submit" disabled={busy} style={{ minHeight: 48, borderRadius: 50, border: "none", background: "linear-gradient(135deg, #7B35C0, #40C8C8)", color: "#fff", fontFamily: font, fontWeight: 700, fontSize: 15, cursor: busy ? "wait" : "pointer", opacity: busy ? 0.7 : 1 }}>
+        <Button type="submit" disabled={busy} className="min-h-12">
           {busy ? "جاري الإرسال..." : "أرسل الدعوة"}
-        </button>
+        </Button>
         {msg && <p role="status" style={{ fontSize: 13, color: msg.ok ? "#40C8C8" : "#F87171" }}>{msg.text}</p>}
       </form>
 
@@ -68,7 +78,7 @@ export function ReferralSection() {
       </div>
 
       {rows.length > 0 && (
-        <ul style={{ listStyle: "none", padding: 0, margin: "16px 0 0", display: "flex", flexDirection: "column", gap: 8 }}>
+        <ul aria-label="دعواتي" tabIndex={0} style={{ listStyle: "none", padding: 0, margin: "16px 0 0", display: "flex", flexDirection: "column", gap: 8, maxHeight: 400, overflowY: "auto" }}>
           {rows.map((r) => (
             <li key={r.id} style={{ padding: 12, borderRadius: 12, border: "1px solid var(--card-glass-border)", fontSize: 13 }}>
               <div style={{ display: "flex", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
@@ -76,15 +86,11 @@ export function ReferralSection() {
                 <span style={{ color: "#40C8C8" }}>{STATUS_AR[r.status] ?? r.status}</span>
               </div>
               <div style={{ color: "var(--text-secondary)", fontSize: 12, marginTop: 4 }}>{day(r.date)}</div>
-              {r.reward_code && (() => { const s = rewardState(r.reward_redeemed_at, r.reward_expires_at, now); return (
-                <div style={{ marginTop: 6, fontSize: 12, color: "var(--text-secondary)" }}>
-                  كود خصمك: <b dir="ltr" style={{ color: "var(--text-primary)" }}>{r.reward_code}</b> · {REWARD_AR[s]} · ينتهي {day(r.reward_expires_at)}
-                </div>
-              ); })()}
             </li>
           ))}
         </ul>
       )}
+      <ReferralWallet rows={wallet} loading={walletLoading} error={walletError} retry={() => void refresh()} />
     </section>
   );
 }
