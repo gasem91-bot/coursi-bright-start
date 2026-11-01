@@ -1,3 +1,4 @@
+import { CURRENT_VERTICAL } from "./verticals";
 import type Stripe from "stripe";
 import { REFERRAL_ALPHABET, REFERRAL_CODE_DAYS, REFERRAL_COUPON_ID, REFERRAL_DISCOUNT_CENTS, expiresAfter, isSuccessfulPaidCheckout, canRewardReferral } from "./referral-rules";
 import { buildFriendDiscountHtml, buildReferrerRewardHtml, FRIEND_DISCOUNT_SUBJECT, REFERRER_REWARD_SUBJECT, sendReferralEmail } from "./referral-emails.server";
@@ -99,7 +100,7 @@ export async function applySignupReferral(userId: string, keys: { stripe: string
     ]);
     await sendReferralEmail({ to: issued.referred_email, subject: FRIEND_DISCOUNT_SUBJECT, eventKey: `referral-friend-${id}`, html: buildFriendDiscountHtml({
       firstName: firstName(buyer?.full_name || buyer?.display_name), referrerName: referrer?.full_name || referrer?.display_name || "صديقك",
-      friendCode: issued.friend_code, expiryDate: date(issued.friend_code_expires_at), purchaseLink: PURCHASE_LINK,
+      friendCode: issued.friend_code, expiryDate: date(issued.friend_code_expires_at), purchaseLink: PURCHASE_LINK, vertical: issued.vertical,
     }) }, emailKey);
     const { error: sentError } = await admin.from("referrals").update({ friend_email_sent_at: new Date().toISOString() }).eq("id", id);
     check(sentError);
@@ -115,14 +116,14 @@ export async function findCheckoutReferral(admin: Admin, session: Stripe.Checkou
     const { data: referrer, error } = await admin.from("profiles").select("id").eq("referral_code", reference).maybeSingle();
     check(error);
     if (referrer) {
-      const { data, error: matchError } = await admin.from("referrals").select().eq("referrer_user_id", referrer.id).eq("referred_email", email).maybeSingle();
+      const { data, error: matchError } = await admin.from("referrals").select().eq("vertical", CURRENT_VERTICAL).eq("referrer_user_id", referrer.id).eq("referred_email", email).maybeSingle();
       check(matchError); if (data && (!data.referred_user_id || data.referred_user_id === userId)) return data;
     }
   }
-  const { data: byEmail, error } = await admin.from("referrals").select().eq("referred_email", email).maybeSingle();
+  const { data: byEmail, error } = await admin.from("referrals").select().eq("vertical", CURRENT_VERTICAL).eq("referred_email", email).maybeSingle();
   check(error);
   if (byEmail && (!byEmail.referred_user_id || byEmail.referred_user_id === userId)) return byEmail;
-  const { data, error: userError } = await admin.from("referrals").select().eq("referred_user_id", userId).maybeSingle();
+  const { data, error: userError } = await admin.from("referrals").select().eq("vertical", CURRENT_VERTICAL).eq("referred_user_id", userId).maybeSingle();
   check(userError); return data;
 }
 
@@ -194,7 +195,7 @@ export async function processReferralCheckout(admin: Admin, stripe: Stripe, sess
   if (!referrer?.email || referrer.email.trim().toLowerCase() === row.referred_email) return;
   await sendReferralEmail({ to: referrer.email, subject: REFERRER_REWARD_SUBJECT, eventKey: `referral-reward-${row.id}`, html: buildReferrerRewardHtml({
     firstName: firstName(referrer.full_name || referrer.display_name), friendFirstName: firstName(buyer?.full_name || buyer?.display_name),
-    rewardCode: row.reward_code, expiryDate: date(row.reward_expires_at), purchaseLink: PURCHASE_LINK,
+    rewardCode: row.reward_code, expiryDate: date(row.reward_expires_at), purchaseLink: PURCHASE_LINK, vertical: row.vertical,
   }) }, keys.email);
   const { error: sentError } = await admin.from("referrals").update({ reward_email_sent_at: now }).eq("id", row.id);
   check(sentError);
@@ -210,7 +211,7 @@ export async function processReferralRefund(admin: Admin, stripe: Stripe, charge
   if (!paymentIntent) return;
   const sessions = await stripe.checkout.sessions.list({ payment_intent: paymentIntent, limit: 100 });
   for (const session of sessions.data) {
-    const { data: row, error } = await admin.from("referrals").select().eq("stripe_session_id", session.id).maybeSingle();
+    const { data: row, error } = await admin.from("referrals").select().eq("vertical", CURRENT_VERTICAL).eq("stripe_session_id", session.id).maybeSingle();
     check(error); if (!row) continue;
     const { error: voidError } = await admin.from("referrals").update({ status: "voided" }).eq("id", row.id);
     check(voidError);
