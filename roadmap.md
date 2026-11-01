@@ -1,3 +1,7 @@
+- [x] Update owned wording, add earliest-expiring wallet credit checkout choice and fitness coming-soon card without changing existing offers. Six bundle links accept codes; six Trading links reject them; tutor retains existing $14 session flow with separate explicit credit action.
+- [x] Synchronize wallet status with Stripe on load and verified payment/refund events; credit-link, used-code persistence and cache tests added; signed-in desktop/390px Offers and empty wallet verified, automatic checks clean.
+- [ ] Verify a real wallet credit checkout: database currently has no wallet codes; no codes or personal data were invented for testing.
+- [ ] Publish current wallet-credit changes and confirm live deployment.
 - [x] Add owner-only referral wallet, synchronized per-code rows, unlimited scrolling and concrete rule tests; QA welcome/reward/cancelled rows and clipboard checked, then fully removed.
 - [x] Segment referral/wallet records and admin filter; brand three referral emails from shared vertical config, rendered previews checked.
 - [x] Remove only the specified unused test invite; Stripe code deactivated (Stripe does not delete promotion codes). Existing AI webhook already enabled for charge.refunded; unused/used reward and duplicate refund tests pass.

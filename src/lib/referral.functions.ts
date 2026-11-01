@@ -3,6 +3,9 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { CURRENT_VERTICAL } from "./verticals";
 import type { WalletCode } from "./referral-wallet";
+import { BUNDLE_OFFERS, getBundleCheckoutUrl } from "./bundle-offers";
+import { TRADING_OFFERS } from "./trading-offers";
+import { buildCreditLink, earliestWalletCode } from "./wallet-credit";
 import { inviteBlockReason, referralPurchaseLink, type InviteBlock } from "./referral-rules";
 
 export type InviteResult = { ok: true } | { ok: false; reason: Exclude<InviteBlock, null> | "invalid" | "error" };
@@ -90,6 +93,11 @@ export const getMyReferralWallet = createServerFn({ method: "POST" })
     }
     if (!rows.length) return [];
     const { supabaseAdmin: admin } = await import("@/integrations/supabase/client.server");
+    const key = process.env["STRIPE_SECRET_KEY"];
+    if (!key) throw new Error("Wallet synchronization unavailable");
+    const Stripe = (await import("stripe")).default;
+    const { synchronizeWalletRows } = await import("./wallet-stripe.server");
+    const synchronized = await synchronizeWalletRows(admin, new Stripe(key), rows);
     const { data: referrals, error: referralError } = await admin.from("referrals")
       .select("id,referrer_user_id,referred_user_id,referred_email").in("id", rows.map((r) => r.referral_id));
     if (referralError) throw new Error(referralError.message);
@@ -98,7 +106,7 @@ export const getMyReferralWallet = createServerFn({ method: "POST" })
     if (namesError) throw new Error(namesError.message);
     const names = new Map((profiles ?? []).map((p) => [p.id, p.full_name || p.display_name || "صديقك"]));
     const sources = new Map((referrals ?? []).map((r) => [r.id, r]));
-    return rows.map((r) => {
+    return synchronized.map((r) => {
       const source = sources.get(r.referral_id);
       const personId = r.kind === "friend" ? source?.referrer_user_id : source?.referred_user_id;
       return { id: r.id, vertical: r.vertical, code: r.code, kind: r.kind === "friend" ? "friend" : "reward",
@@ -106,6 +114,60 @@ export const getMyReferralWallet = createServerFn({ method: "POST" })
         redeemed_at: r.redeemed_at, cancelled_at: r.cancelled_at,
         person: (personId && names.get(personId)) || source?.referred_email || "صديقك" };
     });
+  });
+
+const offerLinks: string[] = [
+  ...BUNDLE_OFFERS.flatMap((b) => [b.coursesUrl, b.tutorsUrl]),
+  ...TRADING_OFFERS.flatMap((b) => [b.courseUrl, b.botsUrl]),
+];
+let linkCache: { until: number; allowed: string[] } | undefined;
+async function promotionEnabledLinks(stripe: import("stripe").default) {
+  if (linkCache && linkCache.until > Date.now()) return linkCache.allowed;
+  const allowed: string[] = [];
+  for await (const link of stripe.paymentLinks.list({ limit: 100 })) {
+    if (link.active && link.allow_promotion_codes && offerLinks.includes(link.url)) allowed.push(link.url);
+  }
+  linkCache = { until: Date.now() + 60_000, allowed };
+  return allowed;
+}
+
+export const getOfferCreditLinks = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async () => {
+    const key = process.env["STRIPE_SECRET_KEY"];
+    if (!key) throw new Error("Checkout unavailable");
+    const Stripe = (await import("stripe")).default;
+    return promotionEnabledLinks(new Stripe(key));
+  });
+
+// Caller supplies only an allowlisted base offer URL, never a user/code identity.
+export const createWalletCreditLink = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) => z.object({ url: z.string().url() }).parse(input))
+  .handler(async ({ context, data }) => {
+    if (!offerLinks.includes(data.url)) throw new Error("Invalid offer");
+    const key = process.env["STRIPE_SECRET_KEY"];
+    if (!key) throw new Error("Checkout unavailable");
+    const Stripe = (await import("stripe")).default;
+    const stripe = new Stripe(key);
+    if (!(await promotionEnabledLinks(stripe)).includes(data.url)) throw new Error("Promotion codes disabled");
+    const rows: import("@/integrations/supabase/types").Database["public"]["Tables"]["referral_wallet_codes"]["Row"][] = [];
+    for (let offset = 0; ; offset += 500) {
+      const { data: page, error } = await context.supabase.from("referral_wallet_codes").select("*").eq("user_id", context.userId).eq("vertical", CURRENT_VERTICAL).order("id").range(offset, offset + 499);
+      if (error) throw error;
+      rows.push(...(page ?? []));
+      if ((page?.length ?? 0) < 500) break;
+    }
+    const { supabaseAdmin: admin } = await import("@/integrations/supabase/client.server");
+    const { synchronizeWalletRows } = await import("./wallet-stripe.server");
+    const synchronized = await synchronizeWalletRows(admin, stripe, rows, true);
+    const chosen = earliestWalletCode(synchronized.map((r) => ({ ...r, kind: r.kind === "friend" ? "friend" as const : "reward" as const, person: "" })));
+    if (!chosen) return { url: null };
+    const { data: profile, error } = await context.supabase.from("profiles").select("email").eq("id", context.userId).maybeSingle();
+    if (error) throw error;
+    const bundle = BUNDLE_OFFERS.find((b) => b.coursesUrl === data.url || b.tutorsUrl === data.url);
+    const base = bundle ? getBundleCheckoutUrl(data.url, bundle.coursesUrl === data.url ? "courses" : "tutors") : data.url;
+    return { url: buildCreditLink(base, chosen.code, profile?.email || String(context.claims.email || "")) };
   });
 
 export type AdminReferralRow = {
