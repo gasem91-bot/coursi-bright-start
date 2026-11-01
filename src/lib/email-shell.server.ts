@@ -95,6 +95,7 @@ export function emailFooter(reasonLine: string): string {
 export function emailShell(params: {
   body: string;
   headerSubtitle?: string;
+  extraStyles?: string;
   footerReason: string;
 }): string {
   const body = useArabicBrand(params.body);
@@ -103,7 +104,7 @@ export function emailShell(params: {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<style>${EMAIL_STYLES}</style>
+<style>${EMAIL_STYLES}${params.extraStyles ?? ""}</style>
 </head>
 <body>
 <div class="wrap"><div class="box">

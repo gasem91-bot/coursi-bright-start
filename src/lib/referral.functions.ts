@@ -1,6 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { CURRENT_VERTICAL } from "./verticals";
+import type { WalletCode } from "./referral-wallet";
 import { inviteBlockReason, referralPurchaseLink, type InviteBlock } from "./referral-rules";
 
 export type InviteResult = { ok: true } | { ok: false; reason: Exclude<InviteBlock, null> | "invalid" | "error" };
@@ -28,14 +30,14 @@ export const inviteReferralFriend = createServerFn({ method: "POST" })
     const block = inviteBlockReason(email, own, !!account?.length, !!invited?.length);
     if (block) return { ok: false, reason: block };
     try {
-      const { data: row, error: insertError } = await admin.from("referrals").insert({ referrer_user_id: context.userId, referred_email: email, source: "email", status: "invited" }).select().single();
+      const { data: row, error: insertError } = await admin.from("referrals").insert({ referrer_user_id: context.userId, referred_email: email, source: "email", status: "invited", vertical: CURRENT_VERTICAL }).select().single();
       if (insertError || !row) return { ok: false, reason: insertError?.code === "23505" ? "already_invited" : "error" };
       const { issueFriendCode } = await import("./referral-backend.server");
       const issued = await issueFriendCode(admin, row, stripeKey);
       const { buildFriendInviteHtml, referralInviteSubject, sendReferralEmail } = await import("./referral-emails.server");
       const name = referrer.full_name || referrer.display_name || "صديقك";
       await sendReferralEmail({ to: email, subject: referralInviteSubject(name), eventKey: `referral-invite-${issued.id}`, html: buildFriendInviteHtml({
-        referrerName: name, friendCode: issued.friend_code || "", purchaseLink: referralPurchaseLink(referrer.referral_code, email),
+        vertical: issued.vertical, referrerName: name, friendCode: issued.friend_code || "", purchaseLink: referralPurchaseLink(referrer.referral_code, email),
       }) }, emailKey);
       await admin.from("referrals").update({ invite_email_sent_at: new Date().toISOString() }).eq("id", issued.id);
       return { ok: true };
@@ -52,7 +54,7 @@ export const getMyReferrals = createServerFn({ method: "POST" })
   .handler(async ({ context }): Promise<MyReferral[]> => {
     const { data, error } = await context.supabase.from("referrals")
       .select("id,referred_email,referred_user_id,status,created_at,signed_up_at,purchased_at,reward_issued_at,reward_code,reward_expires_at,reward_redeemed_at")
-      .eq("referrer_user_id", context.userId).order("created_at", { ascending: false });
+      .eq("vertical", CURRENT_VERTICAL).eq("referrer_user_id", context.userId).order("created_at", { ascending: false });
     if (error) throw new Error(error.message);
     const rows = data ?? [];
     const ids = rows.map((r) => r.referred_user_id).filter((v): v is string => !!v);
@@ -70,8 +72,36 @@ export const getMyReferrals = createServerFn({ method: "POST" })
     }));
   });
 
+// Wallet rows are read through owner RLS; privileged name lookups use only those authorized row IDs.
+export const getMyReferralWallet = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<WalletCode[]> => {
+    const { data, error } = await context.supabase.from("referral_wallet_codes").select("*")
+      .eq("user_id", context.userId).eq("vertical", CURRENT_VERTICAL).order("issued_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    const rows = data ?? [];
+    if (!rows.length) return [];
+    const { supabaseAdmin: admin } = await import("@/integrations/supabase/client.server");
+    const { data: referrals, error: referralError } = await admin.from("referrals")
+      .select("id,referrer_user_id,referred_user_id,referred_email").in("id", rows.map((r) => r.referral_id));
+    if (referralError) throw new Error(referralError.message);
+    const ids = [...new Set((referrals ?? []).flatMap((r) => [r.referrer_user_id, r.referred_user_id]).filter((v): v is string => !!v))];
+    const { data: profiles, error: namesError } = await admin.from("profiles").select("id,full_name,display_name").in("id", ids);
+    if (namesError) throw new Error(namesError.message);
+    const names = new Map((profiles ?? []).map((p) => [p.id, p.full_name || p.display_name || "صديقك"]));
+    const sources = new Map((referrals ?? []).map((r) => [r.id, r]));
+    return rows.map((r) => {
+      const source = sources.get(r.referral_id);
+      const personId = r.kind === "friend" ? source?.referrer_user_id : source?.referred_user_id;
+      return { id: r.id, vertical: r.vertical, code: r.code, kind: r.kind === "friend" ? "friend" : "reward",
+        amount_cents: r.amount_cents, issued_at: r.issued_at, expires_at: r.expires_at,
+        redeemed_at: r.redeemed_at, cancelled_at: r.cancelled_at,
+        person: (personId && names.get(personId)) || source?.referred_email || "صديقك" };
+    });
+  });
+
 export type AdminReferralRow = {
-  referrer_name: string; referrer_email: string; friend_name: string; friend_email: string; status: string;
+  vertical: string; referrer_name: string; referrer_email: string; friend_name: string; friend_email: string; status: string;
   friend_code: string; reward_code: string; created_at: string; signed_up_at: string; purchased_at: string; reward_issued_at: string;
 };
 export type AdminReferralsResult = { ok: true; rows: AdminReferralRow[] } | { ok: false; reason: "forbidden" | "error" };
@@ -90,7 +120,7 @@ export const getAdminReferrals = createServerFn({ method: "POST" })
     const map = new Map((profiles ?? []).map((p) => [p.id, p]));
     const nm = (id: string | null) => { const p = id ? map.get(id) : undefined; return p ? p.full_name || p.display_name || "" : ""; };
     return { ok: true, rows: (data ?? []).map((r) => ({
-      referrer_name: nm(r.referrer_user_id), referrer_email: map.get(r.referrer_user_id)?.email || "",
+      vertical: r.vertical, referrer_name: nm(r.referrer_user_id), referrer_email: map.get(r.referrer_user_id)?.email || "",
       friend_name: nm(r.referred_user_id), friend_email: r.referred_email, status: r.status,
       friend_code: r.friend_code || "", reward_code: r.reward_code || "", created_at: r.created_at,
       signed_up_at: r.signed_up_at || "", purchased_at: r.purchased_at || "", reward_issued_at: r.reward_issued_at || "",

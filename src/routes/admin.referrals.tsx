@@ -1,3 +1,4 @@
+import { VERTICALS, getVertical } from "@/lib/verticals";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
@@ -28,6 +29,7 @@ const day = (d: string) => (d ? d.slice(0, 10) : "");
 function AdminReferralsPage() {
   const load = useServerFn(getAdminReferrals);
   const [state, setState] = useState<"loading" | "signed_out" | "forbidden" | "error" | "ready">("loading");
+  const [vertical, setVertical] = useState("all");
   const [rows, setRows] = useState<AdminReferralRow[]>([]);
 
   useEffect(() => {
@@ -41,11 +43,12 @@ function AdminReferralsPage() {
     });
   }, [load]);
 
+  const filteredRows = rows.filter((r) => vertical === "all" || r.vertical === vertical);
   const totals = [
-    ["الدعوات", rows.length],
-    ["التسجيلات", rows.filter((r) => r.signed_up_at).length],
-    ["المشتريات", rows.filter((r) => r.purchased_at).length],
-    ["الخصومات الممنوحة", rows.filter((r) => r.reward_code).length],
+    ["الدعوات", filteredRows.length],
+    ["التسجيلات", filteredRows.filter((r) => r.signed_up_at).length],
+    ["المشتريات", filteredRows.filter((r) => r.purchased_at).length],
+    ["الخصومات الممنوحة", filteredRows.filter((r) => r.reward_code).length],
   ] as const;
 
   return (
@@ -65,6 +68,12 @@ function AdminReferralsPage() {
         {state === "error" && <div style={{ ...box, padding: 20 }}>تعذّر تحميل البيانات.</div>}
         {state === "ready" && (
           <>
+            <label className="flex items-center gap-3 mb-4">الدورة
+              <select aria-label="تصفية حسب الدورة" value={vertical} onChange={(e) => setVertical(e.target.value)} className="min-h-12 rounded-md border border-input bg-background text-foreground px-3">
+                <option value="all">كل الدورات</option>
+                {Object.values(VERTICALS).map((v) => <option key={v.id} value={v.id}>{v.courseName}</option>)}
+              </select>
+            </label>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 10, marginBottom: 16 }}>
               {totals.map(([l, n]) => (
                 <div key={l} style={{ ...box, padding: 14, textAlign: "center" }}>
@@ -76,15 +85,15 @@ function AdminReferralsPage() {
             <div style={{ ...box, overflowX: "auto" }}>
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, whiteSpace: "nowrap" }}>
                 <thead>
-                  <tr>{["اسم الداعي", "بريد الداعي", "اسم الصديق", "بريد الصديق", "الحالة", "كود الصديق", "كود المكافأة", "تاريخ الدعوة", "تاريخ التسجيل", "تاريخ الشراء", "تاريخ المكافأة"].map((h) => (
+                  <tr>{["الدورة", "اسم الداعي", "بريد الداعي", "اسم الصديق", "بريد الصديق", "الحالة", "كود الصديق", "كود المكافأة", "تاريخ الدعوة", "تاريخ التسجيل", "تاريخ الشراء", "تاريخ المكافأة"].map((h) => (
                     <th key={h} style={{ textAlign: "right", padding: 10, borderBottom: "1px solid var(--border-color, rgba(128,128,128,0.25))" }}>{h}</th>
                   ))}</tr>
                 </thead>
                 <tbody>
-                  {rows.length === 0 && <tr><td colSpan={11} style={{ padding: 16, color: "var(--text-secondary)" }}>لا توجد دعوات بعد.</td></tr>}
-                  {rows.map((r, i) => (
+                  {filteredRows.length === 0 && <tr><td colSpan={12} style={{ padding: 16, color: "var(--text-secondary)" }}>لا توجد دعوات بعد.</td></tr>}
+                  {filteredRows.map((r, i) => (
                     <tr key={i}>
-                      {[r.referrer_name, r.referrer_email, r.friend_name, r.friend_email, STATUS_AR[r.status] ?? r.status, r.friend_code, r.reward_code, day(r.created_at), day(r.signed_up_at), day(r.purchased_at), day(r.reward_issued_at)].map((v, j) => (
+                      {[getVertical(r.vertical).courseName, r.referrer_name, r.referrer_email, r.friend_name, r.friend_email, STATUS_AR[r.status] ?? r.status, r.friend_code, r.reward_code, day(r.created_at), day(r.signed_up_at), day(r.purchased_at), day(r.reward_issued_at)].map((v, j) => (
                         <td key={j} style={{ padding: 10, borderBottom: "1px solid var(--border-color, rgba(128,128,128,0.12))" }}>{v}</td>
                       ))}
                     </tr>

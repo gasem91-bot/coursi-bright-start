@@ -328,18 +328,21 @@ export type Database = {
           paid_at: string
           session_id: string
           user_id: string | null
+          vertical: string
         }
         Insert: {
           amount_usd: number
           paid_at: string
           session_id: string
           user_id?: string | null
+          vertical?: string
         }
         Update: {
           amount_usd?: number
           paid_at?: string
           session_id?: string
           user_id?: string | null
+          vertical?: string
         }
         Relationships: [
           {
@@ -356,22 +359,82 @@ export type Database = {
           created_at: string
           referral_code: string
           user_id: string
+          vertical: string
         }
         Insert: {
           created_at?: string
           referral_code: string
           user_id: string
+          vertical?: string
         }
         Update: {
           created_at?: string
           referral_code?: string
           user_id?: string
+          vertical?: string
         }
         Relationships: [
           {
             foreignKeyName: "referral_signup_claims_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      referral_wallet_codes: {
+        Row: {
+          amount_cents: number
+          cancelled_at: string | null
+          code: string
+          expires_at: string
+          id: string
+          issued_at: string
+          kind: string
+          redeemed_at: string | null
+          referral_id: string
+          user_id: string
+          vertical: string
+        }
+        Insert: {
+          amount_cents?: number
+          cancelled_at?: string | null
+          code: string
+          expires_at: string
+          id?: string
+          issued_at: string
+          kind: string
+          redeemed_at?: string | null
+          referral_id: string
+          user_id: string
+          vertical?: string
+        }
+        Update: {
+          amount_cents?: number
+          cancelled_at?: string | null
+          code?: string
+          expires_at?: string
+          id?: string
+          issued_at?: string
+          kind?: string
+          redeemed_at?: string | null
+          referral_id?: string
+          user_id?: string
+          vertical?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_wallet_codes_referral_id_fkey"
+            columns: ["referral_id"]
+            isOneToOne: false
+            referencedRelation: "referrals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referral_wallet_codes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -403,6 +466,7 @@ export type Database = {
           source: string
           status: string
           stripe_session_id: string | null
+          vertical: string
         }
         Insert: {
           created_at?: string
@@ -429,6 +493,7 @@ export type Database = {
           source?: string
           status?: string
           stripe_session_id?: string | null
+          vertical?: string
         }
         Update: {
           created_at?: string
@@ -455,6 +520,7 @@ export type Database = {
           source?: string
           status?: string
           stripe_session_id?: string | null
+          vertical?: string
         }
         Relationships: [
           {

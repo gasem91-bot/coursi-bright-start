@@ -1,3 +1,4 @@
+import { getVertical } from "./verticals";
 // Server-only: builds sample renders of every branded transactional email.
 // Shared by the admin page server fn and the token-gated debug route.
 
@@ -40,15 +41,15 @@ export async function buildEmailPreviews(): Promise<EmailPreview[]> {
 
   const samples = [
     {
-      key: "referral-friend-invite", label: "دعوة صديق — خصم 5$", to: "student@example.com", from: "كورسي <support@coursi.ai>",
+      key: "referral-friend-invite", label: `دعوة صديق — خصم 5$ — ${getVertical().shortLabel}`, to: "student@example.com", from: "كورسي <support@coursi.ai>",
       subject: referralInviteSubject("قاسم"), html: buildFriendInviteHtml({ referrerName: "قاسم", friendCode: "FR-EXAMPLE", purchaseLink: "https://coursi.ai/ai?ref=ABCDEFGH" }),
     },
     {
-      key: "referral-friend-discount", label: "خصم الدعوة للصديق", to: "student@example.com", from: "كورسي <support@coursi.ai>",
+      key: "referral-friend-discount", label: `خصم الدعوة للصديق — ${getVertical().shortLabel}`, to: "student@example.com", from: "كورسي <support@coursi.ai>",
       subject: FRIEND_DISCOUNT_SUBJECT, html: buildFriendDiscountHtml({ firstName: "أحمد", referrerName: "قاسم", friendCode: "FR-EXAMPLE", expiryDate: "٢٩ يناير ٢٠٢٧", purchaseLink: "https://coursi.ai/ai" }),
     },
     {
-      key: "referral-referrer-reward", label: "مكافأة صاحب الدعوة", to: "student@example.com", from: "كورسي <support@coursi.ai>",
+      key: "referral-referrer-reward", label: `مكافأة صاحب الدعوة — ${getVertical().shortLabel}`, to: "student@example.com", from: "كورسي <support@coursi.ai>",
       subject: REFERRER_REWARD_SUBJECT, html: buildReferrerRewardHtml({ firstName: "قاسم", friendFirstName: "أحمد", rewardCode: "RW-EXAMPLE", expiryDate: "٢٩ يناير ٢٠٢٧", purchaseLink: "https://coursi.ai/ai" }),
     },
     {
