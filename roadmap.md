@@ -1,3 +1,4 @@
+- [ ] Update only referral reward wording, remove unused legacy referral template and preview if unsent, run tests/checks and send one reward sample to the requested address; do not publish.
 - [x] Update owned wording, add earliest-expiring wallet credit checkout choice and fitness coming-soon card without changing existing offers. Six bundle links accept codes; six Trading links reject them; tutor retains existing $14 session flow with separate explicit credit action.
 - [x] Synchronize wallet status with Stripe on load and verified payment/refund events; credit-link, used-code persistence and cache tests added; signed-in desktop/390px Offers and empty wallet verified, automatic checks clean.
 - [ ] Verify a real wallet credit checkout: database currently has no wallet codes; no codes or personal data were invented for testing.
