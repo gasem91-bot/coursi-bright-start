@@ -3,7 +3,7 @@ import { emailShell } from "./email-shell.server";
 
 export const REFERRAL_NOTE = "إذا كان هناك عرض جارٍ، يمكنك اختيار العرض أو كود الدعوة، ولا يُجمع الاثنان معاً";
 export const FRIEND_DISCOUNT_SUBJECT = "خصم الدعوة 5$ جاهز لك";
-export const REFERRER_REWARD_SUBJECT = "اشترى صديقك عبر دعوتك، وخصمك 5$ جاهز";
+export const REFERRER_REWARD_SUBJECT = "تم دعوتك للانضمام إلى كورسي وخصمك 5$ جاهز";
 export function referralInviteSubject(name: string) { return `${name} دعاك للانضمام إلى كورسي، وخصم 5$ بانتظارك`; }
 
 function escape(value: string) {
@@ -33,7 +33,7 @@ export function buildFriendDiscountHtml(p: { vertical?: string; firstName: strin
   return shell("خصم الدعوة 5$ جاهز لك", `أهلاً ${escape(p.firstName)}، انضممت إلى كورس ${getVertical(p.vertical).courseName} في كورسي بدعوة من ${escape(p.referrerName)}. هذا كود خصم 5$ لك: ${escape(p.friendCode)}، صالح حتى ${escape(p.expiryDate)}، ويُستخدم مرة واحدة عند الدفع`, p.friendCode, "ابدأ التعلّم", p.purchaseLink, p.vertical);
 }
 export function buildReferrerRewardHtml(p: { vertical?: string; firstName: string; friendFirstName: string; rewardCode: string; expiryDate: string; purchaseLink: string }) {
-  return shell(REFERRER_REWARD_SUBJECT, `أهلاً ${escape(p.firstName)}، ${escape(p.friendFirstName)} انضم إلى كورس ${getVertical(p.vertical).courseName} في كورسي عبر دعوتك وأكمل عملية الشراء. شكراً لك، هذا كود خصم 5$ لمشترياتك القادمة: ${escape(p.rewardCode)}، صالح حتى ${escape(p.expiryDate)}، ويُستخدم مرة واحدة عند الدفع في أي دورة أو ترقية`, p.rewardCode, "استخدم الخصم", p.purchaseLink, p.vertical);
+  return shell(REFERRER_REWARD_SUBJECT, `أهلاً ${escape(p.firstName)}، ${escape(p.friendFirstName)} انضم إلى كورس ${getVertical(p.vertical).courseName} من كورسي عبر دعوتك وأكمل عملية الشراء. شكراً لك، هذا كود خصم 5$ لمشترياتك القادمة: ${escape(p.rewardCode)}، صالح حتى ${escape(p.expiryDate)}، ويُستخدم مرة واحدة عند الدفع في أي دورة أو ترقية`, p.rewardCode, "استخدم الخصم", p.purchaseLink, p.vertical);
 }
 
 export async function sendReferralEmail(p: { to: string; subject: string; html: string; eventKey: string }, key: string) {
