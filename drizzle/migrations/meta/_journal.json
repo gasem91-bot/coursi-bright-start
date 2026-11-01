@@ -85,6 +85,13 @@
       "when": 1793447008175,
       "tag": "0011_referral_link_invited_signup",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1793518650010,
+      "tag": "0012_referral_vertical_wallet",
+      "breakpoints": true
     }
   ]
 }
