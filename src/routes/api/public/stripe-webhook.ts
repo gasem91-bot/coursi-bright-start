@@ -146,6 +146,13 @@ export const Route = createFileRoute("/api/public/stripe-webhook")({
           const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
           try {
             await processReferralRefund(supabaseAdmin, stripe, event.data.object as Stripe.Charge);
+            const { synchronizeSessionWallets } = await import("@/lib/wallet-stripe.server");
+            const charge = event.data.object as Stripe.Charge;
+            const intent = typeof charge.payment_intent === "string" ? charge.payment_intent : charge.payment_intent?.id;
+            if (intent) {
+              const sessions = await stripe.checkout.sessions.list({ payment_intent: intent, limit: 100 });
+              for (const session of sessions.data) await synchronizeSessionWallets(supabaseAdmin, stripe, session);
+            }
             return Response.json({ received: true });
           } catch {
             return new Response("Referral refund processing failed", { status: 500 });
@@ -172,6 +179,8 @@ export const Route = createFileRoute("/api/public/stripe-webhook")({
 
         try {
           const promoCode = await lookupPromoCode(stripe, session.id);
+          const { synchronizeSessionWallets } = await import("@/lib/wallet-stripe.server");
+          await synchronizeSessionWallets(admin, stripe, session, promoCode);
           const { processReferralCheckout } = await import("@/lib/referral-backend.server");
           // Preserve historical paid evidence before existing fulfillment updates
           // the buyer's latest subscription row.
@@ -207,6 +216,7 @@ export const Route = createFileRoute("/api/public/stripe-webhook")({
               const { applySignupReferral } = await import("@/lib/referral-backend.server");
               await applySignupReferral(buyer.id, { stripe: stripeSecretKey, email: resendApiKey });
               await processReferralCheckout(admin, stripe, session, buyer.id, { stripe: stripeSecretKey, email: resendApiKey }, promoCode);
+              await synchronizeSessionWallets(admin, stripe, session, promoCode);
             }
             console.log(`[stripe-webhook] session ${session.id} already processed — skipped`);
             return Response.json({ received: true, duplicate: true });
@@ -220,6 +230,7 @@ export const Route = createFileRoute("/api/public/stripe-webhook")({
               await applySignupReferral(result.userId, { stripe: stripeSecretKey, email: resendApiKey });
             }
             await processReferralCheckout(admin, stripe, session, result.userId, { stripe: stripeSecretKey, email: resendApiKey }, promoCode);
+            await synchronizeSessionWallets(admin, stripe, session, promoCode);
           };
 
           if (result.kind === "level_upgrade") {
