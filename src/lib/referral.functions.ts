@@ -52,11 +52,15 @@ export type MyReferral = { id: string; friend: string; status: string; date: str
 export const getMyReferrals = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<MyReferral[]> => {
+    const rows: { id: string; referred_email: string; referred_user_id: string | null; status: string; created_at: string; signed_up_at: string | null; purchased_at: string | null; reward_issued_at: string | null; reward_code: string | null; reward_expires_at: string | null; reward_redeemed_at: string | null }[] = [];
+    for (let offset = 0; ; offset += 500) {
     const { data, error } = await context.supabase.from("referrals")
       .select("id,referred_email,referred_user_id,status,created_at,signed_up_at,purchased_at,reward_issued_at,reward_code,reward_expires_at,reward_redeemed_at")
-      .eq("vertical", CURRENT_VERTICAL).eq("referrer_user_id", context.userId).order("created_at", { ascending: false });
+      .eq("vertical", CURRENT_VERTICAL).eq("referrer_user_id", context.userId).order("created_at", { ascending: false }).order("id").range(offset, offset + 499);
     if (error) throw new Error(error.message);
-    const rows = data ?? [];
+    rows.push(...(data ?? []));
+    if ((data?.length ?? 0) < 500) break;
+    }
     const ids = rows.map((r) => r.referred_user_id).filter((v): v is string => !!v);
     const names = new Map<string, string>();
     if (ids.length) {
@@ -76,10 +80,14 @@ export const getMyReferrals = createServerFn({ method: "POST" })
 export const getMyReferralWallet = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<WalletCode[]> => {
-    const { data, error } = await context.supabase.from("referral_wallet_codes").select("*")
-      .eq("user_id", context.userId).eq("vertical", CURRENT_VERTICAL).order("issued_at", { ascending: false });
-    if (error) throw new Error(error.message);
-    const rows = data ?? [];
+    const rows: import("@/integrations/supabase/types").Database["public"]["Tables"]["referral_wallet_codes"]["Row"][] = [];
+    for (let offset = 0; ; offset += 500) {
+      const { data, error } = await context.supabase.from("referral_wallet_codes").select("*")
+        .eq("user_id", context.userId).eq("vertical", CURRENT_VERTICAL).order("issued_at", { ascending: false }).order("id").range(offset, offset + 499);
+      if (error) throw new Error(error.message);
+      rows.push(...(data ?? []));
+      if ((data?.length ?? 0) < 500) break;
+    }
     if (!rows.length) return [];
     const { supabaseAdmin: admin } = await import("@/integrations/supabase/client.server");
     const { data: referrals, error: referralError } = await admin.from("referrals")

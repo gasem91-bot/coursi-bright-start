@@ -60,9 +60,9 @@ body{font-family:'Noto Sans Arabic',Arial,sans-serif;background:#0A0A0A;color:#F
 .fcopy{font-size:11px;color:#B8B8C8;line-height:1.85;}
 `;
 
-export function emailHeader(subtitle = `${BRAND_AR} · coursi.ai`): string {
+export function emailHeader(subtitle = `${BRAND_AR} · coursi.ai`, logo = LOGO_URL): string {
   return `<div class="hdr">
-  <img src="${LOGO_URL}" alt="${BRAND_AR}" width="170" class="logo-img" />
+  <img src="${logo}" alt="${BRAND_AR}" width="170" class="logo-img" />
   <div class="hdr-sub">${useArabicBrand(subtitle)}</div>
 </div>`;
 }
@@ -95,6 +95,7 @@ export function emailFooter(reasonLine: string): string {
 export function emailShell(params: {
   body: string;
   headerSubtitle?: string;
+  headerLogo?: string;
   extraStyles?: string;
   footerReason: string;
 }): string {
@@ -108,7 +109,7 @@ export function emailShell(params: {
 </head>
 <body>
 <div class="wrap"><div class="box">
-${emailHeader(params.headerSubtitle)}
+${emailHeader(params.headerSubtitle, params.headerLogo)}
 ${body}
 ${emailFooter(params.footerReason)}
 </div></div>

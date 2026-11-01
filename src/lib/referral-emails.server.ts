@@ -21,6 +21,7 @@ function shell(title: string, text: string, code: string, button: string, link: 
   return emailShell({
     body: `<div class="hero" dir="rtl"><h1>${title}</h1><p>${text}</p><p dir="ltr" style="text-align:center;font-size:24px;font-weight:900;unicode-bidi:isolate">${escape(code)}</p></div><div class="cta" dir="rtl"><a class="btn" href="${href}">${button}</a><p class="cta-note">${REFERRAL_NOTE}</p><p class="cta-note"><a class="flink" href="${href}">${href}</a></p></div>`,
     headerSubtitle: `كورسي · ${brand.shortLabel}`,
+    headerLogo: brand.logo,
     extraStyles: `.hero h1,.flink{color:${brand.emailAccent}}.btn{background:${brand.emailAccent}}`,
     footerReason: "تلقّيت هذا البريد بخصوص دعوتك في كورسي.",
   });
