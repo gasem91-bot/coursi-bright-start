@@ -99,6 +99,13 @@
       "when": 1793720150102,
       "tag": "0013_portal_sync_tables",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1793720279588,
+      "tag": "0014_enable_cron_net",
+      "breakpoints": true
     }
   ]
 }
