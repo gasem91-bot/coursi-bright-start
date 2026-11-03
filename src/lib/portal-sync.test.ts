@@ -1,4 +1,5 @@
-import { describe, expect, it } from "bun:test";
+import { describe, it } from "node:test";
+import assert from "node:assert/strict";
 import { handleSyncRequest, signSync, verifySync, type SyncDeps } from "./portal-sync";
 import { nextOutboxState } from "./portal-sync.server";
 
@@ -38,69 +39,69 @@ const upsert = (id: string, extra: object = {}) => ({
 describe("portal sync signatures", () => {
   it("accepts a valid signature and rejects a tampered body", async () => {
     const sig = await signSync(SECRET, ts, "{}");
-    expect(await verifySync(SECRET, ts, sig, "{}", NOW)).toBe(true);
-    expect(await verifySync(SECRET, ts, sig, "{ }", NOW)).toBe(false);
+    assert.equal(await verifySync(SECRET, ts, sig, "{}", NOW), true);
+    assert.equal(await verifySync(SECRET, ts, sig, "{ }", NOW), false);
   });
   it("rejects timestamps older than 5 minutes", async () => {
     const old = String(NOW / 1000 - 301);
-    expect(await verifySync(SECRET, old, await signSync(SECRET, old, "{}"), "{}", NOW)).toBe(false);
+    assert.equal(await verifySync(SECRET, old, await signSync(SECRET, old, "{}"), "{}", NOW), false);
   });
   it("fails closed with no data written when the secret is missing", async () => {
     const { deps, writes } = fakeDeps();
     const r = await send(deps, upsert("evt-00001"), { secret: undefined });
-    expect(r.status).toBe(401);
-    expect(writes).toEqual([]);
+    assert.equal(r.status, 401);
+    assert.deepEqual(writes, []);
   });
   it("rejects a wrong signature with no data written", async () => {
     const { deps, writes } = fakeDeps();
-    expect((await send(deps, upsert("evt-00002"), { sig: "00".repeat(32) })).status).toBe(401);
-    expect(writes).toEqual([]);
+    assert.equal((await send(deps, upsert("evt-00002"), { sig: "00".repeat(32) })).status, 401);
+    assert.deepEqual(writes, []);
   });
   it("rejects events claiming to come from this portal (no loops)", async () => {
     const { deps, writes } = fakeDeps();
-    expect((await send(deps, { ...upsert("evt-00003"), origin_portal: "ai" })).status).toBe(401);
-    expect(writes).toEqual([]);
+    assert.equal((await send(deps, { ...upsert("evt-00003"), origin_portal: "ai" })).status, 401);
+    assert.deepEqual(writes, []);
   });
 });
 
 describe("portal sync operations", () => {
   it("rejects a replayed event id", async () => {
     const { deps } = fakeDeps();
-    expect((await send(deps, upsert("evt-10001"))).status).toBe(200);
-    expect((await send(deps, upsert("evt-10001"))).status).toBe(401);
+    assert.equal((await send(deps, upsert("evt-10001"))).status, 200);
+    assert.equal((await send(deps, upsert("evt-10001"))).status, 401);
   });
   it("upsert is idempotent by verified email", async () => {
     const { deps, users } = fakeDeps();
-    expect((await send(deps, upsert("evt-20001"))).body).toEqual({ ok: true, created: true });
-    expect((await send(deps, upsert("evt-20002"))).body).toEqual({ ok: true, created: false });
-    expect(users.size).toBe(1);
-    expect(users.has("sara@example.com")).toBe(true);
+    assert.deepEqual((await send(deps, upsert("evt-20001"))).body, { ok: true, created: true });
+    assert.deepEqual((await send(deps, upsert("evt-20002"))).body, { ok: true, created: false });
+    assert.equal(users.size, 1);
+    assert.equal(users.has("sara@example.com"), true);
   });
   it("never overwrites an existing display name", async () => {
     const { deps, users } = fakeDeps();
     users.set("sara@example.com", { id: "u9", display_name: "Original" });
     await send(deps, upsert("evt-30001", { display_name: "Changed" }));
-    expect(users.get("sara@example.com")?.display_name).toBe("Original");
+    assert.equal(users.get("sara@example.com")?.display_name, "Original");
   });
   it("does not create an account for an unverified email", async () => {
     const { deps, users } = fakeDeps();
     const r = await send(deps, upsert("evt-40001", { email_verified: false }));
-    expect(r.body.ok).toBe(false);
-    expect(users.size).toBe(0);
+    assert.equal(r.body.ok, false);
+    assert.equal(users.size, 0);
   });
   it("reports unregistered emails in get_summary", async () => {
     const { deps } = fakeDeps();
     const r = await send(deps, { event_id: "evt-50001", type: "get_summary", origin_portal: "trading", payload: { email: "x@y.com" } });
-    expect(r.body).toEqual({ registered: false });
+    assert.deepEqual(r.body, { registered: false });
   });
 });
 
 describe("outbox retries", () => {
   it("keeps retrying without burning attempts while the secret is missing", () => {
-    expect(nextOutboxState({ attempts: 0 }, "no_secret", NOW)).toMatchObject({ status: "pending", attempts: 0 });
+    assert.equal(nextOutboxState({ attempts: 0 }, "no_secret", NOW).status, "pending"); assert.equal(nextOutboxState({ attempts: 0 }, "no_secret", NOW).attempts, 0);
   });
   it("gives up after the first try plus 3 retries", () => {
-    expect(nextOutboxState({ attempts: 2 }, "failed", NOW).status).toBe("pending");
-    expect(nextOutboxState({ attempts: 3 }, "failed", NOW).status).toBe("failed");
+    assert.equal(nextOutboxState({ attempts: 2 }, "failed", NOW).status, "pending");
+    assert.equal(nextOutboxState({ attempts: 3 }, "failed", NOW).status, "failed");
   });
 });
