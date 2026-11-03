@@ -50,6 +50,48 @@ export type Database = {
         }
         Relationships: []
       }
+      bundle_activations: {
+        Row: {
+          created_at: string
+          email: string
+          expires_at: string
+          grant_id: string
+          id: string
+          last_email_at: string | null
+          level: string | null
+          plan: string
+          status: string
+          token_hash: string
+          used_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          expires_at?: string
+          grant_id: string
+          id?: string
+          last_email_at?: string | null
+          level?: string | null
+          plan: string
+          status?: string
+          token_hash: string
+          used_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          expires_at?: string
+          grant_id?: string
+          id?: string
+          last_email_at?: string | null
+          level?: string | null
+          plan?: string
+          status?: string
+          token_hash?: string
+          used_at?: string | null
+        }
+        Relationships: []
+      }
       certificate_emails: {
         Row: {
           certificate_id: string
