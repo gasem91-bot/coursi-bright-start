@@ -903,6 +903,7 @@ export type Database = {
         Args: { p_code: string; p_source?: string; p_user_id: string }
         Returns: string
       }
+      disarm_portal_sync_outbox_if_idle: { Args: never; Returns: boolean }
       generate_referral_code: { Args: never; Returns: string }
       has_role: {
         Args: {
