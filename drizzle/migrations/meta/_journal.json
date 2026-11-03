@@ -92,6 +92,13 @@
       "when": 1793518650010,
       "tag": "0012_referral_vertical_wallet",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1793720150102,
+      "tag": "0013_portal_sync_tables",
+      "breakpoints": true
     }
   ]
 }
