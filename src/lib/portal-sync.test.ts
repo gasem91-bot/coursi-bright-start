@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { handleSyncRequest, signSync, verifySync, type SyncDeps } from "./portal-sync";
 import { nextOutboxState } from "./portal-sync.server";
 
