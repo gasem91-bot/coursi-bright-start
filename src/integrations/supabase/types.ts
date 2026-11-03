@@ -322,6 +322,62 @@ export type Database = {
           },
         ]
       }
+      referral_mirror: {
+        Row: {
+          friend_email: string | null
+          friend_name: string | null
+          invited_at: string | null
+          key: string
+          origin_portal: string
+          owner_user_id: string | null
+          purchased_at: string | null
+          referrer_email: string
+          rewarded_at: string | null
+          signed_up_at: string | null
+          status: string
+          updated_at: string
+          vertical: string
+        }
+        Insert: {
+          friend_email?: string | null
+          friend_name?: string | null
+          invited_at?: string | null
+          key: string
+          origin_portal: string
+          owner_user_id?: string | null
+          purchased_at?: string | null
+          referrer_email: string
+          rewarded_at?: string | null
+          signed_up_at?: string | null
+          status: string
+          updated_at?: string
+          vertical?: string
+        }
+        Update: {
+          friend_email?: string | null
+          friend_name?: string | null
+          invited_at?: string | null
+          key?: string
+          origin_portal?: string
+          owner_user_id?: string | null
+          purchased_at?: string | null
+          referrer_email?: string
+          rewarded_at?: string | null
+          signed_up_at?: string | null
+          status?: string
+          updated_at?: string
+          vertical?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_mirror_owner_user_id_fkey"
+            columns: ["owner_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       referral_paid_purchases: {
         Row: {
           amount_usd: number
@@ -647,6 +703,66 @@ export type Database = {
         }
         Relationships: []
       }
+      sync_events: {
+        Row: {
+          event_id: string
+          origin_portal: string
+          received_at: string
+          type: string
+        }
+        Insert: {
+          event_id: string
+          origin_portal: string
+          received_at?: string
+          type: string
+        }
+        Update: {
+          event_id?: string
+          origin_portal?: string
+          received_at?: string
+          type?: string
+        }
+        Relationships: []
+      }
+      sync_outbox: {
+        Row: {
+          attempts: number
+          created_at: string
+          event_id: string
+          id: string
+          last_error: string | null
+          next_attempt_at: string
+          payload: Json
+          status: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          event_id?: string
+          id?: string
+          last_error?: string | null
+          next_attempt_at?: string
+          payload?: Json
+          status?: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          event_id?: string
+          id?: string
+          last_error?: string | null
+          next_attempt_at?: string
+          payload?: Json
+          status?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       task_submissions: {
         Row: {
           ai_feedback: string | null
@@ -725,6 +841,59 @@ export type Database = {
         }
         Relationships: []
       }
+      wallet_code_mirror: {
+        Row: {
+          amount_cents: number
+          code: string
+          expires_at: string | null
+          issued_at: string | null
+          kind: string
+          origin_portal: string
+          owner_email: string
+          owner_user_id: string | null
+          referral_key: string | null
+          status: string
+          updated_at: string
+          vertical: string
+        }
+        Insert: {
+          amount_cents?: number
+          code: string
+          expires_at?: string | null
+          issued_at?: string | null
+          kind: string
+          origin_portal: string
+          owner_email: string
+          owner_user_id?: string | null
+          referral_key?: string | null
+          status: string
+          updated_at?: string
+          vertical?: string
+        }
+        Update: {
+          amount_cents?: number
+          code?: string
+          expires_at?: string | null
+          issued_at?: string | null
+          kind?: string
+          origin_portal?: string
+          owner_email?: string
+          owner_user_id?: string | null
+          referral_key?: string | null
+          status?: string
+          updated_at?: string
+          vertical?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wallet_code_mirror_owner_user_id_fkey"
+            columns: ["owner_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -734,6 +903,7 @@ export type Database = {
         Args: { p_code: string; p_source?: string; p_user_id: string }
         Returns: string
       }
+      disarm_portal_sync_outbox_if_idle: { Args: never; Returns: boolean }
       generate_referral_code: { Args: never; Returns: string }
       has_role: {
         Args: {
