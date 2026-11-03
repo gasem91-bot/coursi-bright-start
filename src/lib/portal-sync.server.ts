@@ -164,5 +164,7 @@ export async function processOutbox(limit = 25) {
     await admin.from("sync_outbox").update({ ...next, updated_at: new Date().toISOString() }).eq("id", row.id);
     if (next.status === "sent") sent++; else if (next.status === "failed") failed++; else pending++;
   }
+  // Stop the 5-minute timer once nothing is waiting; the next queued event re-arms it.
+  await admin.rpc("disarm_portal_sync_outbox_if_idle").then(() => {}, () => {});
   return { processed: (data ?? []).length, sent, pending, failed };
 }
