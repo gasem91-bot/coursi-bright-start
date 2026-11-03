@@ -28,6 +28,8 @@ import { Route as AdminEmailsRouteImport } from './routes/admin.emails'
 import { Route as AdminReferralsRouteImport } from './routes/admin.referrals'
 import { Route as CourseAiRouteImport } from './routes/course.ai'
 import { Route as ApiPublicCheckSubscriptionRouteImport } from './routes/api/public/check-subscription'
+import { Route as ApiPublicPortalSyncRouteImport } from './routes/api/public/portal-sync'
+import { Route as ApiPublicPortalSyncOutboxRouteImport } from './routes/api/public/portal-sync-outbox'
 import { Route as ApiPublicStatsRouteImport } from './routes/api/public/stats'
 import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe-webhook'
 import { Route as ApiPublicTelegramSubscriptionCheckRouteImport } from './routes/api/public/telegram-subscription-check'
@@ -129,6 +131,17 @@ const ApiPublicCheckSubscriptionRoute =
     path: '/api/public/check-subscription',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicPortalSyncRoute = ApiPublicPortalSyncRouteImport.update({
+  id: '/api/public/portal-sync',
+  path: '/api/public/portal-sync',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicPortalSyncOutboxRoute =
+  ApiPublicPortalSyncOutboxRouteImport.update({
+    id: '/api/public/portal-sync-outbox',
+    path: '/api/public/portal-sync-outbox',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicStatsRoute = ApiPublicStatsRouteImport.update({
   id: '/api/public/stats',
   path: '/api/public/stats',
@@ -171,6 +184,8 @@ export interface FileRoutesByFullPath {
   '/admin/referrals': typeof AdminReferralsRoute
   '/course/ai': typeof CourseAiRoute
   '/api/public/check-subscription': typeof ApiPublicCheckSubscriptionRoute
+  '/api/public/portal-sync': typeof ApiPublicPortalSyncRoute
+  '/api/public/portal-sync-outbox': typeof ApiPublicPortalSyncOutboxRoute
   '/api/public/stats': typeof ApiPublicStatsRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/telegram-subscription-check': typeof ApiPublicTelegramSubscriptionCheckRoute
@@ -196,6 +211,8 @@ export interface FileRoutesByTo {
   '/admin/referrals': typeof AdminReferralsRoute
   '/course/ai': typeof CourseAiRoute
   '/api/public/check-subscription': typeof ApiPublicCheckSubscriptionRoute
+  '/api/public/portal-sync': typeof ApiPublicPortalSyncRoute
+  '/api/public/portal-sync-outbox': typeof ApiPublicPortalSyncOutboxRoute
   '/api/public/stats': typeof ApiPublicStatsRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/telegram-subscription-check': typeof ApiPublicTelegramSubscriptionCheckRoute
@@ -222,6 +239,8 @@ export interface FileRoutesById {
   '/admin/referrals': typeof AdminReferralsRoute
   '/course/ai': typeof CourseAiRoute
   '/api/public/check-subscription': typeof ApiPublicCheckSubscriptionRoute
+  '/api/public/portal-sync': typeof ApiPublicPortalSyncRoute
+  '/api/public/portal-sync-outbox': typeof ApiPublicPortalSyncOutboxRoute
   '/api/public/stats': typeof ApiPublicStatsRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/telegram-subscription-check': typeof ApiPublicTelegramSubscriptionCheckRoute
@@ -249,6 +268,8 @@ export interface FileRouteTypes {
     | '/admin/referrals'
     | '/course/ai'
     | '/api/public/check-subscription'
+    | '/api/public/portal-sync'
+    | '/api/public/portal-sync-outbox'
     | '/api/public/stats'
     | '/api/public/stripe-webhook'
     | '/api/public/telegram-subscription-check'
@@ -274,6 +295,8 @@ export interface FileRouteTypes {
     | '/admin/referrals'
     | '/course/ai'
     | '/api/public/check-subscription'
+    | '/api/public/portal-sync'
+    | '/api/public/portal-sync-outbox'
     | '/api/public/stats'
     | '/api/public/stripe-webhook'
     | '/api/public/telegram-subscription-check'
@@ -299,6 +322,8 @@ export interface FileRouteTypes {
     | '/admin/referrals'
     | '/course/ai'
     | '/api/public/check-subscription'
+    | '/api/public/portal-sync'
+    | '/api/public/portal-sync-outbox'
     | '/api/public/stats'
     | '/api/public/stripe-webhook'
     | '/api/public/telegram-subscription-check'
@@ -325,6 +350,8 @@ export interface RootRouteChildren {
   AdminReferralsRoute: typeof AdminReferralsRoute
   CourseAiRoute: typeof CourseAiRoute
   ApiPublicCheckSubscriptionRoute: typeof ApiPublicCheckSubscriptionRoute
+  ApiPublicPortalSyncRoute: typeof ApiPublicPortalSyncRoute
+  ApiPublicPortalSyncOutboxRoute: typeof ApiPublicPortalSyncOutboxRoute
   ApiPublicStatsRoute: typeof ApiPublicStatsRoute
   ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
   ApiPublicTelegramSubscriptionCheckRoute: typeof ApiPublicTelegramSubscriptionCheckRoute
@@ -466,6 +493,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicCheckSubscriptionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/portal-sync': {
+      id: '/api/public/portal-sync'
+      path: '/api/public/portal-sync'
+      fullPath: '/api/public/portal-sync'
+      preLoaderRoute: typeof ApiPublicPortalSyncRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/portal-sync-outbox': {
+      id: '/api/public/portal-sync-outbox'
+      path: '/api/public/portal-sync-outbox'
+      fullPath: '/api/public/portal-sync-outbox'
+      preLoaderRoute: typeof ApiPublicPortalSyncOutboxRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/stats': {
       id: '/api/public/stats'
       path: '/api/public/stats'
@@ -517,6 +558,8 @@ const rootRouteChildren: RootRouteChildren = {
   AdminReferralsRoute: AdminReferralsRoute,
   CourseAiRoute: CourseAiRoute,
   ApiPublicCheckSubscriptionRoute: ApiPublicCheckSubscriptionRoute,
+  ApiPublicPortalSyncRoute: ApiPublicPortalSyncRoute,
+  ApiPublicPortalSyncOutboxRoute: ApiPublicPortalSyncOutboxRoute,
   ApiPublicStatsRoute: ApiPublicStatsRoute,
   ApiPublicStripeWebhookRoute: ApiPublicStripeWebhookRoute,
   ApiPublicTelegramSubscriptionCheckRoute:
