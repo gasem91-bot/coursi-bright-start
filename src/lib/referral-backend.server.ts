@@ -1,7 +1,9 @@
 import { CURRENT_VERTICAL } from "./verticals";
 import type Stripe from "stripe";
 import { REFERRAL_ALPHABET, REFERRAL_CODE_DAYS, REFERRAL_COUPON_ID, REFERRAL_DISCOUNT_CENTS, expiresAfter, isSuccessfulPaidCheckout, canRewardReferral } from "./referral-rules";
-import { buildFriendDiscountHtml, buildReferrerRewardHtml, FRIEND_DISCOUNT_SUBJECT, REFERRER_REWARD_SUBJECT, sendReferralEmail } from "./referral-emails.server";
+import { buildFriendJoinedHtml, buildReferrerRewardHtml, friendJoinedSubject, REFERRER_REWARD_SUBJECT, sendReferralEmail } from "./referral-emails.server";
+import { availableCredit } from "./referral-wallet";
+import { synchronizeWalletRows } from "./wallet-stripe.server";
 import type { Database } from "@/integrations/supabase/types";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
@@ -69,6 +71,7 @@ export async function applySignupReferral(userId: string, keys: { stripe: string
   // An emailed invite wins: link it and reuse its code; the invite email already carried it.
   const { data: invited, error: inviteError } = await admin.rpc("link_invited_signup", { p_user_id: userId });
   check(inviteError);
+  if (invited) await notifyReferrerJoined(admin, invited, userId, emailKey);
   if (invited || !claim) {
     if (claim) { const { error: clearError } = await admin.from("referral_signup_claims").delete().eq("user_id", userId); check(clearError); }
     return;
@@ -92,21 +95,36 @@ export async function applySignupReferral(userId: string, keys: { stripe: string
   const { data: row, error: rowError } = await admin.from("referrals").select().eq("id", id).single();
   check(rowError);
   if (!row) return;
-  const issued = await issueFriendCode(admin, row, stripeKey);
-  if (!issued.friend_email_sent_at && issued.friend_code && issued.friend_code_expires_at) {
-    const [{ data: buyer }, { data: referrer }] = await Promise.all([
-      admin.from("profiles").select("full_name,display_name").eq("id", userId).single(),
-      admin.from("profiles").select("full_name,display_name").eq("id", issued.referrer_user_id).single(),
-    ]);
-    await sendReferralEmail({ to: issued.referred_email, subject: FRIEND_DISCOUNT_SUBJECT, eventKey: `referral-friend-${id}`, html: buildFriendDiscountHtml({
-      firstName: firstName(buyer?.full_name || buyer?.display_name), referrerName: referrer?.full_name || referrer?.display_name || "صديقك",
-      friendCode: issued.friend_code, expiryDate: date(issued.friend_code_expires_at), purchaseLink: PURCHASE_LINK, vertical: issued.vertical,
-    }) }, emailKey);
-    const { error: sentError } = await admin.from("referrals").update({ friend_email_sent_at: new Date().toISOString() }).eq("id", id);
-    check(sentError);
-  }
+  await issueFriendCode(admin, row, stripeKey);
+  await notifyReferrerJoined(admin, id, userId, emailKey);
   const { error: clearError } = await admin.from("referral_signup_claims").delete().eq("user_id", userId);
   check(clearError);
+}
+
+// Email 2: tell the referrer once that the invited friend registered.
+async function notifyReferrerJoined(admin: Admin, referralId: string, friendUserId: string, emailKey: string) {
+  const { data: row, error } = await admin.from("referrals").select("id,referrer_user_id,referred_email,joined_email_sent_at").eq("id", referralId).single();
+  check(error);
+  if (!row || row.joined_email_sent_at) return;
+  const [{ data: referrer }, { data: friend }] = await Promise.all([
+    admin.from("profiles").select("email,full_name,display_name").eq("id", row.referrer_user_id).single(),
+    admin.from("profiles").select("full_name,display_name").eq("id", friendUserId).single(),
+  ]);
+  if (!referrer?.email || referrer.email.trim().toLowerCase() === row.referred_email) return;
+  const friendFirstName = firstName(friend?.full_name || friend?.display_name);
+  await sendReferralEmail({ to: referrer.email, subject: friendJoinedSubject(friendFirstName), eventKey: `referral-joined-${row.id}`, html: buildFriendJoinedHtml({
+    firstName: firstName(referrer.full_name || referrer.display_name), friendFirstName,
+  }) }, emailKey);
+  const { error: sentError } = await admin.from("referrals").update({ joined_email_sent_at: new Date().toISOString() }).eq("id", row.id);
+  check(sentError);
+}
+
+// Same balance the wallet shows: active unused codes, checked against Stripe.
+export async function walletBalance(admin: Admin, stripe: Stripe, userId: string) {
+  const { data, error } = await admin.from("referral_wallet_codes").select("*").eq("user_id", userId);
+  check(error);
+  const rows = await synchronizeWalletRows(admin, stripe, data ?? [], true);
+  return availableCredit(rows.map((r) => ({ ...r, person: "" })) as never, CURRENT_VERTICAL);
 }
 
 export async function findCheckoutReferral(admin: Admin, session: Stripe.Checkout.Session, userId: string) {
@@ -193,9 +211,10 @@ export async function processReferralCheckout(admin: Admin, stripe: Stripe, sess
     admin.from("profiles").select("full_name,display_name").eq("id", userId).single(),
   ]);
   if (!referrer?.email || referrer.email.trim().toLowerCase() === row.referred_email) return;
+  const balance = await walletBalance(admin, stripe, row.referrer_user_id);
   await sendReferralEmail({ to: referrer.email, subject: REFERRER_REWARD_SUBJECT, eventKey: `referral-reward-${row.id}`, html: buildReferrerRewardHtml({
     firstName: firstName(referrer.full_name || referrer.display_name), friendFirstName: firstName(buyer?.full_name || buyer?.display_name),
-    rewardCode: row.reward_code, expiryDate: date(row.reward_expires_at), purchaseLink: PURCHASE_LINK, vertical: row.vertical,
+    rewardCode: row.reward_code, expiryDate: date(row.reward_expires_at), balance,
   }) }, keys.email);
   const { error: sentError } = await admin.from("referrals").update({ reward_email_sent_at: now }).eq("id", row.id);
   check(sentError);
