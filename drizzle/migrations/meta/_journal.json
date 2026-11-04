@@ -120,6 +120,13 @@
       "when": 1793720397705,
       "tag": "0016_bundle_activations",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1793802347005,
+      "tag": "0017_referral_joined_email",
+      "breakpoints": true
     }
   ]
 }
