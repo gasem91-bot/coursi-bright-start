@@ -27,6 +27,7 @@ import { Route as AdminDataRouteImport } from './routes/admin.data'
 import { Route as AdminEmailsRouteImport } from './routes/admin.emails'
 import { Route as AdminReferralsRouteImport } from './routes/admin.referrals'
 import { Route as CourseAiRouteImport } from './routes/course.ai'
+import { Route as ApiPublicBundleActivationRouteImport } from './routes/api/public/bundle-activation'
 import { Route as ApiPublicCheckSubscriptionRouteImport } from './routes/api/public/check-subscription'
 import { Route as ApiPublicPortalSyncRouteImport } from './routes/api/public/portal-sync'
 import { Route as ApiPublicPortalSyncOutboxRouteImport } from './routes/api/public/portal-sync-outbox'
@@ -34,6 +35,7 @@ import { Route as ApiPublicStatsRouteImport } from './routes/api/public/stats'
 import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe-webhook'
 import { Route as ApiPublicTelegramSubscriptionCheckRouteImport } from './routes/api/public/telegram-subscription-check'
 import { Route as ApiPublicTelegramTicketRouteImport } from './routes/api/public/telegram-ticket'
+import { Route as ApiPublicBundleActivationCompleteRouteImport } from './routes/api/public/bundle-activation.complete'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -125,6 +127,12 @@ const CourseAiRoute = CourseAiRouteImport.update({
   path: '/course/ai',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicBundleActivationRoute =
+  ApiPublicBundleActivationRouteImport.update({
+    id: '/api/public/bundle-activation',
+    path: '/api/public/bundle-activation',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicCheckSubscriptionRoute =
   ApiPublicCheckSubscriptionRouteImport.update({
     id: '/api/public/check-subscription',
@@ -163,6 +171,12 @@ const ApiPublicTelegramTicketRoute = ApiPublicTelegramTicketRouteImport.update({
   path: '/api/public/telegram-ticket',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicBundleActivationCompleteRoute =
+  ApiPublicBundleActivationCompleteRouteImport.update({
+    id: '/complete',
+    path: '/complete',
+    getParentRoute: () => ApiPublicBundleActivationRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -183,6 +197,7 @@ export interface FileRoutesByFullPath {
   '/admin/emails': typeof AdminEmailsRoute
   '/admin/referrals': typeof AdminReferralsRoute
   '/course/ai': typeof CourseAiRoute
+  '/api/public/bundle-activation': typeof ApiPublicBundleActivationRouteWithChildren
   '/api/public/check-subscription': typeof ApiPublicCheckSubscriptionRoute
   '/api/public/portal-sync': typeof ApiPublicPortalSyncRoute
   '/api/public/portal-sync-outbox': typeof ApiPublicPortalSyncOutboxRoute
@@ -190,6 +205,7 @@ export interface FileRoutesByFullPath {
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/telegram-subscription-check': typeof ApiPublicTelegramSubscriptionCheckRoute
   '/api/public/telegram-ticket': typeof ApiPublicTelegramTicketRoute
+  '/api/public/bundle-activation/complete': typeof ApiPublicBundleActivationCompleteRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -210,6 +226,7 @@ export interface FileRoutesByTo {
   '/admin/emails': typeof AdminEmailsRoute
   '/admin/referrals': typeof AdminReferralsRoute
   '/course/ai': typeof CourseAiRoute
+  '/api/public/bundle-activation': typeof ApiPublicBundleActivationRouteWithChildren
   '/api/public/check-subscription': typeof ApiPublicCheckSubscriptionRoute
   '/api/public/portal-sync': typeof ApiPublicPortalSyncRoute
   '/api/public/portal-sync-outbox': typeof ApiPublicPortalSyncOutboxRoute
@@ -217,6 +234,7 @@ export interface FileRoutesByTo {
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/telegram-subscription-check': typeof ApiPublicTelegramSubscriptionCheckRoute
   '/api/public/telegram-ticket': typeof ApiPublicTelegramTicketRoute
+  '/api/public/bundle-activation/complete': typeof ApiPublicBundleActivationCompleteRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -238,6 +256,7 @@ export interface FileRoutesById {
   '/admin/emails': typeof AdminEmailsRoute
   '/admin/referrals': typeof AdminReferralsRoute
   '/course/ai': typeof CourseAiRoute
+  '/api/public/bundle-activation': typeof ApiPublicBundleActivationRouteWithChildren
   '/api/public/check-subscription': typeof ApiPublicCheckSubscriptionRoute
   '/api/public/portal-sync': typeof ApiPublicPortalSyncRoute
   '/api/public/portal-sync-outbox': typeof ApiPublicPortalSyncOutboxRoute
@@ -245,6 +264,7 @@ export interface FileRoutesById {
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/telegram-subscription-check': typeof ApiPublicTelegramSubscriptionCheckRoute
   '/api/public/telegram-ticket': typeof ApiPublicTelegramTicketRoute
+  '/api/public/bundle-activation/complete': typeof ApiPublicBundleActivationCompleteRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -267,6 +287,7 @@ export interface FileRouteTypes {
     | '/admin/emails'
     | '/admin/referrals'
     | '/course/ai'
+    | '/api/public/bundle-activation'
     | '/api/public/check-subscription'
     | '/api/public/portal-sync'
     | '/api/public/portal-sync-outbox'
@@ -274,6 +295,7 @@ export interface FileRouteTypes {
     | '/api/public/stripe-webhook'
     | '/api/public/telegram-subscription-check'
     | '/api/public/telegram-ticket'
+    | '/api/public/bundle-activation/complete'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -294,6 +316,7 @@ export interface FileRouteTypes {
     | '/admin/emails'
     | '/admin/referrals'
     | '/course/ai'
+    | '/api/public/bundle-activation'
     | '/api/public/check-subscription'
     | '/api/public/portal-sync'
     | '/api/public/portal-sync-outbox'
@@ -301,6 +324,7 @@ export interface FileRouteTypes {
     | '/api/public/stripe-webhook'
     | '/api/public/telegram-subscription-check'
     | '/api/public/telegram-ticket'
+    | '/api/public/bundle-activation/complete'
   id:
     | '__root__'
     | '/'
@@ -321,6 +345,7 @@ export interface FileRouteTypes {
     | '/admin/emails'
     | '/admin/referrals'
     | '/course/ai'
+    | '/api/public/bundle-activation'
     | '/api/public/check-subscription'
     | '/api/public/portal-sync'
     | '/api/public/portal-sync-outbox'
@@ -328,6 +353,7 @@ export interface FileRouteTypes {
     | '/api/public/stripe-webhook'
     | '/api/public/telegram-subscription-check'
     | '/api/public/telegram-ticket'
+    | '/api/public/bundle-activation/complete'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -349,6 +375,7 @@ export interface RootRouteChildren {
   AdminEmailsRoute: typeof AdminEmailsRoute
   AdminReferralsRoute: typeof AdminReferralsRoute
   CourseAiRoute: typeof CourseAiRoute
+  ApiPublicBundleActivationRoute: typeof ApiPublicBundleActivationRouteWithChildren
   ApiPublicCheckSubscriptionRoute: typeof ApiPublicCheckSubscriptionRoute
   ApiPublicPortalSyncRoute: typeof ApiPublicPortalSyncRoute
   ApiPublicPortalSyncOutboxRoute: typeof ApiPublicPortalSyncOutboxRoute
@@ -486,6 +513,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CourseAiRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/bundle-activation': {
+      id: '/api/public/bundle-activation'
+      path: '/api/public/bundle-activation'
+      fullPath: '/api/public/bundle-activation'
+      preLoaderRoute: typeof ApiPublicBundleActivationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/check-subscription': {
       id: '/api/public/check-subscription'
       path: '/api/public/check-subscription'
@@ -535,8 +569,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicTelegramTicketRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/bundle-activation/complete': {
+      id: '/api/public/bundle-activation/complete'
+      path: '/complete'
+      fullPath: '/api/public/bundle-activation/complete'
+      preLoaderRoute: typeof ApiPublicBundleActivationCompleteRouteImport
+      parentRoute: typeof ApiPublicBundleActivationRoute
+    }
   }
 }
+
+interface ApiPublicBundleActivationRouteChildren {
+  ApiPublicBundleActivationCompleteRoute: typeof ApiPublicBundleActivationCompleteRoute
+}
+
+const ApiPublicBundleActivationRouteChildren: ApiPublicBundleActivationRouteChildren =
+  {
+    ApiPublicBundleActivationCompleteRoute:
+      ApiPublicBundleActivationCompleteRoute,
+  }
+
+const ApiPublicBundleActivationRouteWithChildren =
+  ApiPublicBundleActivationRoute._addFileChildren(
+    ApiPublicBundleActivationRouteChildren,
+  )
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -557,6 +613,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminEmailsRoute: AdminEmailsRoute,
   AdminReferralsRoute: AdminReferralsRoute,
   CourseAiRoute: CourseAiRoute,
+  ApiPublicBundleActivationRoute: ApiPublicBundleActivationRouteWithChildren,
   ApiPublicCheckSubscriptionRoute: ApiPublicCheckSubscriptionRoute,
   ApiPublicPortalSyncRoute: ApiPublicPortalSyncRoute,
   ApiPublicPortalSyncOutboxRoute: ApiPublicPortalSyncOutboxRoute,

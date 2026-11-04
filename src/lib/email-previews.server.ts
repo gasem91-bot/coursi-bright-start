@@ -27,6 +27,8 @@ export async function buildEmailPreviews(): Promise<EmailPreview[]> {
   const { buildUpgradeNudgeHtml, UPGRADE_NUDGE_SUBJECT } = await import("./upgrade-nudge-email.server");
   const { buildFriendInviteHtml, buildFriendDiscountHtml, buildReferrerRewardHtml, referralInviteSubject, FRIEND_DISCOUNT_SUBJECT, REFERRER_REWARD_SUBJECT } = await import("./referral-emails.server");
 
+  const { buildBundleActivationHtml, BUNDLE_ACTIVATION_SUBJECT } = await import("./bundle-activation-email.server");
+
   const dateText = arabicDate(new Date());
   const ticket = {
     ticketRef: "TKT-1413815E",
@@ -50,6 +52,10 @@ export async function buildEmailPreviews(): Promise<EmailPreview[]> {
     {
       key: "referral-referrer-reward", label: `مكافأة صاحب الدعوة — ${getVertical().shortLabel}`, to: "student@example.com", from: "كورسي <support@coursi.ai>",
       subject: REFERRER_REWARD_SUBJECT, html: buildReferrerRewardHtml({ firstName: "قاسم", friendFirstName: "أحمد", rewardCode: "RW-EXAMPLE", expiryDate: "٢٩ يناير ٢٠٢٧", purchaseLink: "https://coursi.ai/ai" }),
+    },
+    {
+      key: "bundle-activation", label: "تفعيل كورس الذكاء الاصطناعي من باقة التداول", to: "student@example.com", from: "كورسي <support@coursi.ai>",
+      subject: BUNDLE_ACTIVATION_SUBJECT, html: buildBundleActivationHtml("https://coursi.ai/bundle/activate?t=EXAMPLE-TOKEN"),
     },
     {
       key: "welcome",
