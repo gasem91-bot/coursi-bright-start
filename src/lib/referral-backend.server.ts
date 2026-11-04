@@ -9,7 +9,6 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 type Admin = SupabaseClient<Database>;
 type Referral = Database["public"]["Tables"]["referrals"]["Row"];
-const PURCHASE_LINK = "https://coursi.ai/ai";
 function check(error: { message: string } | null) { if (error) throw new Error(error.message); }
 function firstName(name: string | null | undefined) { return name?.trim().split(/\s+/)[0] || "صديقنا"; }
 function date(iso: string) { return new Date(iso).toLocaleDateString("ar-AE", { timeZone: "UTC" }); }
