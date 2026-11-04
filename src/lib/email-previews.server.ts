@@ -1,4 +1,3 @@
-import { getVertical } from "./verticals";
 // Server-only: builds sample renders of every branded transactional email.
 // Shared by the admin page server fn and the token-gated debug route.
 
