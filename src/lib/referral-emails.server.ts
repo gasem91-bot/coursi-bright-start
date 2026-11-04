@@ -1,10 +1,13 @@
-import { getVertical } from "./verticals";
 import { emailShell } from "./email-shell.server";
 
+// Referral emails use general كورسي branding only: no per-course name or theme.
+export const BRAND_LOGO = "https://ai.portal.coursi.ai/__l5e/assets-v1/4e70392d-96cd-4490-86e4-4e562039be12/coursi-logo.png?v=arabic-wordmark-20261003";
 export const REFERRAL_NOTE = "إذا كان هناك عرض جارٍ، يمكنك اختيار العرض أو كود الدعوة، ولا يُجمع الاثنان معاً";
-export const FRIEND_DISCOUNT_SUBJECT = "خصم الدعوة 5$ جاهز لك";
-export const REFERRER_REWARD_SUBJECT = "تم دعوتك للانضمام إلى كورسي وخصمك 5$ جاهز";
+export const REFERRER_REWARD_SUBJECT = "تمت إضافة 5$ إلى محفظتك في كورسي";
+export const FRIENDS_LINK = "https://ai.portal.coursi.ai/profile#referrals";
+export const WALLET_LINK = "https://ai.portal.coursi.ai/profile#wallet";
 export function referralInviteSubject(name: string) { return `${name} دعاك للانضمام إلى كورسي، وخصم 5$ بانتظارك`; }
+export function friendJoinedSubject(friendName: string) { return `${friendName} أصبح في قائمة أصدقائك على كورسي`; }
 
 function escape(value: string) {
   return value.replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char] ?? char);
@@ -15,25 +18,26 @@ function safeLink(value: string) {
   if (url.searchParams.has("prefilled_promo_code")) throw new Error("Referral codes must not be prefilled");
   return escape(url.href);
 }
-function shell(title: string, text: string, code: string, button: string, link: string, vertical = "ai") {
-  const brand = getVertical(vertical);
-  const href = safeLink(link);
+function money(value: number) { return `${Number.isInteger(value) ? value : value.toFixed(2)}$`; }
+function shell(p: { title: string; text: string; code?: string; button: string; link: string; note?: string }) {
+  const href = safeLink(p.link);
+  const code = p.code ? `<p dir="ltr" style="text-align:center;font-size:24px;font-weight:900;unicode-bidi:isolate">${escape(p.code)}</p>` : "";
+  const note = p.note ? `<p class="cta-note">${p.note}</p>` : "";
   return emailShell({
-    body: `<div class="hero" dir="rtl"><h1>${title}</h1><p>${text}</p><p dir="ltr" style="text-align:center;font-size:24px;font-weight:900;unicode-bidi:isolate">${escape(code)}</p></div><div class="cta" dir="rtl"><a class="btn" href="${href}">${button}</a><p class="cta-note">${REFERRAL_NOTE}</p><p class="cta-note"><a class="flink" href="${href}">${href}</a></p></div>`,
-    headerSubtitle: `كورسي · ${brand.shortLabel}`,
-    headerLogo: brand.logo,
-    extraStyles: `.hero h1,.flink{color:${brand.emailAccent}}.btn{background:${brand.emailAccent}}`,
+    body: `<div class="hero" dir="rtl"><h1>${p.title}</h1><p>${p.text}</p>${code}</div><div class="cta" dir="rtl"><a class="btn" href="${href}">${p.button}</a>${note}<p class="cta-note"><a class="flink" href="${href}">${href}</a></p></div>`,
+    headerSubtitle: "كورسي",
+    headerLogo: BRAND_LOGO,
     footerReason: "تلقّيت هذا البريد بخصوص دعوتك في كورسي.",
   });
 }
-export function buildFriendInviteHtml(p: { vertical?: string; referrerName: string; friendCode: string; purchaseLink: string }) {
-  return shell("دعوة إلى كورسي", `مرحباً، ${escape(p.referrerName)} يدعوك لتجربة كورسي، منصة تعلّم ${getVertical(p.vertical).courseName} بالعربية. هذا كود خصم 5$ لك، صالح 90 يوماً: ${escape(p.friendCode)}`, p.friendCode, "ابدأ الآن", p.purchaseLink, p.vertical);
+export function buildFriendInviteHtml(p: { referrerName: string; friendCode: string; purchaseLink: string }) {
+  return shell({ title: "دعوة إلى كورسي", text: `مرحباً، ${escape(p.referrerName)} يدعوك لتجربة كورسي، منصة تعلّم الذكاء الاصطناعي بالعربية. هذا كود خصم 5$ لك، صالح 90 يوماً: ${escape(p.friendCode)}`, code: p.friendCode, button: "ابدأ الآن", link: p.purchaseLink, note: REFERRAL_NOTE });
 }
-export function buildFriendDiscountHtml(p: { vertical?: string; firstName: string; referrerName: string; friendCode: string; expiryDate: string; purchaseLink: string }) {
-  return shell("خصم الدعوة 5$ جاهز لك", `أهلاً ${escape(p.firstName)}، انضممت إلى كورس ${getVertical(p.vertical).courseName} في كورسي بدعوة من ${escape(p.referrerName)}. هذا كود خصم 5$ لك: ${escape(p.friendCode)}، صالح حتى ${escape(p.expiryDate)}، ويُستخدم مرة واحدة عند الدفع`, p.friendCode, "ابدأ التعلّم", p.purchaseLink, p.vertical);
+export function buildFriendJoinedHtml(p: { firstName: string; friendFirstName: string }) {
+  return shell({ title: friendJoinedSubject(escape(p.friendFirstName)), text: `أهلاً ${escape(p.firstName)}، ${escape(p.friendFirstName)} سجّل في كورسي عبر دعوتك وأصبح الآن في قائمة أصدقائك. استمتعا بالتعلم معاً. وعندما يُكمل أول عملية شراء، يُضاف 5$ إلى محفظتك`, button: "عرض أصدقائي", link: FRIENDS_LINK });
 }
-export function buildReferrerRewardHtml(p: { vertical?: string; firstName: string; friendFirstName: string; rewardCode: string; expiryDate: string; purchaseLink: string }) {
-  return shell(REFERRER_REWARD_SUBJECT, `أهلاً ${escape(p.firstName)}، ${escape(p.friendFirstName)} انضم إلى كورس ${getVertical(p.vertical).courseName} من كورسي عبر دعوتك وأكمل عملية الشراء. شكراً لك، هذا كود خصم 5$ لمشترياتك القادمة: ${escape(p.rewardCode)}، صالح حتى ${escape(p.expiryDate)}، ويُستخدم مرة واحدة عند الدفع في أي دورة أو ترقية`, p.rewardCode, "استخدم الخصم", p.purchaseLink, p.vertical);
+export function buildReferrerRewardHtml(p: { firstName: string; friendFirstName: string; rewardCode: string; expiryDate: string; balance: number }) {
+  return shell({ title: REFERRER_REWARD_SUBJECT, text: `أهلاً ${escape(p.firstName)}، ${escape(p.friendFirstName)} أكمل أول عملية شراء في كورسي عبر دعوتك. أضفنا 5$ إلى محفظتك، ورصيدك الحالي ${money(p.balance)}. كود الخصم: ${escape(p.rewardCode)}، صالح حتى ${escape(p.expiryDate)}، ويُستخدم مرة واحدة عند الدفع في أي دورة أو ترقية`, code: p.rewardCode, button: "افتح محفظتي", link: WALLET_LINK, note: REFERRAL_NOTE });
 }
 
 export async function sendReferralEmail(p: { to: string; subject: string; html: string; eventKey: string }, key: string) {
