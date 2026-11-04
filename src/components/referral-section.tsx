@@ -54,7 +54,7 @@ export function ReferralSection() {
   const rewards = rows.filter((r) => r.reward_code);
 
   return (
-    <section id="referrals" dir="rtl" style={{ scrollMarginTop: 80, background: "var(--card-glass)", border: "1px solid var(--card-glass-border)", borderRadius: 16, padding: 20, marginBottom: 24, fontFamily: font }}>
+    <section dir="rtl" style={{ background: "var(--card-glass)", border: "1px solid var(--card-glass-border)", borderRadius: 16, padding: 20, marginBottom: 24, fontFamily: font }}>
       <h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 8, color: "var(--text-primary)" }}>ادعُ صديقاً واربحا معاً</h2>
       <p style={{ fontSize: 14, lineHeight: 1.8, color: "var(--text-secondary)", marginBottom: 14 }}>
         أرسل دعوة بالبريد لصديقك. يحصل صديقك على خصم 5$ عند الدفع، وتحصل أنت على خصم 5$ عندما يُكمل صديقك أول عملية شراء. كل خصم صالح 90 يوماً من تاريخ إصداره ولا يُجمع مع العروض الجارية.
