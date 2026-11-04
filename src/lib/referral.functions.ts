@@ -40,7 +40,7 @@ export const inviteReferralFriend = createServerFn({ method: "POST" })
       const { buildFriendInviteHtml, referralInviteSubject, sendReferralEmail } = await import("./referral-emails.server");
       const name = referrer.full_name || referrer.display_name || "صديقك";
       await sendReferralEmail({ to: email, subject: referralInviteSubject(name), eventKey: `referral-invite-${issued.id}`, html: buildFriendInviteHtml({
-        vertical: issued.vertical, referrerName: name, friendCode: issued.friend_code || "", purchaseLink: referralPurchaseLink(referrer.referral_code, email),
+        referrerName: name, friendCode: issued.friend_code || "", purchaseLink: referralPurchaseLink(referrer.referral_code, email),
       }) }, emailKey);
       await admin.from("referrals").update({ invite_email_sent_at: new Date().toISOString() }).eq("id", issued.id);
       return { ok: true };

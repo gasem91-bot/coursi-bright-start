@@ -18,7 +18,7 @@ export function ReferralWallet({ rows, loading, error, retry }: { rows: WalletCo
     try { await navigator.clipboard.writeText(row.code); setCopied(row.id); setCopyError(false); }
     catch { setCopyError(true); }
   }
-  return <div dir="rtl" className="referral-wallet mt-6 border-t border-border pt-5 text-foreground">
+  return <div id="wallet" dir="rtl" className="referral-wallet scroll-mt-20 mt-6 border-t border-border pt-5 text-foreground">
     <style>{`
       .referral-wallet { margin-top:24px; padding-top:20px; color:var(--text-primary); }
       .referral-wallet > p { margin-top:12px; }
