@@ -34,7 +34,7 @@ export function buildFriendInviteHtml(p: { referrerName: string; friendCode: str
   return shell({ title: "دعوة إلى كورسي", text: `مرحباً، ${escape(p.referrerName)} يدعوك لتجربة كورسي، منصة تعلّم الذكاء الاصطناعي بالعربية. هذا كود خصم 5$ لك، صالح 90 يوماً: ${escape(p.friendCode)}`, code: p.friendCode, button: "ابدأ الآن", link: p.purchaseLink, note: REFERRAL_NOTE });
 }
 export function buildFriendJoinedHtml(p: { firstName: string; friendFirstName: string }) {
-  return shell({ title: friendJoinedSubject(escape(p.friendFirstName)), text: `أهلاً ${escape(p.firstName)}، ${escape(p.friendFirstName)} سجّل في كورسي عبر دعوتك وأصبح الآن في قائمة أصدقائك. استمتعا بالتعلم معاً. وعندما يُكمل أول عملية شراء، يُضاف 5$ إلى محفظتك`, button: "عرض أصدقائي", link: FRIENDS_LINK });
+  return shell({ title: friendJoinedSubject(escape(p.friendFirstName)), text: `أهلاً ${escape(p.firstName)}، ${escape(p.friendFirstName)} سجّل في كورسي عبر دعوتك وأصبح الآن في قائمة أصدقائك. استمتعا بالتعلم معاً. وعندما يُكمل أول عملية شراء، يُضاف 5$ إلى محفظتك`, button: "قائمة أصدقائي", link: FRIENDS_LINK });
 }
 export function buildReferrerRewardHtml(p: { firstName: string; friendFirstName: string; rewardCode: string; expiryDate: string; balance: number }) {
   return shell({ title: REFERRER_REWARD_SUBJECT, text: `أهلاً ${escape(p.firstName)}، ${escape(p.friendFirstName)} أكمل أول عملية شراء في كورسي عبر دعوتك. أضفنا 5$ إلى محفظتك، ورصيدك الحالي ${money(p.balance)}. كود الخصم: ${escape(p.rewardCode)}، صالح حتى ${escape(p.expiryDate)}، ويُستخدم مرة واحدة عند الدفع في أي دورة أو ترقية`, code: p.rewardCode, button: "افتح محفظتي", link: WALLET_LINK, note: REFERRAL_NOTE });

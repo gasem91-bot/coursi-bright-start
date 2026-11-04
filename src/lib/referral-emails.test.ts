@@ -13,7 +13,8 @@ test("exactly three referral emails exist; friend-discount email is gone", () =>
 test("friend joined subject and button", () => {
   assert.equal(friendJoinedSubject("أحمد"), "أحمد أصبح في قائمة أصدقائك على كورسي");
   const html = buildFriendJoinedHtml({ firstName: "قاسم", friendFirstName: "أحمد" });
-  assert.ok(html.includes("عرض أصدقائي"));
+  assert.ok(html.includes("قائمة أصدقائي"))
+  assert.ok(html.includes("profile#referrals"));
   assert.ok(html.includes("وعندما يُكمل أول عملية شراء، يُضاف 5$ إلى محفظتك"));
 });
 

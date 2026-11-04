@@ -208,3 +208,28 @@ export const finishPendingReferral = createServerFn({ method: "POST" })
     await applySignupReferral(context.userId, { stripe, email });
     return { ok: true };
   });
+
+// Friends list: caller's own referral rows plus owner-RLS mirror rows; names only for this caller's referred users.
+export const getMyFriends = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<import("./referral-friends").FriendRow[]> => {
+    const { buildFriendRows } = await import("./referral-friends");
+    const { data: own, error } = await context.supabase.from("referrals")
+      .select("id,referred_email,referred_user_id,status,vertical,signed_up_at,purchased_at")
+      .eq("referrer_user_id", context.userId).order("created_at", { ascending: false }).limit(1000);
+    if (error) throw new Error(error.message);
+    const { data: mirror } = await context.supabase.from("referral_mirror")
+      .select("key,friend_email,friend_name,status,vertical,signed_up_at,purchased_at")
+      .eq("owner_user_id", context.userId).order("updated_at", { ascending: false }).limit(1000);
+    const ids = (own ?? []).map((r) => r.referred_user_id).filter((v): v is string => !!v);
+    const names = new Map<string, string>();
+    if (ids.length) {
+      const { supabaseAdmin: admin } = await import("@/integrations/supabase/client.server");
+      const { data: profiles } = await admin.from("profiles").select("id,full_name,display_name").in("id", ids);
+      for (const p of profiles ?? []) names.set(p.id, p.full_name || p.display_name || "");
+    }
+    return buildFriendRows([
+      ...(own ?? []).map((r) => ({ key: r.id, email: r.referred_email, name: r.referred_user_id ? names.get(r.referred_user_id) ?? null : null, vertical: r.vertical, status: r.status, signed_up_at: r.signed_up_at, purchased_at: r.purchased_at })),
+      ...(mirror ?? []).map((m) => ({ key: m.key, email: m.friend_email, name: m.friend_name, vertical: m.vertical, status: m.status, signed_up_at: m.signed_up_at, purchased_at: m.purchased_at })),
+    ]);
+  });
