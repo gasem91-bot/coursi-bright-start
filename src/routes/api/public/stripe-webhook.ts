@@ -2,7 +2,17 @@ import { createFileRoute } from "@tanstack/react-router";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 
-import { fulfillCheckout } from "@/lib/stripe-fulfillment.server";
+import { fulfillCheckout, isAiCheckout } from "@/lib/stripe-fulfillment.server";
+
+// Iterate every page: a shared-account checkout may place its AI item later.
+async function aiCheckoutPrice(stripe: Stripe, session: Stripe.Checkout.Session): Promise<string | null> {
+  let aiPrice: string | null = null;
+  for await (const item of stripe.checkout.sessions.listLineItems(session.id, { limit: 100 })) {
+    const priceId = item.price?.id || "";
+    if (aiPrice === null && isAiCheckout(priceId, session.metadata ?? {})) aiPrice = priceId;
+  }
+  return aiPrice ?? (isAiCheckout("", session.metadata ?? {}) ? "" : null);
+}
 
 async function sendWelcomeEmail(
   email: string,
@@ -151,7 +161,17 @@ export const Route = createFileRoute("/api/public/stripe-webhook")({
             const intent = typeof charge.payment_intent === "string" ? charge.payment_intent : charge.payment_intent?.id;
             if (intent) {
               const sessions = await stripe.checkout.sessions.list({ payment_intent: intent, limit: 100 });
-              for (const session of sessions.data) await synchronizeSessionWallets(supabaseAdmin, stripe, session);
+              for (const session of sessions.data) {
+                await synchronizeSessionWallets(supabaseAdmin, stripe, session);
+                if (await aiCheckoutPrice(stripe, session) !== null) {
+                  // Only this AI session's entitlement, never a bundle activation
+                  // or a newer purchase now occupying the same subscription row.
+                  const { error } = await supabaseAdmin.from("subscriptions")
+                    .update({ status: "inactive", cancelled_at: new Date().toISOString() })
+                    .eq("stripe_session_id", session.id).eq("status", "active");
+                  if (error) throw error;
+                }
+              }
             }
             return Response.json({ received: true });
           } catch {
@@ -167,8 +187,6 @@ export const Route = createFileRoute("/api/public/stripe-webhook")({
         const email = session.customer_email || session.customer_details?.email;
         if (!email) return new Response("No email", { status: 400 });
 
-        const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
-        const priceId = lineItems.data[0]?.price?.id || "";
         const admin = createClient(supabaseUrl, supabaseServiceRoleKey, {
           auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
         });
@@ -178,6 +196,7 @@ export const Route = createFileRoute("/api/public/stripe-webhook")({
         const mode = session.mode || "payment";
 
         try {
+          const priceId = await aiCheckoutPrice(stripe, session);
           const promoCode = await lookupPromoCode(stripe, session.id);
           const { synchronizeSessionWallets } = await import("@/lib/wallet-stripe.server");
           await synchronizeSessionWallets(admin, stripe, session, promoCode);
@@ -186,6 +205,14 @@ export const Route = createFileRoute("/api/public/stripe-webhook")({
           // the buyer's latest subscription row.
           const { data: priorProfile, error: priorError } = await admin.from("profiles").select("id").ilike("email", email.trim().toLowerCase()).maybeSingle();
           if (priorError) throw priorError;
+          if (priceId === null) {
+            if (priorProfile) {
+              await processReferralCheckout(admin, stripe, session, priorProfile.id, { stripe: stripeSecretKey, email: resendApiKey }, promoCode);
+              await synchronizeSessionWallets(admin, stripe, session, promoCode);
+            }
+            console.log(`[stripe-webhook] session ${session.id} ignored — not_ai`);
+            return Response.json({ received: true, ignored: "not_ai" });
+          }
           if (priorProfile) {
             const { data: priorPaid, error: paidError } = await admin.from("subscriptions").select("stripe_session_id,purchased_at,created_at,amount,amount_paid_cents").eq("user_id", priorProfile.id).gt("amount", 0);
             if (paidError) throw paidError;

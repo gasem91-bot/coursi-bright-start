@@ -5,6 +5,8 @@
 - All lesson images use `LessonImageViewer`, including existing HTML images; shared overlay and pinch zoom keep media behavior consistent without changing lesson data.
 - Offers reuses `getUpgradeStatus` and `createAiUpgradeCheckout`; retained referral UI stays unmounted, keeping eligibility/payment logic consistent and referrals reversible.
 - Stripe checkout fulfillment lives in `src/lib/stripe-fulfillment.server.ts` (route only verifies, emails); each session id is claimed in `stripe_processed_sessions` first so webhook retries never double-apply.
+- Shared Stripe events use `isAiCheckout` across all line-item pages before AI fulfillment or refund revocation; unknown direct fulfillment prices fail before writes, while non-AI wallet/referral processing remains independent to avoid cross-portal access grants.
+- Run all tests with `bun run test`; webhook module mocks run in a separate process from existing library tests to prevent cross-suite mock contamination.
 - Android status-bar separation uses StatusBar configuration plus a top-only native inset on edge-to-edge Android; consume that inset before the WebView and gate CSS safe-area handling to Android so browser layouts and bottom spacing remain unchanged.
 - Email congratulations use the shared shell's centred hero/CTA styles; admin samples carry template/level/tier metadata so previews and test sends use the same builders, one selected variant per template.
 - Bundle base links, prices and timed promotion config live in `bundle-offers.ts`; consumers derive current prices and checkout prefills using its time-aware helpers, refreshing open views at expiry and rechecking checkout clicks so existing checkout flows and public pages stay unchanged.

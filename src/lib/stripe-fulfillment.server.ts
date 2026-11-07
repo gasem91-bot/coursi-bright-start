@@ -20,6 +20,15 @@ export const PRICE_MAP: Record<string, { level: string; tier: string }> = {
   "price_1Ts2H2HNdqnRfyCH7YX3CJ6G": { level: "advanced", tier: "course_ai" },
 };
 
+export function isAiCheckout(priceId: string, metadata: Record<string, string | undefined>): boolean {
+  return Object.hasOwn(PRICE_MAP, priceId)
+    || priceId === LEVEL_UPGRADE_PRICE_ID
+    || priceId === AI_TOPUP_PRICE_ID
+    || priceId === AI_TOPUP_PRICE_ID_LEGACY
+    || metadata.upgrade === "level_upgrade"
+    || metadata.upgrade === "course_ai_topup";
+}
+
 export type CheckoutInput = {
   sessionId: string;
   email: string;
@@ -82,6 +91,8 @@ async function saveSubscription(admin: Admin, userId: string, tier: string, inpu
 }
 
 export async function fulfillCheckout(admin: Admin, input: CheckoutInput): Promise<FulfillResult> {
+  // Fail before any database/auth mutation, even for direct non-webhook callers.
+  if (!isAiCheckout(input.priceId, input.metadata)) throw new Error("unknown_price");
   // Idempotency: claim the session id first; a second delivery hits the
   // primary key and is skipped. Also honour sessions recorded before the ledger.
   const { data: seen } = await admin
@@ -142,7 +153,8 @@ async function fulfillOnce(admin: Admin, input: CheckoutInput): Promise<FulfillR
   }
 
   // New course purchase.
-  const { level, tier } = PRICE_MAP[priceId] || { level: "beginner", tier: "course" };
+  if (!Object.hasOwn(PRICE_MAP, priceId)) throw new Error("unknown_price");
+  const { level, tier } = PRICE_MAP[priceId];
   let userId = await findUserIdByEmail(admin, input.email);
   if (!userId) {
     const { data: created, error } = await admin.auth.admin.createUser({
