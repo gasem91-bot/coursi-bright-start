@@ -18,9 +18,8 @@ export const EMAIL_STYLES = `
 body{font-family:'Noto Sans Arabic',Arial,sans-serif;background:#0A0A0A;color:#F2F2F5;direction:rtl;text-align:right;}
 .wrap{background:#0A0A0A;padding:32px 16px;direction:rtl;text-align:right;}
 .box{max-width:600px;margin:0 auto;background:#0D0D0D;border-radius:24px;overflow:hidden;border:1px solid #232323;direction:rtl;text-align:right;}
-.hdr{background:linear-gradient(160deg,#0D0520,#110A24,#071520);padding:36px 40px 28px;text-align:center;border-bottom:1px solid rgba(146,86,214,0.28);}
+.hdr{background:linear-gradient(160deg,#0D0520,#110A24,#071520);padding:32px 40px;text-align:center;border-bottom:1px solid rgba(146,86,214,0.28);}
 .logo-img{display:block;margin:0 auto;width:170px;max-width:70%;height:auto;border:0;outline:none;text-decoration:none;}
-.hdr-sub{font-size:12px;color:#B8B8C8;font-weight:600;letter-spacing:3px;margin-top:10px;}
 .hero{padding:36px 40px 30px;text-align:center;direction:rtl;border-bottom:1px solid #1C1C1C;}
 .badge{display:inline-block;background:rgba(146,86,214,0.14);border:1px solid rgba(146,86,214,0.42);color:#C4A6EE;font-size:12px;font-weight:700;padding:6px 18px;border-radius:20px;margin-bottom:18px;}
 .badge-cyan{display:inline-block;background:rgba(96,214,214,0.14);border:1px solid rgba(96,214,214,0.42);color:#7FE3E3;font-size:12px;font-weight:700;padding:6px 18px;border-radius:20px;margin-bottom:18px;}
@@ -60,10 +59,12 @@ body{font-family:'Noto Sans Arabic',Arial,sans-serif;background:#0A0A0A;color:#F
 .fcopy{font-size:11px;color:#B8B8C8;line-height:1.85;}
 `;
 
+// The header shows the logo only: no brand-name text line under it, so the
+// wordmark never repeats. `subtitle` is accepted for call-site compatibility
+// and intentionally not rendered.
 export function emailHeader(subtitle = `${BRAND_AR} · coursi.ai`, logo = LOGO_URL): string {
   return `<div class="hdr">
   <img src="${logo}" alt="${BRAND_AR}" width="170" class="logo-img" />
-  <div class="hdr-sub">${useArabicBrand(subtitle)}</div>
 </div>`;
 }
 
