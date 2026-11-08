@@ -4,7 +4,7 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "test": "bun test src/lib && bun test tests/stripe-webhook.test.ts",
+    "test": "bun test src/lib && bun test tests/stripe-webhook.test.ts && bun test tests/referral-offer-card.test.tsx",
     "dev": "vite dev",
     "build": "vite build",
     "build:dev": "vite build --mode development",

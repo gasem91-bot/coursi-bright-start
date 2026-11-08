@@ -11,6 +11,7 @@ import { BUNDLE_OFFERS, BUNDLE_LIMITED_TIME_OFFER, getBundleOfferState, getBundl
 import { TRADING_OFFERS, TRADING_PRICES } from "@/lib/trading-offers";
 import { useIsNative } from "@/lib/native";
 import { IapBuyButton } from "@/components/iap-buy-button";
+import { ReferralOfferCard } from "@/components/referral-offer-card";
 import { getMyReferralWallet, getOfferCreditLinks, createWalletCreditLink } from "@/lib/referral.functions";
 import { earliestWalletCode } from "@/lib/wallet-credit";
 import type { WalletCode } from "@/lib/referral-wallet";
@@ -160,6 +161,7 @@ function OffersPage() {
           main[data-page="offers"] [data-offer="bundle"] { padding: 16px; }
           main[data-page="offers"] [data-offer="trading"] { padding: 16px; }
           main[data-page="offers"] [data-offer="ai-tutor"] { padding: 16px; }
+          main[data-page="offers"] [data-offer="referral"] { padding: 16px; }
           main[data-page="offers"] [data-offer="ai-tutor"] + [data-offer="next-level"] { margin-top: 0; }
         }
       `}</style>
@@ -286,6 +288,7 @@ function OffersPage() {
             ))}
             </>)}
             {/* Future drop offers can be added here. */}
+            <ReferralOfferCard />
             <article data-offer="bundle" aria-disabled="true" className="rounded-lg border border-[var(--accent-purple-border)] bg-[var(--bg-secondary)] p-6">
               <div className="flex flex-wrap items-center gap-3">
                 <Sparkles className="size-6 text-[var(--accent-purple-text)]" aria-hidden="true" />
@@ -297,21 +300,5 @@ function OffersPage() {
         )}
       </div>
     </main>
-  );
-}
-
-// Referral UI retained for a future relaunch, intentionally not mounted for any user.
-function ReferralOffer({ referralCode }: { referralCode: string }) {
-  const copyReferral = async () => {
-    try { await navigator.clipboard.writeText(referralCode); toast.success("تم النسخ ✓"); }
-    catch { toast.error("تعذّر النسخ"); }
-  };
-  return (
-    <div className="rounded-lg border border-[var(--accent-green-border)] bg-[var(--accent-green-soft)] p-6">
-      <h3 className="text-lg font-bold text-[var(--text-primary)]">ادعُ صديقاً واربحا معاً</h3>
-      <p className="mt-2 text-sm text-[var(--text-secondary)]">شارك رمز الدعوة الخاص بك</p>
-      <div className="my-4 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] p-4 text-center text-xl font-extrabold text-[var(--accent-cyan-text)]">{referralCode}</div>
-      <Button variant="outline" onClick={copyReferral}>نسخ الرمز</Button>
-    </div>
   );
 }
