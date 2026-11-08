@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { getMyReferrals, getMyReferralWallet, inviteReferralFriend, type MyReferral } from "@/lib/referral.functions";
 import { ReferralWallet } from "./referral-wallet";
 import type { WalletCode } from "@/lib/referral-wallet";
+import { activeRewardCount } from "@/lib/referral-display";
 import { Button } from "@/components/ui/button";
 
 const font = "Cairo, 'Noto Sans Arabic', sans-serif";
@@ -51,7 +52,7 @@ export function ReferralSection() {
   };
 
   const joined = rows.filter((r) => r.status !== "invited" && r.status !== "voided").length;
-  const rewards = rows.filter((r) => r.reward_code);
+  const rewards = activeRewardCount(wallet);
 
   return (
     <section dir="rtl" style={{ background: "var(--card-glass)", border: "1px solid var(--card-glass-border)", borderRadius: 16, padding: 20, marginBottom: 24, fontFamily: font }}>
@@ -69,7 +70,7 @@ export function ReferralSection() {
       </form>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8, marginTop: 18 }}>
-        {([["دعوات مرسلة", rows.length], ["أصدقاء انضموا", joined], ["خصومات حصلت عليها", rewards.length]] as const).map(([label, n]) => (
+        {([["دعوات مرسلة", rows.length], ["أصدقاء انضموا", joined], ["خصومات حصلت عليها", rewards]] as const).map(([label, n]) => (
           <div key={label} style={{ textAlign: "center", padding: "10px 4px", borderRadius: 12, background: "rgba(123,53,192,0.08)" }}>
             <div style={{ fontSize: 20, fontWeight: 800, color: "var(--text-primary)" }}>{n}</div>
             <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>{label}</div>

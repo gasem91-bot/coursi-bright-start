@@ -27,6 +27,31 @@ test("statuses, course names, masking and dedupe", () => {
   assert.deepEqual(rows.map((r) => [r.name, r.course, r.status]), [
     ["أحمد", "كورسي الذكاء الاصطناعي", "joined"],
     ["b***@x.com", "كورسي الذكاء الاصطناعي", "purchased"],
-    ["c***@x.com", "كورسي التداول", "pending"],
   ]);
+});
+
+const source = { key: "friend", email: "friend@example.com", name: null, vertical: "ai", status: "invited", signed_up_at: null, purchased_at: null };
+
+test("zero joined friends yields an empty friends list", () => {
+  assert.equal(buildFriendRows([]).length, 0);
+});
+
+test("one registered friend is listed and counted once", () => {
+  const rows = buildFriendRows([{ ...source, status: "signed_up", signed_up_at: "2026-11-08" }]);
+  assert.equal(rows.length, 1);
+  assert.equal(rows[0]?.status, "joined");
+});
+
+test("a purchased friend is listed and counted once", () => {
+  const rows = buildFriendRows([{ ...source, status: "rewarded", purchased_at: "2026-11-08" }]);
+  assert.equal(rows.length, 1);
+  assert.equal(rows[0]?.status, "purchased");
+});
+
+test("refunded referrals never count even with signup and purchase timestamps", () => {
+  assert.equal(buildFriendRows([{ ...source, status: "voided", signed_up_at: "2026-11-01", purchased_at: "2026-11-02" }]).length, 0);
+});
+
+test("pending-only invitations are neither listed nor counted as friends", () => {
+  assert.equal(buildFriendRows([source]).length, 0);
 });

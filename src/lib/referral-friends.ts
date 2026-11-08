@@ -35,7 +35,7 @@ export function buildFriendRows(sources: FriendSource[]): FriendRow[] {
   const out: FriendRow[] = [];
   for (const s of sources) {
     const status = friendStatus(s);
-    if (!status) continue;
+    if (!status || status === "pending") continue;
     const dedupe = `${(s.email ?? s.key).trim().toLowerCase()}|${s.vertical}`;
     if (seen.has(dedupe)) continue;
     seen.add(dedupe);
