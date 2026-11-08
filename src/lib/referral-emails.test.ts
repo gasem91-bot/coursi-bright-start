@@ -45,3 +45,18 @@ test("placeholders cannot inject executable content", () => {
   }
   assert.equal(buildFriendJoinedHtml({ firstName: payload, friendFirstName: payload }).includes(payload), false);
 });
+
+const count = (h: string, x: string) => h.split(x).length - 1;
+test("invite sentence exact and code shown once in box", () => {
+  const html = buildFriendInviteHtml({ referrerName: "a", friendCode: "FR-ABC123", purchaseLink: "https://buy.stripe.com/abc123xyz" });
+  assert.ok(html.includes("مرحباً، صديقك يدعوك لتجربة كورسي، منصة تعلّم الذكاء الاصطناعي بالعربية. هذا كود خصم 5$ لك، صالح 90 يوماً:</p>"));
+  assert.equal(count(html, "FR-ABC123"), 1);
+  assert.ok(html.includes('href="https://buy.stripe.com/abc123xyz"'));
+  assert.equal(html.includes(">https://buy.stripe.com/abc123xyz<"), false);
+  assert.ok(html.includes(">coursi.ai</a>"));
+});
+test("reward code shown once; link text is host only", () => {
+  const html = buildReferrerRewardHtml(sample);
+  assert.equal(count(html, "RW-EXAMPLE"), 1);
+  assert.ok(html.includes(">ai.portal.coursi.ai</a>"));
+});
