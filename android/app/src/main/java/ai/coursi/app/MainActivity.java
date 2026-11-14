@@ -41,7 +41,15 @@ public class MainActivity extends BridgeActivity {
                         | WindowInsetsCompat.Type.displayCutout()
                         | WindowInsetsCompat.Type.ime()
                 );
-                view.setPadding(left + safe.left, top + safe.top, right + safe.right, bottom + safe.bottom);
+                // Tablets: cap the page width and centre it, with black side borders.
+int extra = 0;
+float density = getResources().getDisplayMetrics().density;
+int screenW = getResources().getDisplayMetrics().widthPixels;
+int maxW = (int) (640 * density);
+if (getResources().getConfiguration().smallestScreenWidthDp >= 600 && screenW > maxW) {
+extra = (screenW - maxW) / 2;
+}
+view.setPadding(left + Math.max(safe.left, extra), top + safe.top, right + Math.max(safe.right, extra), bottom + safe.bottom);
                 // The WebView now sits inside the strips; do not apply insets twice.
                 return windowInsets.inset(safe.left, safe.top, safe.right, safe.bottom);
             });
